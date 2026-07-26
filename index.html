@@ -1,1 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fortnite Sprite Tracker</title>
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg: #0d0f1a;
+      --card-bg: #161a2b;
+      --accent-purple: #8b5cf6;
+      --accent-purple-hover: #7c3aed;
+      --accent-green: #10b981;
+      --text: #eef1ff;
+      --muted: #8a90ad;
+      --border-radius: 14px;
+    }
 
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 1rem; }
+    .container { max-width: 1400px; margin: 0 auto; }
+
+    /* Fortnite Hero Slideshow */
+    .hero-slideshow {
+      position: relative;
+      width: 100%;
+      height: 220px;
+      border-radius: 16px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .slide {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: flex-end;
+      padding: 1.5rem;
+    }
+
+    .slide.active { opacity: 1; }
+    .slide-overlay {
+      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(13,15,26,0.95) 100%);
+      position: absolute; inset: 0;
+    }
+
+    .slide-caption {
+      position: relative; z-index: 2;
+      font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    }
+
+    /* Left-Anchored Responsive Profile Banner */
+    .profile-banner {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      background: var(--card-bg);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 1.25rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      width: 76px; height: 76px;
+      flex-shrink: 0;
+    }
+
+    .profile-photo {
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--accent-purple);
+      background: #1e293b;
+    }
+
+    .avatar-edit-badge {
+      position: absolute; bottom: 0; right: 0;
+      width: 26px; height: 26px; border-radius: 50%;
+      background: #1e293b; border: 1px solid rgba(255,255,255,0.2);
+      color: #fff; font-size: 0.75rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .user-info { flex-grow: 1; }
+    .user-name { font-size: 1.4rem; font-weight: 800; }
+    .user-status { font-size: 0.85rem; color: var(--muted); }
+
+    .auth-box {
+      display: flex; gap: 0.5rem; margin-left: auto; align-items: center;
+    }
+
+    .input-field {
+      background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.85rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700;
+      cursor: pointer; border: none; font-size: 0.85rem;
+    }
+    .btn-primary { background: var(--accent-purple); color: #fff; }
+    .btn-primary:hover { background: var(--accent-purple-hover); }
+
+    /* Sprite Grid */
+    .sprite-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.25rem;
+    }
+    @media (max-width: 1200px) { .sprite-grid { grid-template-columns: repeat(4, 1fr); } }
+    @media (max-width: 900px) { .sprite-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 600px) { .sprite-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .sprite-card {
+      background: var(--card-bg); border-radius: var(--border-radius);
+      padding: 1rem; text-align: center; border: 1px solid rgba(255,255,255,0.08);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <!-- Fortnite Slideshow Header -->
+    <div class="hero-slideshow" id="slideshow">
+      <div class="slide active" style="background-image: url('https://cdn2.unrealengine.com/fn-social-ch5s1-1920x1080-2a54fb263632.jpg');">
+        <div class="slide-overlay"></div>
+        <div class="slide-caption">Chapter 7 Season 3: Runners</div>
+      </div>
+      <div class="slide" style="background-image: url('https://cdn2.unrealengine.com/keyart-1920x1080-4927f88410fb.jpg');">
+        <div class="slide-overlay"></div>
+        <div class="slide-caption">Sprite Hunt Event Live</div>
+      </div>
+    </div>
+
+    <!-- Left-Anchored Responsive Profile Banner -->
+    <div class="profile-banner">
+      <div class="avatar-wrapper">
+        <img id="profilePhoto" src="https://placehold.co/150x150/1e293b/8b5cf6?text=User" class="profile-photo" alt="Avatar" />
+        <label for="avatarInput" class="avatar-edit-badge" title="Upload new photo">📷</label>
+        <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="uploadAvatar(event)" />
+      </div>
+
+      <div class="user-info">
+        <div class="user-name" id="displayName">Guest User</div>
+        <div class="user-status" id="userStatus">Log in below to sync your findings</div>
+      </div>
+
+      <!-- Custom Auth Form (No Google Required) -->
+      <div class="auth-box" id="authBox">
+        <input type="text" id="loginUsername" placeholder="Username" class="input-field" />
+        <input type="password" id="loginPassword" placeholder="Password" class="input-field" />
+        <button class="btn btn-primary" onclick="login()">Log In</button>
+      </div>
+    </div>
+
+    <!-- Collection Grid Container -->
+    <div id="spriteContainer" class="sprite-grid">
+      <!-- Cards render dynamically -->
+    </div>
+
+  </div>
+
+  <script>
+    // Initialize Supabase Credentials
+    const SUPABASE_URL = "https://oereylignfdcrnafqpix.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_Sz7H2GqdGiX5Z6X0BPrm9Q_iloAP-2O";
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    let currentSlide = 0;
+
+    // Slideshow Loop
+    setInterval(() => {
+      const slides = document.querySelectorAll('.slide');
+      slides[currentSlide].classList.remove('active');
+      currentSlide = (currentSlide + 1) % slides.length;
+      slides[currentSlide].classList.add('active');
+    }, 5000);
+
+    // Custom Login Function
+    async function login() {
+      const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+      const password = document.getElementById('loginPassword').value;
+      const email = `${username}@fnsprites.local`;
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        alert("Login failed: " + error.message);
+      } else {
+        updateProfileUI(data.user, username);
+      }
+    }
+
+    function updateProfileUI(user, username) {
+      document.getElementById('displayName').innerText = username.toUpperCase();
+      document.getElementById('userStatus').innerText = "Logged in & Syncing";
+      document.getElementById('authBox').innerHTML = `<button class="btn btn-primary" onclick="logout()">Log Out</button>`;
+    }
+
+    async function logout() {
+      await supabase.auth.signOut();
+      location.reload();
+    }
+
+    // Avatar Upload Handler
+    async function uploadAvatar(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const user = (await supabase.auth.getUser()).data.user;
+      if (!user) {
+        alert("Please log in first to change your photo!");
+        return;
+      }
+
+      const fileExt = file.name.split('.').pop();
+      const filePath = `avatars/${user.id}.${fileExt}`;
+
+      let { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
+      if (uploadError) {
+        alert("Upload error: " + uploadError.message);
+        return;
+      }
+
+      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
+      document.getElementById('profilePhoto').src = data.publicUrl;
+    }
+  </script>
+</body>
+</html>
