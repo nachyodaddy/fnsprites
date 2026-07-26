@@ -148,7 +148,20 @@
       box-shadow: 0 8px 28px rgba(0,0,0,0.45);
       border-radius: 16px; padding: 1.25rem 1.25rem 1.25rem 3.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;
       position: relative; z-index: 10; margin-left: 28px; width: calc(100% - 28px);
-      overflow: visible;
+      overflow: visible; transition: all 0.3s ease;
+    }
+    .profile-banner.guest-welcome {
+      margin-left: 0; width: 100%; padding-left: 1.5rem;
+      background: linear-gradient(135deg, rgba(22, 26, 43, 0.94) 0%, rgba(45, 27, 78, 0.9) 100%),
+                  url('https://i.ytimg.com/vi/emZfQYbDR74/maxresdefault.jpg');
+      background-size: cover; background-position: center;
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      box-shadow: 0 8px 32px rgba(139, 92, 246, 0.25);
+    }
+    .profile-banner.guest-welcome .user-name {
+      font-size: 1.5rem; font-weight: 900; letter-spacing: 1px;
+      background: linear-gradient(90deg, #ffcb3d, #8b5cf6, #10b981);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
     .avatar-wrapper {
       position: absolute; left: -34px; top: 50%; transform: translateY(-50%);
@@ -2011,12 +2024,44 @@
       await loadSprites();
     }
 
+    function renderLoggedOutState() {
+      const banner = document.querySelector('.profile-banner');
+      if (banner) banner.classList.add('guest-welcome');
+
+      const avatarWrap = document.querySelector('.avatar-wrapper');
+      if (avatarWrap) avatarWrap.style.display = 'none';
+
+      document.getElementById('displayName').innerHTML = '👋 WELCOME TO SPRITE TRACKR';
+      document.getElementById('userStatus').innerText = 'Sign in or create an account below to track your extracted sprites & mastered crowns!';
+
+      const browseBtn = document.querySelector('.browse-players-btn');
+      if (browseBtn) browseBtn.style.display = 'none';
+
+      document.getElementById('editProfileBtn').style.display = 'none';
+      document.getElementById('adminPanelBtn').style.display = 'none';
+      document.getElementById('claimAdminBtn').style.display = 'none';
+
+      const badge = document.getElementById('pendingApprovalBadge');
+      if (badge) badge.style.display = 'none';
+    }
+
     function updateProfileUI(username) {
+      const banner = document.querySelector('.profile-banner');
+      if (banner) banner.classList.remove('guest-welcome');
+
+      const avatarWrap = document.querySelector('.avatar-wrapper');
+      if (avatarWrap) avatarWrap.style.display = 'block';
+
       document.getElementById('displayName').innerText = username.toUpperCase();
       document.getElementById('userStatus').innerText = 'Logged in & syncing your own collection';
       document.getElementById('progressSub').innerText = 'Your own private progress';
+      
       document.getElementById('authBox').innerHTML =
         '<button class="btn btn-primary" onclick="logout()">Log Out</button>';
+
+      const browseBtn = document.querySelector('.browse-players-btn');
+      if (browseBtn) browseBtn.style.display = 'inline-flex';
+
       document.getElementById('editProfileBtn').style.display = 'inline-block';
       checkAdminStatus();
       upsertMyProfile(username);
@@ -2034,6 +2079,7 @@
 
     async function logout() {
       await sb.auth.signOut();
+      localStorage.removeItem('fnsprites_username');
       location.reload();
     }
 
@@ -2045,6 +2091,8 @@
         currentUser = data.session.user;
         const username = (currentUser.user_metadata && currentUser.user_metadata.username) || 'Player';
         updateProfileUI(username);
+      } else {
+        renderLoggedOutState();
       }
     }
 
