@@ -177,10 +177,10 @@
       filter: drop-shadow(0 0 6px rgba(255,203,61,0.8)); z-index: 2;
     }
     .thumb-wrap {
-      width: 100%; aspect-ratio: 1/1; background: rgba(0,0,0,0.18); border-radius: 10px;
+      width: 100%; aspect-ratio: 1/1; background: transparent; border-radius: 10px;
       overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
     }
-    .thumb-wrap img { width: 100%; height: 100%; object-fit: contain; }
+    .thumb-wrap img { width: 92%; height: 92%; object-fit: contain; object-position: center; margin: auto; }
     .sprite-name { font-size: 13px; font-weight: 700; margin-bottom: 8px; min-height: 32px; display: flex; align-items: center; justify-content: center; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
     .toggle-row { display: flex; gap: 6px; }
     .icon-toggle-btn {
@@ -211,8 +211,8 @@
       max-width: 420px; width: 100%; padding: 26px; position: relative; padding-bottom: 60px;
     }
     .modal-close { position: absolute; top: 12px; right: 14px; background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; }
-    .modal-thumb { width: 140px; height: 140px; margin: 0 auto 14px; border-radius: 12px; background: rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; }
-    .modal-thumb img { width: 100%; height: 100%; object-fit: contain; }
+    .modal-thumb { width: 140px; height: 140px; margin: 0 auto 14px; border-radius: 12px; background: transparent; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .modal-thumb img { width: 92%; height: 92%; object-fit: contain; object-position: center; margin: auto; }
     .modal-name { text-align: center; font-size: 20px; font-weight: 800; margin-bottom: 4px; }
     .modal-variant { display: block; text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 16px; }
     .modal-section { margin-bottom: 14px; }
@@ -239,7 +239,60 @@
     .note-modal-actions button { flex: 1; padding: 9px; border-radius: 8px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; }
     .note-save-btn { background: var(--accent-purple); color: #fff; }
     .note-cancel-btn { background: rgba(255,255,255,0.08); color: var(--muted); }
-  </style>
+  
+    /* ============ PROGRESS BARS ============ */
+    .progress-bars { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; }
+    .progress-bar-row { display: flex; align-items: center; gap: 8px; font-size: 10px; color: var(--muted); }
+    .progress-track { flex: 1; height: 6px; border-radius: 999px; background: rgba(255,255,255,0.08); overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 999px; transition: width 0.4s ease; }
+    .progress-fill.extracted-fill { background: linear-gradient(90deg, #0d8a5f, var(--accent-green)); }
+    .progress-fill.mastered-fill { background: linear-gradient(90deg, #d69a2b, var(--accent-gold)); }
+
+    /* ============ FILTER SELECTS ============ */
+    .filter-select {
+      padding: 7px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.15);
+      background: var(--card-bg); color: var(--text); font-size: 12px; cursor: pointer;
+    }
+
+    /* ============ PROFILE EDIT / BROWSE BUTTON ============ */
+    .edit-profile-btn {
+      background: none; border: 1px solid rgba(255,255,255,0.15); color: var(--muted);
+      border-radius: 999px; padding: 4px 10px; font-size: 11px; cursor: pointer; margin-top: 4px;
+    }
+    .edit-profile-btn:hover { color: #fff; border-color: var(--accent-purple); }
+    .browse-players-btn {
+      background: var(--card-bg); border: 1px solid rgba(255,255,255,0.15); color: var(--text);
+      border-radius: 999px; padding: 7px 16px; font-size: 12px; cursor: pointer; font-weight: 700;
+    }
+    .browse-players-btn:hover { border-color: var(--accent-purple); }
+
+    /* ============ PLAYER LIST MODAL ============ */
+    .player-list-box {
+      background: #161a2b; border: 2px solid rgba(255,255,255,0.12); border-radius: 16px;
+      max-width: 460px; width: 100%; max-height: 80vh; overflow-y: auto; padding: 22px;
+    }
+    .player-list-title { font-size: 16px; font-weight: 800; margin-bottom: 14px; }
+    .player-row {
+      display: flex; align-items: center; gap: 12px; padding: 10px; border-radius: 10px;
+      cursor: pointer; transition: background 0.15s ease;
+    }
+    .player-row:hover { background: rgba(255,255,255,0.06); }
+    .player-row img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-purple); }
+    .player-row-name { font-weight: 700; font-size: 14px; }
+    .player-empty { color: var(--muted); font-size: 13px; text-align: center; padding: 20px; }
+
+    /* ============ OTHER PLAYER'S SPRITE CARD BUTTONS ============ */
+    .heart-btn, .request-btn {
+      flex: 1; background: rgba(13,15,26,0.55); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+      padding: 6px; font-size: 10px; font-weight: 700; color: #fff; cursor: pointer;
+    }
+    .heart-btn.on { background: rgba(255,84,112,0.25); border-color: var(--accent-red); }
+    .request-btn.on { background: rgba(139,92,246,0.3); border-color: var(--accent-purple); }
+    .back-to-mine-btn {
+      background: var(--card-bg); border: 1px solid rgba(255,255,255,0.15); color: var(--text);
+      border-radius: 999px; padding: 7px 16px; font-size: 12px; cursor: pointer; font-weight: 700; margin-bottom: 14px;
+    }
+</style>
 </head>
 <body>
 
@@ -250,11 +303,11 @@
 
     <!-- Fortnite Slideshow Header -->
     <div class="hero-slideshow" id="slideshow">
-      <div class="slide active" style="background-image: url('https://cdn2.unrealengine.com/fn-social-ch5s1-1920x1080-2a54fb263632.jpg');">
+      <div class="slide active" style="background-image: url('https://i.ytimg.com/vi/emZfQYbDR74/maxresdefault.jpg');">
         <div class="slide-overlay"></div>
         <div class="slide-caption">Chapter 7 Season 3: Runners</div>
       </div>
-      <div class="slide" style="background-image: url('https://cdn2.unrealengine.com/keyart-1920x1080-4927f88410fb.jpg');">
+      <div class="slide" style="background-image: url('https://static.beebom.com/wp-content/uploads/2026/07/Fortnite-Sprite-Events.png?w=1168&quality=75');">
         <div class="slide-overlay"></div>
         <div class="slide-caption">Sprite Hunt Event Live</div>
       </div>
@@ -271,6 +324,18 @@
         <div class="stat-label">Collection Progress</div>
         <div class="stat-value" id="progressValue">0 / 0</div>
         <div class="stat-sub" id="progressSub">Log in to track your own</div>
+        <div class="progress-bars">
+          <div class="progress-bar-row">
+            <span>Extracted</span>
+            <div class="progress-track"><div class="progress-fill extracted-fill" id="extractedBar" style="width:0%"></div></div>
+            <span id="extractedLabel">0/0</span>
+          </div>
+          <div class="progress-bar-row">
+            <span>Mastered</span>
+            <div class="progress-track"><div class="progress-fill mastered-fill" id="masteredBar" style="width:0%"></div></div>
+            <span id="masteredLabel">0/0</span>
+          </div>
+        </div>
       </div>
       <div class="stat-box event-box">
         <div class="stat-label">Next Sprite Event</div>
@@ -290,7 +355,10 @@
       <div class="user-info">
         <div class="user-name" id="displayName">Guest User</div>
         <div class="user-status" id="userStatus">Log in below to sync your findings</div>
+        <button class="edit-profile-btn" id="editProfileBtn" style="display:none;" onclick="openEditProfileModal()">Edit Profile</button>
       </div>
+
+      <button class="browse-players-btn" onclick="openBrowsePlayers()">Browse Players</button>
 
       <div class="auth-box" id="authBox">
         <input type="text" id="loginUsername" placeholder="Username" class="input-field" />
@@ -307,6 +375,22 @@
       <div class="filter-chip" data-filter="extracted" onclick="setFilter('extracted')">Extracted</div>
       <div class="filter-chip" data-filter="mastered" onclick="setFilter('mastered')">Mastered</div>
       <div class="filter-chip" data-filter="untouched" onclick="setFilter('untouched')">Untouched</div>
+      <select id="raritySelect" class="filter-select" onchange="renderGrid()">
+        <option value="">All Rarities</option>
+        <option value="Rare">Rare</option>
+        <option value="Epic">Epic</option>
+        <option value="Legendary">Legendary</option>
+        <option value="Mythic">Mythic</option>
+      </select>
+      <select id="variantSelect" class="filter-select" onchange="renderGrid()">
+        <option value="">All Variants</option>
+        <option value="Base">Base</option>
+        <option value="Gold">Gold</option>
+        <option value="Gummy">Gummy</option>
+        <option value="Galaxy">Galaxy</option>
+        <option value="Holofoil">Holofoil</option>
+        <option value="Cube">Cube</option>
+      </select>
     </div>
 
     <!-- Collection Grid Container -->
@@ -349,6 +433,27 @@
     </div>
   </div>
 
+  <!-- EDIT PROFILE MODAL -->
+  <div class="modal-overlay" id="editProfileOverlay" onclick="closeEditProfileIfBackdrop(event)">
+    <div class="note-modal-box">
+      <div class="note-modal-title">Edit Profile</div>
+      <input type="text" id="editUsernameInput" placeholder="New username" class="input-field" style="width:100%; margin-bottom:10px;" />
+      <div class="auth-mode-note">Changing your username here changes what other players see when they Browse Players. Change your photo using the camera icon on your avatar.</div>
+      <div class="note-modal-actions">
+        <button class="note-cancel-btn" onclick="closeEditProfileModal()">Cancel</button>
+        <button class="note-save-btn" onclick="saveProfileEdits()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- BROWSE PLAYERS MODAL -->
+  <div class="modal-overlay" id="browsePlayersOverlay" onclick="closeBrowsePlayersIfBackdrop(event)">
+    <div class="player-list-box">
+      <div class="player-list-title">Browse Players</div>
+      <div id="playerListContainer"><div class="player-empty">Loading players...</div></div>
+    </div>
+  </div>
+
   <script>
     // ===================== SUPABASE SETUP =====================
     const SUPABASE_URL = "https://oereylignfdcrnafqpix.supabase.co";
@@ -360,6 +465,9 @@
     let currentFilter = 'all';
     let allCollected = false;
     let currentNoteSprite = null;
+    let viewingOwnerId = null;      // null = viewing your own collection; otherwise another player's user id
+    let viewingOwnerName = '';
+    let myHeartsAndRequests = { hearts: {}, requests: {} }; // keyed by "ownerId::spriteName"
 
     // ===================== HERO SLIDESHOW =====================
     let currentSlide = 0;
@@ -449,6 +557,18 @@
       document.getElementById('progressSub').innerText = 'Your own private progress';
       document.getElementById('authBox').innerHTML =
         '<button class="btn btn-primary" onclick="logout()">Log Out</button>';
+      document.getElementById('editProfileBtn').style.display = 'inline-block';
+      upsertMyProfile(username);
+    }
+
+    // Keeps a public "profiles" row in sync so other players can find you
+    // in Browse Players. Safe to call any time you're logged in.
+    async function upsertMyProfile(username, avatarUrl) {
+      if (!currentUser) return;
+      var payload = { id: currentUser.id, username: username };
+      if (avatarUrl) payload.avatar_url = avatarUrl;
+      var { error } = await sb.from('profiles').upsert(payload, { onConflict: 'id' });
+      if (error) console.error('Could not sync profile:', error.message);
     }
 
     async function logout() {
@@ -488,6 +608,9 @@
 
       const { data } = sb.storage.from('avatars').getPublicUrl(filePath);
       document.getElementById('profilePhoto').src = data.publicUrl + '?t=' + Date.now();
+
+      const username = (currentUser.user_metadata && currentUser.user_metadata.username) || 'Player';
+      await upsertMyProfile(username, data.publicUrl);
     }
 
     // ===================== SPRITE LORE / DATA (shared with the Sheets version) =====================
@@ -562,11 +685,13 @@
       'Vini Jr.': 'Mythic', 'Pollo': 'Mythic'
     };
 
+    // Updated per Epic's July 24, 2026 Sprite Dust price cut:
+    // Base costs down ~10%, Special variant costs down ~32-33%.
     var BUYBACK_COST = {
-      'Rare': { base: 100, special: 4000 }, 'Epic': { base: 3000, special: 6000 },
-      'Legendary': { base: 5000, special: 10000 }, 'Mythic': { base: 7500, special: 15000 }
+      'Rare': { base: 90, special: 2700 }, 'Epic': { base: 2700, special: 4000 },
+      'Legendary': { base: 4500, special: 6750 }, 'Mythic': { base: 6750, special: 10000 }
     };
-    var BUYBACK_BASE_OVERRIDES = { 'Air': 2000 };
+    var BUYBACK_BASE_OVERRIDES = { 'Air': 1800 };
 
     var SPRITE_DROP_RATES = {
       'Water': { base: 13.92 }, 'Earth': { base: 13.92 }, 'Fire': { base: 13.92 }, 'Fishy': { base: 13.79 }, 'Air': { base: 0 },
@@ -647,8 +772,10 @@
       var sprites = [];
       while ((match = objRegex.exec(jsContent)) !== null) {
         if (match[5] === 'true') continue; // skip unreleased
+        var name = match[2];
+        if (name.indexOf('Gem ') === 0) continue; // Gem variants were vaulted/never actually released
         sprites.push({
-          name: match[2],
+          name: name,
           imageUrl: baseUrl + 'sprites/' + match[1] + '.png',
           rarity: match[4]
         });
@@ -705,7 +832,7 @@
       return true;
     }
 
-    // ===================== FILTER / GROUPING ===================== 
+    // ===================== FILTER / GROUPING ==================== 
     function setFilter(f) {
       currentFilter = f;
       document.querySelectorAll('.filter-chip').forEach(function(chip) {
@@ -720,6 +847,14 @@
       return true;
     }
     function matchesSearch(sprite, query) { return !query || sprite.name.toLowerCase().indexOf(query) !== -1; }
+    function matchesRarityVariant(sprite) {
+      var identity = parseSpriteIdentity(sprite.name);
+      var raritySel = document.getElementById('raritySelect').value;
+      var variantSel = document.getElementById('variantSelect').value;
+      if (raritySel && getBaseTier(identity) !== raritySel) return false;
+      if (variantSel && identity.variant !== variantSel) return false;
+      return true;
+    }
 
     function buildGroups() {
       var groupOrder = [], groups = {}, soloGroup = [];
@@ -736,18 +871,35 @@
       var query = document.getElementById('searchInput').value.trim().toLowerCase();
       var container = document.getElementById('gridContainer');
       container.innerHTML = '';
+
+      if (viewingOwnerId) {
+        var backBtn = document.createElement('button');
+        backBtn.className = 'back-to-mine-btn';
+        backBtn.innerText = '⬅ Back to My Collection';
+        backBtn.onclick = backToMyCollection;
+        container.appendChild(backBtn);
+
+        var viewingNote = document.createElement('div');
+        viewingNote.style.cssText = 'color:var(--muted); font-size:13px; margin-bottom:14px;';
+        viewingNote.innerText = 'Viewing ' + viewingOwnerName.toUpperCase() + '\'s extracted sprites. Heart a sprite or request it if you want to trade for it.';
+        container.appendChild(viewingNote);
+      }
+
       var data = buildGroups();
       var sections = [];
 
       data.groupOrder.forEach(function(base) {
-        var visible = data.groups[base].filter(function(s) { return matchesFilter(s) && matchesSearch(s, query); });
+        var visible = data.groups[base].filter(function(s) { return matchesFilter(s) && matchesSearch(s, query) && matchesRarityVariant(s); });
         if (visible.length > 0) sections.push(buildGroupSection(base, visible));
       });
-      var soloVisible = data.soloGroup.filter(function(s) { return matchesFilter(s) && matchesSearch(s, query); });
+      var soloVisible = data.soloGroup.filter(function(s) { return matchesFilter(s) && matchesSearch(s, query) && matchesRarityVariant(s); });
       if (soloVisible.length > 0) sections.push(buildGroupSection('Fan Favorites (No Variants)', soloVisible));
 
       if (sections.length === 0) {
-        container.innerHTML = '<div class="empty-state">No sprites match that filter.</div>';
+        var emptyDiv = document.createElement('div');
+        emptyDiv.className = 'empty-state';
+        emptyDiv.innerText = viewingOwnerId ? 'This player has not extracted any sprites yet.' : 'No sprites match that filter.';
+        container.appendChild(emptyDiv);
       } else {
         sections.forEach(function(section, idx) {
           container.appendChild(section);
@@ -771,6 +923,8 @@
     }
 
     function buildCard(sprite) {
+      if (viewingOwnerId) return buildOtherPlayerCard(sprite);
+
       var identity = parseSpriteIdentity(sprite.name);
       var card = document.createElement('div');
       card.className = 'sprite-card' + (sprite.mastered ? ' mastered' : sprite.extracted ? ' extracted' : '');
@@ -841,7 +995,16 @@
     function updateProgress() {
       var total = allSprites.length;
       var extractedCount = allSprites.filter(function(s) { return s.extracted; }).length;
+      var masteredCount = allSprites.filter(function(s) { return s.mastered; }).length;
       document.getElementById('progressValue').innerText = extractedCount + ' / ' + total;
+      var exBar = document.getElementById('extractedBar');
+      var mstBar = document.getElementById('masteredBar');
+      if (exBar) exBar.style.width = (total ? (extractedCount / total * 100) : 0) + '%';
+      if (mstBar) mstBar.style.width = (total ? (masteredCount / total * 100) : 0) + '%';
+      var exLabel = document.getElementById('extractedLabel');
+      var mstLabel = document.getElementById('masteredLabel');
+      if (exLabel) exLabel.innerText = extractedCount + '/' + total;
+      if (mstLabel) mstLabel.innerText = masteredCount + '/' + total;
       allCollected = total > 0 && extractedCount === total;
     }
 
@@ -881,6 +1044,167 @@
       if (!ok) { sprite.notes = prevNotes; return; }
       closeNoteModal();
       renderGrid();
+    }
+
+    // ===================== OTHER PLAYER CARD (Browse Players view) =====================
+    function buildOtherPlayerCard(sprite) {
+      var identity = parseSpriteIdentity(sprite.name);
+      var key = viewingOwnerId + '::' + sprite.name;
+      var hearted = !!myHeartsAndRequests.hearts[key];
+      var requested = !!myHeartsAndRequests.requests[key];
+
+      var card = document.createElement('div');
+      card.className = 'sprite-card extracted';
+      card.style.background = VARIANT_GRADIENTS[identity.variant] || VARIANT_GRADIENTS['Base'];
+      card.onclick = function() { openModal(sprite); };
+
+      var buyback = document.createElement('div'); buyback.className = 'buyback-badge';
+      buyback.innerText = '🪙 ' + getBuybackCost(identity).toLocaleString();
+      card.appendChild(buyback);
+
+      if (sprite.mastered) {
+        var crown = document.createElement('div'); crown.className = 'crown-icon'; crown.innerText = '👑';
+        card.appendChild(crown);
+      }
+
+      var thumbWrap = document.createElement('div'); thumbWrap.className = 'thumb-wrap';
+      var img = document.createElement('img'); img.src = sprite.imageUrl; img.alt = sprite.name; img.loading = 'lazy';
+      thumbWrap.appendChild(img); card.appendChild(thumbWrap);
+
+      var name = document.createElement('div'); name.className = 'sprite-name'; name.innerText = sprite.name;
+      card.appendChild(name);
+
+      var toggleRow = document.createElement('div'); toggleRow.className = 'toggle-row';
+
+      var heartBtn = document.createElement('button');
+      heartBtn.className = 'heart-btn' + (hearted ? ' on' : '');
+      heartBtn.innerText = hearted ? '❤️ Loved' : '🤍 Heart';
+      heartBtn.onclick = async function(e) { e.stopPropagation(); await toggleHeart(sprite); };
+
+      var reqBtn = document.createElement('button');
+      reqBtn.className = 'request-btn' + (requested ? ' on' : '');
+      reqBtn.innerText = requested ? '✓ Requested' : '🔍 Request';
+      reqBtn.disabled = requested;
+      reqBtn.onclick = async function(e) { e.stopPropagation(); await sendRequest(sprite); };
+
+      toggleRow.appendChild(heartBtn); toggleRow.appendChild(reqBtn);
+      card.appendChild(toggleRow);
+      return card;
+    }
+
+    async function toggleHeart(sprite) {
+      if (!currentUser) { alert('Log in first to heart sprites!'); return; }
+      var key = viewingOwnerId + '::' + sprite.name;
+      if (myHeartsAndRequests.hearts[key]) {
+        await sb.from('sprite_hearts').delete()
+          .eq('user_id', currentUser.id).eq('owner_user_id', viewingOwnerId).eq('sprite_name', sprite.name);
+        delete myHeartsAndRequests.hearts[key];
+      } else {
+        await sb.from('sprite_hearts').insert({ user_id: currentUser.id, owner_user_id: viewingOwnerId, sprite_name: sprite.name });
+        myHeartsAndRequests.hearts[key] = true;
+      }
+      renderGrid();
+    }
+
+    async function sendRequest(sprite) {
+      if (!currentUser) { alert('Log in first to send a request!'); return; }
+      var key = viewingOwnerId + '::' + sprite.name;
+      if (myHeartsAndRequests.requests[key]) return;
+      var { error } = await sb.from('sprite_requests').insert({
+        requester_user_id: currentUser.id, owner_user_id: viewingOwnerId, sprite_name: sprite.name, status: 'pending'
+      });
+      if (error) { alert('Could not send request: ' + error.message); return; }
+      myHeartsAndRequests.requests[key] = true;
+      renderGrid();
+    }
+
+    // ===================== BROWSE PLAYERS =====================
+    async function openBrowsePlayers() {
+      document.getElementById('browsePlayersOverlay').classList.add('open');
+      var container = document.getElementById('playerListContainer');
+      container.innerHTML = '<div class="player-empty">Loading players...</div>';
+
+      var { data, error } = await sb.from('profiles').select('*').order('username');
+      if (error) {
+        container.innerHTML = '<div class="player-empty">Could not load players: ' + error.message + '</div>';
+        return;
+      }
+      var others = (data || []).filter(function(p) { return !currentUser || p.id !== currentUser.id; });
+      if (others.length === 0) {
+        container.innerHTML = '<div class="player-empty">No other players have joined yet. Once your kids/friends sign up, they will show up here.</div>';
+        return;
+      }
+      container.innerHTML = '';
+      others.forEach(function(p) {
+        var row = document.createElement('div'); row.className = 'player-row';
+        row.onclick = function() { viewPlayerProfile(p.id, p.username || 'Player'); };
+        var avatarUrl = p.avatar_url || 'https://placehold.co/80x80/1e293b/8b5cf6?text=U';
+        row.innerHTML = '<img src="' + avatarUrl + '" alt="' + p.username + '"><div class="player-row-name">' + (p.username || 'Player').toUpperCase() + '</div>';
+        container.appendChild(row);
+      });
+    }
+
+    function closeBrowsePlayers() { document.getElementById('browsePlayersOverlay').classList.remove('open'); }
+    function closeBrowsePlayersIfBackdrop(e) { if (e.target.id === 'browsePlayersOverlay') closeBrowsePlayers(); }
+
+    async function viewPlayerProfile(ownerId, username) {
+      closeBrowsePlayers();
+      viewingOwnerId = ownerId;
+      viewingOwnerName = username;
+
+      document.getElementById('loader').style.display = 'block';
+      var master = await fetchMasterSprites();
+
+      var { data: progressRows } = await sb.from('progress').select('*').eq('user_id', ownerId).eq('extracted', true);
+      var progressMap = {};
+      (progressRows || []).forEach(function(row) { progressMap[row.sprite_name] = row; });
+
+      allSprites = master
+        .filter(function(s) { return !!progressMap[s.name]; }) // only show sprites they've actually extracted
+        .map(function(s) {
+          var p = progressMap[s.name];
+          return { name: s.name, imageUrl: s.imageUrl, rarity: s.rarity, extracted: true, mastered: !!p.mastered, notes: '' };
+        });
+
+      // Load my own hearts/requests aimed at this owner so button states are correct
+      myHeartsAndRequests = { hearts: {}, requests: {} };
+      if (currentUser) {
+        var { data: hearts } = await sb.from('sprite_hearts').select('sprite_name').eq('user_id', currentUser.id).eq('owner_user_id', ownerId);
+        (hearts || []).forEach(function(h) { myHeartsAndRequests.hearts[ownerId + '::' + h.sprite_name] = true; });
+        var { data: reqs } = await sb.from('sprite_requests').select('sprite_name').eq('requester_user_id', currentUser.id).eq('owner_user_id', ownerId);
+        (reqs || []).forEach(function(r) { myHeartsAndRequests.requests[ownerId + '::' + r.sprite_name] = true; });
+      }
+
+      document.getElementById('loader').style.display = 'none';
+      renderGrid();
+    }
+
+    function backToMyCollection() {
+      viewingOwnerId = null;
+      viewingOwnerName = '';
+      loadSprites();
+    }
+
+    // ===================== EDIT PROFILE =====================
+    function openEditProfileModal() {
+      var current = document.getElementById('displayName').innerText;
+      document.getElementById('editUsernameInput').value = current;
+      document.getElementById('editProfileOverlay').classList.add('open');
+    }
+    function closeEditProfileModal() { document.getElementById('editProfileOverlay').classList.remove('open'); }
+    function closeEditProfileIfBackdrop(e) { if (e.target.id === 'editProfileOverlay') closeEditProfileModal(); }
+
+    async function saveProfileEdits() {
+      var newUsername = document.getElementById('editUsernameInput').value.trim();
+      if (!newUsername) { alert('Enter a username.'); return; }
+      if (!currentUser) return;
+
+      var { error } = await sb.auth.updateUser({ data: { username: newUsername } });
+      if (error) { alert('Could not update username: ' + error.message); return; }
+
+      await upsertMyProfile(newUsername);
+      document.getElementById('displayName').innerText = newUsername.toUpperCase();
+      closeEditProfileModal();
     }
 
     // ===================== INIT =====================
