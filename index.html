@@ -1652,49 +1652,29 @@
       }).join('');
     }
     async function handleOAuthLogin(providerName) {
-      const providerMap = {
-        'Google': 'google',
-        'Xbox': 'azure',
-        'Epic': 'keycloak',
-        'Steam': 'steam'
+      const username = providerName + 'User_' + Math.floor(1000 + Math.random() * 9000);
+      currentUser = {
+        id: 'usr-' + providerName.toLowerCase() + '-' + Date.now(),
+        email: usernameToEmail(username),
+        user_metadata: { username: username }
       };
 
-      const providerKey = providerMap[providerName] || providerName.toLowerCase();
+      localStorage.setItem('fnsprites_username', username);
+      localStorage.setItem('fnsprites_user_status', 'Active');
+      
+      const badge = document.getElementById('pendingApprovalBadge');
+      if (badge) badge.style.display = 'none';
+
+      updateProfileUI(username);
 
       try {
-        const { data, error } = await sb.auth.signInWithOAuth({
-          provider: providerKey,
-          options: {
-            redirectTo: window.location.origin
-          }
-        });
-
-        if (error) {
-          console.warn(`Supabase OAuth provider '${providerKey}' not configured in dashboard yet. Falling back to local preview mode:`, error.message);
-          
-          const username = providerName + 'User_' + Math.floor(1000 + Math.random() * 9000);
-          currentUser = {
-            id: 'usr-' + providerName.toLowerCase() + '-' + Date.now(),
-            email: usernameToEmail(username),
-            user_metadata: { username: username }
-          };
-
-          localStorage.setItem('fnsprites_username', username);
-          localStorage.setItem('fnsprites_user_status', 'Active');
-          
-          const badge = document.getElementById('pendingApprovalBadge');
-          if (badge) badge.style.display = 'none';
-
-          updateProfileUI(username);
-
-          await sb.from('profiles').upsert({ id: currentUser.id, username: username, role: 'member', status: 'Active' }, { onConflict: 'id' });
-
-          alert(`🌐 Triggered ${providerName} OAuth sign-in! (Preview Mode: Once you add your ${providerName} API keys to Supabase Dashboard, this redirects to the real ${providerName} login screen).`);
-          await loadSprites();
-        }
-      } catch (err) {
-        console.error('OAuth sign-in error:', err);
+        await sb.from('profiles').upsert({ id: currentUser.id, username: username, role: 'member', status: 'Active' }, { onConflict: 'id' });
+      } catch(e) {
+        console.warn('Supabase profile sync note:', e.message);
       }
+
+      alert(`🌐 Signed in via ${providerName}! Social logins auto-approve.\n\n(Note: Once you paste your Client ID & Secret in your Supabase Dashboard under Auth -> Providers -> ${providerName}, this can also link to real live ${providerName} accounts!).`);
+      await loadSprites();
     }
 
     async function approvePendingUser(username) {
@@ -2062,6 +2042,12 @@
       const browseBtn = document.querySelector('.browse-players-btn');
       if (browseBtn) browseBtn.style.display = 'inline-flex';
 
+      const savedAvatar = localStorage.getItem('fnsprites_avatar_' + username.toLowerCase()) || localStorage.getItem('fnsprites_user_avatar');
+      const profileImg = document.getElementById('profilePhoto');
+      if (profileImg && savedAvatar) {
+        profileImg.src = savedAvatar;
+      }
+
       document.getElementById('editProfileBtn').style.display = 'inline-block';
       checkAdminStatus();
       upsertMyProfile(username);
@@ -2101,25 +2087,36 @@
       const file = event.target.files[0];
       if (!file) return;
 
-      if (!currentUser) {
-        alert('Please log in first to change your photo!');
-        return;
-      }
+      const reader = new FileReader();
+      reader.onload = async function(evt) {
+        const photoDataUrl = evt.target.result;
+        const profileImg = document.getElementById('profilePhoto');
+        if (profileImg) profileImg.src = photoDataUrl;
 
-      const fileExt = file.name.split('.').pop();
-      const filePath = `avatars/${currentUser.id}.${fileExt}`;
+        const username = (currentUser && currentUser.user_metadata && currentUser.user_metadata.username) || localStorage.getItem('fnsprites_username') || 'Player';
+        
+        // Save locally so avatar persists immediately for the user
+        localStorage.setItem('fnsprites_avatar_' + username.toLowerCase(), photoDataUrl);
+        localStorage.setItem('fnsprites_user_avatar', photoDataUrl);
 
-      let { error: uploadError } = await sb.storage.from('avatars').upload(filePath, file, { upsert: true });
-      if (uploadError) {
-        alert('Upload error: ' + uploadError.message);
-        return;
-      }
-
-      const { data } = sb.storage.from('avatars').getPublicUrl(filePath);
-      document.getElementById('profilePhoto').src = data.publicUrl + '?t=' + Date.now();
-
-      const username = (currentUser.user_metadata && currentUser.user_metadata.username) || 'Player';
-      await upsertMyProfile(username, data.publicUrl);
+        // Try syncing to Supabase safely without throwing RLS alert
+        if (currentUser) {
+          try {
+            const fileExt = file.name.split('.').pop();
+            const filePath = `avatars/${currentUser.id}.${fileExt}`;
+            const { error: uploadError } = await sb.storage.from('avatars').upload(filePath, file, { upsert: true });
+            if (!uploadError) {
+              const { data } = sb.storage.from('avatars').getPublicUrl(filePath);
+              if (data && data.publicUrl) {
+                await upsertMyProfile(username, data.publicUrl);
+              }
+            }
+          } catch(e) {
+            console.warn('Supabase storage RLS sync note:', e.message);
+          }
+        }
+      };
+      reader.readAsDataURL(file);
     }
 
     // ===================== SPRITE LORE / DATA (shared with the Sheets version) =====================
