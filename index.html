@@ -688,7 +688,6 @@
         <div style="display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;">
           <button class="edit-profile-btn" id="editProfileBtn" style="display:none;" onclick="openEditProfileModal()">Edit Profile</button>
           <button class="admin-panel-btn" id="adminPanelBtn" style="display:none;" onclick="openAdminModal()">🛡️ Admin Panel</button>
-          <button class="claim-admin-btn" id="claimAdminBtn" onclick="claimAdminRole()">👑 Claim Admin Role</button>
         </div>
       </div>
 
@@ -702,12 +701,12 @@
       </div>
 
       <!-- Bottom Row of Profile Panel -->
-      <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap; gap: 10px;">
+      <div id="bottomBannerRow" style="width: 100%; display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap; gap: 10px;">
         <!-- Left Side: Browse Players Button -->
-        <button class="browse-players-btn" onclick="openBrowsePlayers()">👥 Browse Players</button>
+        <button class="browse-players-btn" id="browsePlayersBtn" onclick="openBrowsePlayers()">👥 Browse Players</button>
 
         <!-- Right Side: Sign in with OAuth Links & Notice -->
-        <div style="display: flex; flex-direction: column; align-items: flex-end; margin-left: auto;">
+        <div id="oauthSection" style="display: flex; flex-direction: column; align-items: flex-end; margin-left: auto;">
           <div class="oauth-box">
             <span class="oauth-label">Sign in with:</span>
             <button class="oauth-btn google" onclick="handleOAuthLogin('Google')">🌐 Google</button>
@@ -1336,14 +1335,7 @@
       }
 
       const adminBtn = document.getElementById('adminPanelBtn');
-      const claimBtn = document.getElementById('claimAdminBtn');
-      if (isAdminRole) {
-        if (adminBtn) adminBtn.style.display = 'inline-flex';
-        if (claimBtn) claimBtn.style.display = 'none';
-      } else {
-        if (adminBtn) adminBtn.style.display = 'none';
-        if (claimBtn) claimBtn.style.display = 'inline-block';
-      }
+      if (adminBtn) adminBtn.style.display = isAdminRole ? 'inline-flex' : 'none';
     }
 
     async function fetchLiveSupabaseUsers() {
@@ -2014,12 +2006,14 @@
       document.getElementById('displayName').innerHTML = '👋 WELCOME TO SPRITE TRACKR';
       document.getElementById('userStatus').innerText = 'Sign in or create an account below to track your extracted sprites & mastered crowns!';
 
-      const browseBtn = document.querySelector('.browse-players-btn');
+      const browseBtn = document.getElementById('browsePlayersBtn');
       if (browseBtn) browseBtn.style.display = 'none';
+
+      const oauthSec = document.getElementById('oauthSection');
+      if (oauthSec) oauthSec.style.display = 'flex';
 
       document.getElementById('editProfileBtn').style.display = 'none';
       document.getElementById('adminPanelBtn').style.display = 'none';
-      document.getElementById('claimAdminBtn').style.display = 'none';
 
       const badge = document.getElementById('pendingApprovalBadge');
       if (badge) badge.style.display = 'none';
@@ -2039,7 +2033,10 @@
       document.getElementById('authBox').innerHTML =
         '<button class="btn btn-primary" onclick="logout()">Log Out</button>';
 
-      const browseBtn = document.querySelector('.browse-players-btn');
+      const oauthSec = document.getElementById('oauthSection');
+      if (oauthSec) oauthSec.style.display = 'none';
+
+      const browseBtn = document.getElementById('browsePlayersBtn');
       if (browseBtn) browseBtn.style.display = 'inline-flex';
 
       const savedAvatar = localStorage.getItem('fnsprites_avatar_' + username.toLowerCase()) || localStorage.getItem('fnsprites_user_avatar');
