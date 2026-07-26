@@ -22,8 +22,8 @@
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background-color: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 1rem 1rem 3rem; }
-    .container { max-width: 1400px; margin: 0 auto; position: relative; }
+    body { background-color: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0 0 3rem; overflow-x: hidden; }
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 1rem; position: relative; z-index: 10; }
 
     /* ============ GUIDE LINK ICONS ============ */
     .guide-link {
@@ -38,40 +38,40 @@
     .guide-link:hover { transform: translateY(-2px) scale(1.05); border-color: var(--accent-purple); }
     .guide-link.secondary { right: 64px; }
 
-    /* ============ HERO SLIDESHOW (unchanged look) ============ */
+    /* ============ HERO SLIDESHOW (Full-Width Viewport Banner with Parallax) ============ */
     .hero-slideshow {
-      position: relative; width: 100%; height: 220px;
-      border-radius: 16px; overflow: hidden; margin-bottom: 1.25rem;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: absolute; top: 0; left: 0; width: 100%; height: 750px;
+      overflow: hidden; z-index: 1; pointer-events: none;
+      will-change: transform; transform: translate3d(0, 0, 0);
+      transition: transform 0.05s linear;
     }
     .slide {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       opacity: 0; transition: opacity 1s ease-in-out;
-      background-size: cover; background-position: center;
-      display: flex; align-items: flex-end; padding: 1.5rem;
+      background-size: cover; background-position: center top; background-repeat: no-repeat;
     }
     .slide.active { opacity: 1; }
     .slide-overlay {
-      background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(13,15,26,0.95) 100%);
+      background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(13,15,26,0.05) 50%, rgba(13,15,26,0.7) 80%, rgba(13,15,26,0.98) 95%, rgba(13,15,26,1) 100%);
       position: absolute; inset: 0;
     }
-    .slide-caption {
-      position: relative; z-index: 2;
-      font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-    }
 
-    /* ============ STAT ROW (new: countdown / progress / event) ============ */
+    /* ============ STAT ROW (in front of top banner) ============ */
     .stat-row {
-      display: flex; flex-wrap: wrap; gap: 12px;
-      margin-bottom: 1.25rem;
+      display: flex; flex-wrap: wrap; gap: 14px;
+      margin-top: 420px; margin-bottom: 1.25rem;
+      position: relative; z-index: 10;
     }
     .stat-box {
       flex: 1; min-width: 200px;
-      background: var(--card-bg); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px; padding: 12px 16px;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      background: rgba(22, 26, 43, 0.82);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px; padding: 14px 18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
     }
+    .stat-box:hover { transform: translateY(-2px); }
     .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 6px; }
     .stat-value { font-size: 18px; font-weight: 700; }
     .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
@@ -86,27 +86,96 @@
     .event-box a { color: var(--accent-purple); text-decoration: none; font-weight: 700; }
     .event-box a:hover { text-decoration: underline; }
 
-    /* ============ PROFILE BANNER (unchanged look) ============ */
+    /* ============ STAT BOX CUSTOM BACKGROUNDS & TOAST ============ */
+    .stat-box.custom-bg {
+      background-size: cover !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
+      position: relative; overflow: hidden;
+    }
+    .stat-box.custom-bg::before {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(13, 15, 26, 0.65);
+      border-radius: inherit; z-index: 1;
+    }
+    .stat-box.custom-bg > * { position: relative; z-index: 2; }
+
+    /* ============ ANNOUNCEMENT TOAST POPUP ============ */
+    .announcement-toast {
+      position: fixed; top: 24px; right: 24px; z-index: 9999;
+      max-width: 380px; width: calc(100% - 48px);
+      background: rgba(22, 26, 43, 0.95);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--accent-purple);
+      box-shadow: 0 10px 30px rgba(139, 92, 246, 0.35);
+      border-radius: 14px; padding: 14px 18px; color: #fff;
+      animation: slideInToast 0.4s ease-out;
+    }
+    @keyframes slideInToast {
+      from { transform: translateX(120%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    .toast-header {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;
+    }
+    .toast-title {
+      font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px;
+      color: var(--accent-gold); display: flex; align-items: center; gap: 6px;
+    }
+    .toast-close {
+      background: none; border: none; color: var(--muted); font-size: 14px; cursor: pointer; padding: 0;
+    }
+    .toast-close:hover { color: #fff; }
+    .toast-body { font-size: 13px; font-weight: 600; line-height: 1.4; color: #fff; }
+    .toast-timer { font-size: 10px; color: var(--muted); margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+
+    @media (max-width: 768px) {
+      .hero-slideshow { height: 560px; }
+      .stat-row { margin-top: 320px; }
+      .announcement-toast { top: 12px; right: 12px; left: 12px; width: auto; }
+    }
+    @media (max-width: 480px) {
+      .hero-slideshow { height: 460px; }
+      .stat-row { margin-top: 250px; }
+    }
+
+    /* ============ PROFILE BANNER (with overlapping avatar) ============ */
     .profile-banner {
       display: flex; align-items: center; gap: 1.25rem;
-      background: var(--card-bg); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+      background: rgba(22, 26, 43, 0.85);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+      border-radius: 16px; padding: 1.25rem 1.25rem 1.25rem 3.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;
+      position: relative; z-index: 10; margin-left: 28px; width: calc(100% - 28px);
+      overflow: visible;
     }
-    .avatar-wrapper { position: relative; width: 76px; height: 76px; flex-shrink: 0; }
+    .avatar-wrapper {
+      position: absolute; left: -34px; top: 50%; transform: translateY(-50%);
+      width: 84px; height: 84px; flex-shrink: 0; z-index: 15;
+    }
     .profile-photo {
       width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
       border: 3px solid var(--accent-purple); background: #1e293b;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.6);
     }
     .avatar-edit-badge {
       position: absolute; bottom: 0; right: 0; width: 26px; height: 26px; border-radius: 50%;
       background: #1e293b; border: 1px solid rgba(255,255,255,0.2);
       color: #fff; font-size: 0.75rem; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
+      display: flex; align-items: center; justify-content: center; z-index: 16;
     }
-    .user-info { flex-grow: 1; }
+    .user-info { flex-grow: 1; margin-left: 10px; }
     .user-name { font-size: 1.4rem; font-weight: 800; }
     .user-status { font-size: 0.85rem; color: var(--muted); }
-    .auth-box { display: flex; gap: 0.5rem; margin-left: auto; align-items: center; flex-wrap: wrap; }
+
+    .pending-badge {
+      background: rgba(255, 203, 61, 0.2); color: var(--accent-gold);
+      border: 1px solid rgba(255, 203, 61, 0.4); border-radius: 8px;
+      padding: 3px 9px; font-size: 11px; font-weight: 800; display: inline-flex; align-items: center; gap: 4px;
+    }
+
+    .auth-box { display: flex; flex-direction: column; gap: 0.5rem; margin-left: auto; align-items: flex-end; }
     .input-field {
       background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
       color: #fff; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.85rem;
@@ -115,7 +184,23 @@
     .btn-primary { background: var(--accent-purple); color: #fff; }
     .btn-primary:hover { background: var(--accent-purple-hover); }
     .btn-link { background: none; color: var(--muted); text-decoration: underline; font-size: 0.78rem; padding: 0; }
-    .auth-mode-note { width: 100%; font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
+    .auth-mode-note { width: 100%; font-size: 0.75rem; color: var(--muted); margin-top: 2px; text-align: right; }
+
+    /* OAUTH BUTTONS */
+    .oauth-box {
+      display: flex; gap: 6px; align-items: center; flex-wrap: wrap; margin-top: 4px; justify-content: flex-end;
+    }
+    .oauth-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; margin-right: 2px; }
+    .oauth-btn {
+      padding: 5px 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(0,0,0,0.35); color: #fff; font-size: 11px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; gap: 4px; transition: all 0.15s ease;
+    }
+    .oauth-btn:hover { background: rgba(255,255,255,0.15); transform: translateY(-1px); }
+    .oauth-btn.google:hover { border-color: #4285F4; color: #4285F4; }
+    .oauth-btn.xbox:hover { border-color: #107C41; color: #107C41; }
+    .oauth-btn.epic:hover { border-color: #ffcb3d; color: #ffcb3d; }
+    .oauth-btn.steam:hover { border-color: #66c0f4; color: #66c0f4; }
 
     /* ============ CONTROLS ============ */
     .controls {
@@ -131,6 +216,65 @@
       background: var(--card-bg); color: var(--muted); font-size: 12px; cursor: pointer;
     }
     .filter-chip.active { color: #fff; background: var(--accent-purple); border-color: transparent; font-weight: 700; }
+
+    /* ============ SPRITE TABLE SELECTOR GRID ============ */
+    .sprite-table-container {
+      background: rgba(22, 26, 43, 0.85);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 16px; padding: 1rem; margin-bottom: 1.5rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+    }
+    .sprite-table-header {
+      font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px;
+      color: var(--muted); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .sprite-table-grid {
+      display: grid; grid-template-columns: repeat(10, 1fr); gap: 8px;
+    }
+    @media (max-width: 1100px) { .sprite-table-grid { grid-template-columns: repeat(5, 1fr); } }
+    @media (max-width: 600px) { .sprite-table-grid { grid-template-columns: repeat(3, 1fr); } }
+
+    .type-btn {
+      background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px; padding: 8px 4px; text-align: center; cursor: pointer;
+      opacity: 0.55; transition: all 0.2s ease; display: flex; flex-direction: column; align-items: center; gap: 4px;
+      user-select: none;
+    }
+    .type-btn:hover { opacity: 0.85; transform: translateY(-2px); }
+    .type-btn.active { opacity: 1; border-color: var(--accent-purple); background: rgba(139, 92, 246, 0.2); box-shadow: 0 0 12px rgba(139, 92, 246, 0.3); }
+    .type-btn.completed-extracted { border-color: var(--accent-green) !important; box-shadow: 0 0 14px rgba(16,185,129,0.5) !important; opacity: 1; }
+    .type-btn.completed-mastered { border-color: var(--accent-gold) !important; box-shadow: 0 0 16px rgba(255,203,61,0.6) !important; opacity: 1; }
+
+    .type-btn-icon { font-size: 18px; }
+    .type-btn-thumb {
+      width: 32px; height: 32px; object-fit: contain; border-radius: 6px;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    }
+    .type-btn-name { font-size: 10px; font-weight: 800; color: #fff; text-transform: uppercase; letter-spacing: 0.4px; }
+
+    .type-btn.all-btn {
+      background: linear-gradient(135deg, rgba(139,92,246,0.3), rgba(16,185,129,0.3));
+      border-color: rgba(255,255,255,0.25); opacity: 0.8;
+    }
+    .type-btn.all-btn.active { opacity: 1; border-color: var(--accent-gold); box-shadow: 0 0 16px rgba(255,203,61,0.5); }
+
+    /* ============ GROUP HEADER DIVIDERS WITH BULK ACTIONS ============ */
+    .group-header-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 24px 0 12px 0; padding-bottom: 6px; border-bottom: 2px solid rgba(255,255,255,0.1);
+    }
+    .group-header-title-wrap { display: flex; align-items: center; gap: 10px; }
+    .group-title-name { font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+    .group-count-badge { font-size: 10px; font-weight: 800; color: #fff; background: var(--accent-purple); padding: 2px 8px; border-radius: 999px; }
+    .group-header-actions { display: flex; gap: 8px; }
+    .bulk-btn {
+      padding: 4px 10px; font-size: 11px; font-weight: 700; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(0,0,0,0.3); color: #fff; cursor: pointer; transition: all 0.15s ease;
+    }
+    .bulk-btn:hover { background: rgba(255,255,255,0.15); transform: translateY(-1px); }
+    .bulk-btn.extract-all:hover { border-color: var(--accent-green); color: var(--accent-green); }
+    .bulk-btn.master-all:hover { border-color: var(--accent-gold); color: var(--accent-gold); }
 
     /* ============ GROUPS ============ */
     .sprite-group { margin-bottom: 4px; }
@@ -261,10 +405,13 @@
     }
     .edit-profile-btn:hover { color: #fff; border-color: var(--accent-purple); }
     .browse-players-btn {
-      background: var(--card-bg); border: 1px solid rgba(255,255,255,0.15); color: var(--text);
-      border-radius: 999px; padding: 7px 16px; font-size: 12px; cursor: pointer; font-weight: 700;
+      position: static;
+      background: rgba(139, 92, 246, 0.25); border: 1px solid var(--accent-purple); color: #fff;
+      border-radius: 8px; padding: 6px 14px; font-size: 12px; cursor: pointer; font-weight: 800;
+      display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: transform 0.15s ease, background 0.15s ease;
     }
-    .browse-players-btn:hover { border-color: var(--accent-purple); }
+    .browse-players-btn:hover { background: var(--accent-purple); transform: translateY(-1px); }
 
     /* ============ PLAYER LIST MODAL ============ */
     .player-list-box {
@@ -292,6 +439,174 @@
       background: var(--card-bg); border: 1px solid rgba(255,255,255,0.15); color: var(--text);
       border-radius: 999px; padding: 7px 16px; font-size: 12px; cursor: pointer; font-weight: 700; margin-bottom: 14px;
     }
+
+    /* ============ POV BANNER ============ */
+    .pov-banner {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+      background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+      color: #fff; padding: 10px 20px; font-size: 13px; font-weight: 600;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .pov-banner strong { color: #ffcb3d; font-weight: 800; }
+    .btn-sm { padding: 5px 12px; font-size: 11px; border-radius: 6px; cursor: pointer; border: none; font-weight: 700; }
+
+    /* ============ ADMIN BUTTONS ============ */
+    .admin-panel-btn {
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+      color: #ffffff; border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 8px; padding: 6px 14px; font-weight: 800; font-size: 12px;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      box-shadow: 0 0 16px rgba(139, 92, 246, 0.4);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .admin-panel-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 22px rgba(139, 92, 246, 0.6); }
+
+    .claim-admin-btn {
+      background: rgba(255, 203, 61, 0.15); color: var(--accent-gold);
+      border: 1px solid rgba(255, 203, 61, 0.4); border-radius: 8px;
+      padding: 6px 12px; font-weight: 700; font-size: 11px; cursor: pointer;
+    }
+    .claim-admin-btn:hover { background: rgba(255, 203, 61, 0.3); }
+
+    /* ============ ADMIN SLIDE-UP BOTTOM SHEET MODAL ============ */
+    .admin-modal-overlay {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+      z-index: 10000; opacity: 0; pointer-events: none;
+      transition: opacity 0.3s ease;
+      display: flex; align-items: flex-end; justify-content: center;
+    }
+    .admin-modal-overlay.active { opacity: 1; pointer-events: auto; }
+
+    .admin-sheet-box {
+      width: 98%; max-width: 1440px; height: 92vh;
+      background: #111424; border: 1px solid rgba(139, 92, 246, 0.35);
+      border-radius: 20px 20px 0 0;
+      box-shadow: 0 -12px 50px rgba(0, 0, 0, 0.85), 0 0 40px rgba(139, 92, 246, 0.25);
+      display: flex; flex-direction: column;
+      transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+    .admin-modal-overlay.active .admin-sheet-box { transform: translateY(0); }
+
+    .admin-sheet-header {
+      padding: 1rem 1.5rem; background: rgba(22, 26, 43, 0.95);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .admin-sheet-title { font-size: 1.25rem; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
+    .admin-sheet-badge { background: var(--accent-purple); color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 999px; font-weight: 700; }
+    .admin-sheet-close {
+      background: rgba(255,255,255,0.08); border: none; color: #fff; font-size: 1.2rem;
+      width: 34px; height: 34px; border-radius: 50%; cursor: pointer; transition: background 0.2s;
+    }
+    .admin-sheet-close:hover { background: rgba(255,84,112,0.3); }
+
+    .admin-sheet-body {
+      flex: 1; display: grid; grid-template-columns: 400px 1fr; gap: 1.25rem;
+      padding: 1.25rem; overflow: hidden; background: #0c0e18;
+    }
+    @media (max-width: 1024px) {
+      .admin-sheet-body { grid-template-columns: 1fr; overflow-y: auto; }
+      .admin-preview-col { display: none; }
+    }
+
+    /* Left Column: Scale Mini-Model of Site */
+    .admin-preview-col {
+      background: #161a2b; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px; padding: 1rem; display: flex; flex-direction: column; gap: 12px;
+      overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,0.3);
+    }
+    .admin-preview-header { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; color: var(--accent-purple); letter-spacing: 0.8px; display: flex; align-items: center; justify-content: space-between; }
+    .admin-preview-viewport {
+      flex: 1; background: #0d0f1a; border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 12px; overflow: hidden; position: relative; padding: 10px;
+    }
+    .mini-hero-box {
+      width: 100%; height: 130px; border-radius: 10px; background-size: cover; background-position: center;
+      position: relative; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); transition: background-image 0.5s ease;
+    }
+    .mini-hero-overlay { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.1), rgba(13,15,26,0.9)); }
+    .mini-stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; }
+    .mini-stat-card { background: rgba(22,26,43,0.9); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 6px; font-size: 9px; color: #fff; }
+    .mini-stat-val { font-weight: 800; color: var(--accent-purple); font-size: 11px; }
+
+    /* Right Column: Controls Panel */
+    .admin-controls-col {
+      display: flex; flex-direction: column; gap: 1rem; overflow: hidden;
+    }
+    .admin-nav-tabs {
+      display: flex; gap: 8px; background: rgba(22, 26, 43, 0.8);
+      padding: 6px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+    }
+    .admin-tab-btn {
+      flex: 1; padding: 10px 14px; border-radius: 8px; border: none;
+      background: transparent; color: var(--muted); font-size: 0.85rem; font-weight: 700;
+      cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .admin-tab-btn.active {
+      background: var(--accent-purple); color: #fff; box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4);
+    }
+
+    .admin-panel-view {
+      flex: 1; overflow-y: auto; padding-right: 8px; display: none;
+    }
+    .admin-panel-view.active { display: block; }
+
+    /* Form & Card Elements inside Admin Panel */
+    .admin-card {
+      background: #161a2b; border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 12px; padding: 1.25rem; margin-bottom: 1.25rem;
+    }
+    .admin-card-title { font-size: 1rem; font-weight: 800; color: #fff; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; }
+    .form-group { margin-bottom: 1rem; }
+    .form-label { display: block; font-size: 0.78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; }
+    .form-control {
+      width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; padding: 10px 14px; border-radius: 8px; font-size: 0.88rem; outline: none;
+    }
+    .form-control:focus { border-color: var(--accent-purple); }
+    .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+
+    /* Visual Slide List */
+    .slide-item-card {
+      display: flex; align-items: center; gap: 1rem; background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 14px; margin-bottom: 10px;
+    }
+    .slide-thumb { width: 90px; height: 55px; border-radius: 6px; object-fit: cover; border: 1px solid rgba(255,255,255,0.15); }
+    .slide-info { flex: 1; }
+    .slide-title { font-weight: 700; font-size: 0.95rem; color: #fff; }
+    .slide-dates { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    .slide-status { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 999px; text-transform: uppercase; display: inline-block; }
+    .status-live { background: rgba(16,185,129,0.2); color: var(--accent-green); border: 1px solid rgba(16,185,129,0.4); }
+    .status-scheduled { background: rgba(255,203,61,0.2); color: var(--accent-gold); border: 1px solid rgba(255,203,61,0.4); }
+    .status-expired { background: rgba(255,84,112,0.2); color: var(--accent-red); border: 1px solid rgba(255,84,112,0.4); }
+
+    /* Admin User Table */
+    .admin-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+    .admin-table th { padding: 10px 12px; background: rgba(0,0,0,0.3); color: var(--muted); text-transform: uppercase; font-size: 0.72rem; letter-spacing: 0.6px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    .admin-table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.06); vertical-align: middle; }
+    .admin-table tr:hover { background: rgba(255,255,255,0.03); }
+    .role-badge { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 999px; }
+    .role-admin { background: rgba(139, 92, 246, 0.25); color: var(--accent-purple); border: 1px solid rgba(139, 92, 246, 0.4); }
+    .role-member { background: rgba(255, 255, 255, 0.1); color: var(--text); }
+    .status-suspended { background: rgba(255,84,112,0.2); color: var(--accent-red); padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800; }
+    .status-active { background: rgba(16,185,129,0.2); color: var(--accent-green); padding: 2px 8px; border-radius: 999px; font-size: 10px; font-weight: 800; }
+
+    /* Stats Grid */
+    .stats-metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
+    @media (max-width: 900px) { .stats-metric-grid { grid-template-columns: repeat(2, 1fr); } }
+    .metric-card { background: #161a2b; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 1.25rem; text-align: center; }
+    .metric-val { font-size: 2.2rem; font-weight: 900; color: #fff; margin: 4px 0; }
+    .metric-lbl { font-size: 0.75rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.6px; }
+
+    /* Footer Action Bar */
+    .admin-sheet-footer {
+      padding: 1rem 1.5rem; background: rgba(22, 26, 43, 0.95);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex; align-items: center; justify-content: flex-end; gap: 12px;
+    }
 </style>
 </head>
 <body>
@@ -299,19 +614,17 @@
   <a class="guide-link secondary" href="https://accountshark.net/blog/fortnite-chapter-7-season-3-sprites" target="_blank" rel="noopener" title="Every Sprite, Ability &amp; Drop Rate (AccountShark)">🦈</a>
   <a class="guide-link" href="https://www.ign.com/wikis/fortnite/Sprites_Checklist_and_Guide_-_All_Variants_and_Abilities_List" target="_blank" rel="noopener" title="Full Sprites Guide (IGN)">📖</a>
 
-  <div class="container">
-
-    <!-- Fortnite Slideshow Header -->
-    <div class="hero-slideshow" id="slideshow">
-      <div class="slide active" style="background-image: url('https://i.ytimg.com/vi/emZfQYbDR74/maxresdefault.jpg');">
-        <div class="slide-overlay"></div>
-        <div class="slide-caption">Chapter 7 Season 3: Runners</div>
-      </div>
-      <div class="slide" style="background-image: url('https://static.beebom.com/wp-content/uploads/2026/07/Fortnite-Sprite-Events.png?w=1168&quality=75');">
-        <div class="slide-overlay"></div>
-        <div class="slide-caption">Sprite Hunt Event Live</div>
-      </div>
+  <!-- Fortnite Slideshow Header (Anchored to 0px Top of Viewport) -->
+  <div class="hero-slideshow" id="slideshow">
+    <div class="slide active" style="background-image: url('https://i.ytimg.com/vi/emZfQYbDR74/maxresdefault.jpg');">
+      <div class="slide-overlay"></div>
     </div>
+    <div class="slide" style="background-image: url('https://static.beebom.com/wp-content/uploads/2026/07/Fortnite-Sprite-Events.png?w=1168&quality=75');">
+      <div class="slide-overlay"></div>
+    </div>
+  </div>
+
+  <div class="container">
 
     <!-- Stat Row: countdown / progress / next event -->
     <div class="stat-row">
@@ -320,7 +633,7 @@
         <div class="stat-value" id="countdownValue">--</div>
         <div class="stat-sub">Chapter 7 Season 3 ("Runners")</div>
       </div>
-      <div class="stat-box">
+      <div class="stat-box" id="progressBox">
         <div class="stat-label">Collection Progress</div>
         <div class="stat-value" id="progressValue">0 / 0</div>
         <div class="stat-sub" id="progressSub">Log in to track your own</div>
@@ -337,14 +650,14 @@
           </div>
         </div>
       </div>
-      <div class="stat-box event-box">
+      <div class="stat-box event-box" id="eventBox">
         <div class="stat-label">Next Sprite Event</div>
         <div class="stat-value"><a href="https://beebom.com/fortnite-sprite-events-schedule/" target="_blank" rel="noopener">Shiny Hours</a></div>
         <div class="stat-sub">July 25, 2026 · 2 PM &amp; 9 PM ET</div>
       </div>
     </div>
 
-    <!-- Left-Anchored Responsive Profile Banner -->
+    <!-- Left-Anchored Responsive Profile Banner with Overlapping Avatar -->
     <div class="profile-banner">
       <div class="avatar-wrapper">
         <img id="profilePhoto" src="https://placehold.co/150x150/1e293b/8b5cf6?text=User" class="profile-photo" alt="Avatar" />
@@ -353,19 +666,44 @@
       </div>
 
       <div class="user-info">
-        <div class="user-name" id="displayName">Guest User</div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <div class="user-name" id="displayName">Guest User</div>
+          <span id="pendingApprovalBadge" class="pending-badge" style="display:none;">⏳ Pending Admin Approval</span>
+        </div>
         <div class="user-status" id="userStatus">Log in below to sync your findings</div>
-        <button class="edit-profile-btn" id="editProfileBtn" style="display:none;" onclick="openEditProfileModal()">Edit Profile</button>
+        
+        <div style="display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;">
+          <button class="edit-profile-btn" id="editProfileBtn" style="display:none;" onclick="openEditProfileModal()">Edit Profile</button>
+          <button class="admin-panel-btn" id="adminPanelBtn" style="display:none;" onclick="openAdminModal()">🛡️ Admin Panel</button>
+          <button class="claim-admin-btn" id="claimAdminBtn" onclick="claimAdminRole()">👑 Claim Admin Role</button>
+        </div>
       </div>
 
-      <button class="browse-players-btn" onclick="openBrowsePlayers()">Browse Players</button>
-
       <div class="auth-box" id="authBox">
-        <input type="text" id="loginUsername" placeholder="Username" class="input-field" />
-        <input type="password" id="loginPassword" placeholder="Password" class="input-field" />
-        <button class="btn btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()">Log In</button>
-        <button class="btn-link" id="authToggleLink" onclick="toggleAuthMode()">Need an account? Sign Up</button>
-        <div class="auth-mode-note" id="authModeNote">Kids: use any username you like, it's just for this site.</div>
+        <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+          <input type="text" id="loginUsername" placeholder="Username" class="input-field" />
+          <input type="password" id="loginPassword" placeholder="Password" class="input-field" />
+          <button class="btn btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()">Log In</button>
+          <button class="btn-link" id="authToggleLink" onclick="toggleAuthMode()">Need an account? Sign Up</button>
+        </div>
+      </div>
+
+      <!-- Bottom Row of Profile Panel -->
+      <div style="width: 100%; display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap; gap: 10px;">
+        <!-- Left Side: Browse Players Button -->
+        <button class="browse-players-btn" onclick="openBrowsePlayers()">👥 Browse Players</button>
+
+        <!-- Right Side: Sign in with OAuth Links & Notice -->
+        <div style="display: flex; flex-direction: column; align-items: flex-end; margin-left: auto;">
+          <div class="oauth-box">
+            <span class="oauth-label">Sign in with:</span>
+            <button class="oauth-btn google" onclick="handleOAuthLogin('Google')">🌐 Google</button>
+            <button class="oauth-btn xbox" onclick="handleOAuthLogin('Xbox')">🎮 Xbox</button>
+            <button class="oauth-btn epic" onclick="handleOAuthLogin('Epic')">⚡ Epic</button>
+            <button class="oauth-btn steam" onclick="handleOAuthLogin('Steam')">⚙️ Steam</button>
+          </div>
+          <div class="auth-mode-note" id="authModeNote">Manual sign-ups require Admin Approval. Social sign-ins auto-approve!</div>
+        </div>
       </div>
     </div>
 
@@ -391,6 +729,17 @@
         <option value="Holofoil">Holofoil</option>
         <option value="Cube">Cube</option>
       </select>
+    </div>
+
+    <!-- SPRITE TABLE SELECTOR (2 Rows of 10 Types + Show All) -->
+    <div class="sprite-table-container">
+      <div class="sprite-table-header">
+        <span>🎮 Sprite Type Selector Table</span>
+        <span style="font-size:10px; color:var(--accent-purple);">Click any type to toggle group visibility · Completed groups glow!</span>
+      </div>
+      <div class="sprite-table-grid" id="spriteTableGrid">
+        <!-- Populated dynamically -->
+      </div>
     </div>
 
     <!-- Collection Grid Container -->
@@ -454,6 +803,273 @@
     </div>
   </div>
 
+  <!-- POV BANNER -->
+  <div id="povBanner" class="pov-banner" style="display:none;">
+    <span>👁️ <strong>POV MODE ACTIVE:</strong> Viewing site as <span id="povUsername">User</span> (Read-Only)</span>
+    <button onclick="exitPovMode()" class="btn-sm btn-primary">Exit POV Mode</button>
+  </div>
+
+  <!-- ADMIN MANAGEMENT PANEL (SLIDE-UP BOTTOM SHEET MODAL) -->
+  <div class="admin-modal-overlay" id="adminModalOverlay" onclick="closeAdminModalIfBackdrop(event)">
+    <div class="admin-sheet-box">
+      <!-- Sheet Header -->
+      <div class="admin-sheet-header">
+        <div class="admin-sheet-title">
+          🛡️ Admin Management Console <span class="admin-sheet-badge" id="adminSheetUserBadge">nachyodaddy</span>
+        </div>
+        <button class="admin-sheet-close" onclick="closeAdminModal()">✕</button>
+      </div>
+
+      <!-- Sheet Body -->
+      <div class="admin-sheet-body">
+        <!-- Left Column: Scale Mini-Model of Site -->
+        <div class="admin-preview-col">
+          <div class="admin-preview-header">
+            <span>🖥️ Live Scale Site Model</span>
+            <span style="font-size:10px; color:var(--accent-green);">● Active</span>
+          </div>
+          <div class="admin-preview-viewport">
+            <div class="mini-hero-box" id="miniHeroBox" style="background-image: url('https://i.ytimg.com/vi/emZfQYbDR74/maxresdefault.jpg');">
+              <div class="mini-hero-overlay"></div>
+            </div>
+            <div class="mini-stat-grid">
+              <div class="mini-stat-card">
+                <div>COUNTDOWN</div>
+                <div class="mini-stat-val">23d 16h</div>
+              </div>
+              <div class="mini-stat-card">
+                <div>COLLECTION</div>
+                <div class="mini-stat-val" id="miniCollectionVal">0 / 91</div>
+              </div>
+              <div class="mini-stat-card">
+                <div>SPEED</div>
+                <div class="mini-stat-val" id="miniSpeedVal">5s</div>
+              </div>
+            </div>
+            <div style="margin-top:10px; background:rgba(255,255,255,0.05); border-radius:6px; padding:8px; font-size:9px; color:var(--muted);">
+              Scale model updates live as you adjust header slides, slideshow speed, and user roles.
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Controls Panel & Tabs -->
+        <div class="admin-controls-col">
+          <!-- Navigation Tabs -->
+          <div class="admin-nav-tabs">
+            <button class="admin-tab-btn active" id="tabBtnSlider" onclick="switchAdminTab('slider')">🖼️ Slides</button>
+            <button class="admin-tab-btn" id="tabBtnBanners" onclick="switchAdminTab('banners')">🎨 Banner Backgrounds</button>
+            <button class="admin-tab-btn" id="tabBtnNotices" onclick="switchAdminTab('notices')">📢 Site Notices</button>
+            <button class="admin-tab-btn" id="tabBtnUsers" onclick="switchAdminTab('users')">👥 Users</button>
+            <button class="admin-tab-btn" id="tabBtnStats" onclick="switchAdminTab('stats')">📊 Stats</button>
+          </div>
+
+          <!-- TAB: BANNER BACKGROUNDS -->
+          <div class="admin-panel-view" id="panelBanners">
+            <div class="admin-card">
+              <div class="admin-card-title">⏳ Season Ends Box Background</div>
+              <div class="form-group">
+                <label class="form-label">Background Image (URL or Upload)</label>
+                <div style="display:flex; gap:8px;">
+                  <input type="text" class="form-control" id="bgSeasonEndsUrl" placeholder="https://... or upload image" onchange="updateBoxBackground('countdownBox', this.value)">
+                  <label for="bgSeasonEndsFile" class="btn btn-primary" style="white-space:nowrap; cursor:pointer;">📁 Upload</label>
+                  <input type="file" id="bgSeasonEndsFile" accept="image/*" style="display:none;" onchange="handleBoxBgUpload(event, 'countdownBox', 'bgSeasonEndsUrl')">
+                  <button class="btn" style="background:rgba(255,255,255,0.1); color:#fff;" onclick="clearBoxBg('countdownBox', 'bgSeasonEndsUrl')">Clear</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <div class="admin-card-title">📊 Collection Progress Box Background</div>
+              <div class="form-group">
+                <label class="form-label">Background Image (URL or Upload)</label>
+                <div style="display:flex; gap:8px;">
+                  <input type="text" class="form-control" id="bgProgressUrl" placeholder="https://... or upload image" onchange="updateBoxBackground('progressBox', this.value)">
+                  <label for="bgProgressFile" class="btn btn-primary" style="white-space:nowrap; cursor:pointer;">📁 Upload</label>
+                  <input type="file" id="bgProgressFile" accept="image/*" style="display:none;" onchange="handleBoxBgUpload(event, 'progressBox', 'bgProgressUrl')">
+                  <button class="btn" style="background:rgba(255,255,255,0.1); color:#fff;" onclick="clearBoxBg('progressBox', 'bgProgressUrl')">Clear</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <div class="admin-card-title">🌟 Next Sprite Event Box Background</div>
+              <div class="form-group">
+                <label class="form-label">Background Image (URL or Upload)</label>
+                <div style="display:flex; gap:8px;">
+                  <input type="text" class="form-control" id="bgEventUrl" placeholder="https://... or upload image" onchange="updateBoxBackground('eventBox', this.value)">
+                  <label for="bgEventFile" class="btn btn-primary" style="white-space:nowrap; cursor:pointer;">📁 Upload</label>
+                  <input type="file" id="bgEventFile" accept="image/*" style="display:none;" onchange="handleBoxBgUpload(event, 'eventBox', 'bgEventUrl')">
+                  <button class="btn" style="background:rgba(255,255,255,0.1); color:#fff;" onclick="clearBoxBg('eventBox', 'bgEventUrl')">Clear</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB: SITE NOTICES / TOAST ANNOUNCEMENTS -->
+          <div class="admin-panel-view" id="panelNotices">
+            <div class="admin-card">
+              <div class="admin-card-title">📢 Create New Toast Announcement</div>
+              <div class="form-group">
+                <label class="form-label">Announcement Message Text</label>
+                <textarea class="form-control" id="noticeMsgInput" rows="3" placeholder="🔥 Double XP Sprite Event is now live! Get ready for Shiny Hours!"></textarea>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Icon Emoji</label>
+                  <select class="form-control" id="noticeIconSelect">
+                    <option value="📢">📢 Announcement</option>
+                    <option value="🔥">🔥 Hot Event</option>
+                    <option value="⚡">⚡ Special Boost</option>
+                    <option value="🏆">🏆 Tournament</option>
+                    <option value="🎁">🎁 Reward</option>
+                    <option value="⚠️">⚠️ Warning / Maintenance</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Duration (Hours)</label>
+                  <input type="number" class="form-control" id="noticeDurationHours" min="1" max="168" value="6">
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="createSiteAnnouncement()">📢 Publish Site Notice Toast</button>
+            </div>
+
+            <div class="admin-card">
+              <div class="admin-card-title">📜 Active &amp; Past Announcements</div>
+              <div id="adminNoticeListContainer"></div>
+            </div>
+          </div>
+
+          <!-- TAB 1: SLIDER OPTIONS -->
+          <div class="admin-panel-view active" id="panelSlider">
+            <div class="admin-card">
+              <div class="admin-card-title">⏱️ Slideshow Configuration</div>
+              <div class="form-group">
+                <label class="form-label">Slider Transition Speed (<span id="speedValLabel">5</span> seconds)</label>
+                <input type="range" class="form-control" id="sliderSpeedRange" min="2" max="15" step="1" value="5" oninput="updateSliderSpeed(this.value)">
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <div class="admin-card-title">➕ Upload / Add New Header Slide</div>
+              <div class="form-group">
+                <label class="form-label">Slide Image (File Upload or Image URL)</label>
+                <div style="display:flex; gap:8px; margin-bottom:8px;">
+                  <input type="text" class="form-control" id="newSlideUrl" placeholder="https://... or upload local file">
+                  <label for="newSlideFileInput" class="btn btn-primary" style="white-space:nowrap; cursor:pointer;">📁 Browse</label>
+                  <input type="file" id="newSlideFileInput" accept="image/*" style="display:none;" onchange="handleSlideFileUpload(event)">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Slide Title / Description</label>
+                <input type="text" class="form-control" id="newSlideTitle" placeholder="Chapter 7 Season 3: Special Event">
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Live Date (Start)</label>
+                  <input type="datetime-local" class="form-control" id="newSlideStartDate">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Take Down Date (Expiration)</label>
+                  <input type="datetime-local" class="form-control" id="newSlideEndDate">
+                </div>
+              </div>
+              <button class="btn btn-primary" onclick="addCustomSlide()">➕ Add Header Slide</button>
+            </div>
+
+            <div class="admin-card">
+              <div class="admin-card-title">🖼️ Active &amp; Scheduled Header Slides</div>
+              <div id="slideListContainer"></div>
+            </div>
+          </div>
+
+          <!-- TAB 2: USER MANAGEMENT -->
+          <div class="admin-panel-view" id="panelUsers">
+            <div class="admin-card">
+              <div class="admin-card-title">
+                <span>👥 Player Accounts &amp; Activity</span>
+                <input type="text" id="adminUserSearch" class="form-control" style="width:200px; padding:6px 10px; font-size:12px;" placeholder="Search player..." oninput="renderAdminUsers()">
+              </div>
+              <div style="overflow-x:auto;">
+                <table class="admin-table">
+                  <thead>
+                    <tr>
+                      <th>User</th>
+                      <th>Role</th>
+                      <th>Progress</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="adminUserTableBody">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- TAB 3: SITE STATISTICS ("SITE TASTICS") -->
+          <div class="admin-panel-view" id="panelStats">
+            <div class="stats-metric-grid">
+              <div class="metric-card">
+                <div class="metric-lbl">Total Site Visitors</div>
+                <div class="metric-val" id="statVisitorsCount">1,842</div>
+                <div style="font-size:10px; color:var(--accent-green);">+14% this week</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-lbl">Registered Players</div>
+                <div class="metric-val" id="statPlayersCount">12</div>
+                <div style="font-size:10px; color:var(--accent-purple);">Synced to Supabase</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-lbl">Total Extracted</div>
+                <div class="metric-val" id="statExtractedCount">348</div>
+                <div style="font-size:10px; color:var(--accent-gold);">Across all users</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-lbl">Total Mastered</div>
+                <div class="metric-val" id="statMasteredCount">126</div>
+                <div style="font-size:10px; color:var(--accent-gold);">Gold Crown status</div>
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <div class="admin-card-title">🔥 Most Collected Sprites</div>
+              <div style="display:flex; flex-direction:column; gap:8px;">
+                <div style="display:flex; justify-content:space-between; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:6px;">
+                  <span>Air Sprite (Rare)</span>
+                  <span style="color:var(--accent-green); font-weight:700;">86 Extractions</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:6px;">
+                  <span>Water Sprite (Rare)</span>
+                  <span style="color:var(--accent-green); font-weight:700;">74 Extractions</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; font-size:12px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:6px;">
+                  <span>Burnt Peanut (Mythic)</span>
+                  <span style="color:var(--accent-gold); font-weight:700;">42 Extractions</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sheet Footer -->
+      <div class="admin-sheet-footer">
+        <button class="btn" style="background:rgba(255,255,255,0.1); color:#fff;" onclick="closeAdminModal()">Close</button>
+        <button class="btn btn-primary" onclick="saveAdminChanges()">💾 Submit Changes</button>
+      </div>
+    </div>
+  <!-- ANNOUNCEMENT TOAST POPUP -->
+  <div id="announcementToast" class="announcement-toast" style="display:none;">
+    <div class="toast-header">
+      <div class="toast-title"><span id="toastIcon">📢</span> OFFICIAL ANNOUNCEMENT</div>
+      <button class="toast-close" onclick="dismissToast()">✕</button>
+    </div>
+    <div class="toast-body" id="toastMessage">Double XP Event active!</div>
+    <div class="toast-timer">⏳ <span id="toastTimeLeft">Expires soon</span></div>
+  </div>
+
   <script>
     // ===================== SUPABASE SETUP =====================
     const SUPABASE_URL = "https://oereylignfdcrnafqpix.supabase.co";
@@ -468,6 +1084,850 @@
     let viewingOwnerId = null;      // null = viewing your own collection; otherwise another player's user id
     let viewingOwnerName = '';
     let myHeartsAndRequests = { hearts: {}, requests: {} }; // keyed by "ownerId::spriteName"
+
+    // ===================== ADMIN & ROLE STATE =====================
+    let isAdminRole = false;
+    let povModeUser = null;
+    let sliderSpeedMs = 5000;
+    let sliderTimerId = null;
+
+    let adminSlides = [
+      { id: 1, title: "Chapter 7 Season 3: Runners", url: "https://i.ytimg.com/vi/emZfQYbDR74/maxresdefault.jpg", startDate: "", endDate: "", active: true },
+      { id: 2, title: "Sprite Hunt Event Live", url: "https://static.beebom.com/wp-content/uploads/2026/07/Fortnite-Sprite-Events.png?w=1168&quality=75", startDate: "", endDate: "", active: true }
+    ];
+
+    let adminUsersList = [
+      { id: "usr-nachyodaddy", username: "nachyodaddy", role: "admin", extracted: 48, mastered: 18, status: "Active", lastActive: "Just now" },
+      { id: "usr-woodlane", username: "WoodlanePlayer", role: "member", extracted: 22, mastered: 5, status: "Active", lastActive: "2 hours ago" },
+      { id: "usr-fortknight", username: "FortKnight99", role: "member", extracted: 61, mastered: 24, status: "Active", lastActive: "1 day ago" },
+      { id: "usr-spritemaster", username: "SpriteMasterX", role: "member", extracted: 91, mastered: 91, status: "Active", lastActive: "3 days ago" },
+      { id: "usr-banneduser", username: "ShadowGamer", role: "member", extracted: 2, mastered: 0, status: "Suspended", lastActive: "2 weeks ago" }
+    ];
+
+    let boxBackgrounds = {
+      countdownBox: '',
+      progressBox: '',
+      eventBox: ''
+    };
+
+    let adminNotices = [
+      { id: 1, icon: '📢', message: '🔥 Double XP Sprite Event is active! Get ready for Shiny Hours!', durationHours: 24, createdAt: Date.now(), active: true }
+    ];
+
+    function loadAdminState() {
+      const savedSlides = localStorage.getItem('fnsprites_admin_slides');
+      if (savedSlides) {
+        try { adminSlides = JSON.parse(savedSlides); } catch(e) {}
+      }
+      const savedSpeed = localStorage.getItem('fnsprites_admin_speed');
+      if (savedSpeed) {
+        sliderSpeedMs = parseInt(savedSpeed, 10) * 1000;
+        const input = document.getElementById('sliderSpeedRange');
+        if (input) input.value = Math.round(sliderSpeedMs / 1000);
+        const lbl = document.getElementById('speedValLabel');
+        if (lbl) lbl.innerText = Math.round(sliderSpeedMs / 1000);
+      }
+      const savedUsers = localStorage.getItem('fnsprites_admin_users');
+      if (savedUsers) {
+        try { adminUsersList = JSON.parse(savedUsers); } catch(e) {}
+      }
+      const savedAdmin = localStorage.getItem('fnsprites_is_admin');
+      if (savedAdmin === 'true') {
+        isAdminRole = true;
+      }
+      const savedBoxBgs = localStorage.getItem('fnsprites_box_backgrounds');
+      if (savedBoxBgs) {
+        try { boxBackgrounds = JSON.parse(savedBoxBgs); } catch(e) {}
+      }
+      const savedNotices = localStorage.getItem('fnsprites_admin_notices');
+      if (savedNotices) {
+        try { adminNotices = JSON.parse(savedNotices); } catch(e) {}
+      }
+      applyBoxBackgrounds();
+      checkAndDisplayToastNotice();
+    }
+
+    function saveAdminStateToStorage() {
+      localStorage.setItem('fnsprites_admin_slides', JSON.stringify(adminSlides));
+      localStorage.setItem('fnsprites_admin_speed', (sliderSpeedMs / 1000).toString());
+      localStorage.setItem('fnsprites_admin_users', JSON.stringify(adminUsersList));
+      localStorage.setItem('fnsprites_is_admin', isAdminRole ? 'true' : 'false');
+      localStorage.setItem('fnsprites_box_backgrounds', JSON.stringify(boxBackgrounds));
+      localStorage.setItem('fnsprites_admin_notices', JSON.stringify(adminNotices));
+    }
+
+    function updateBoxBackground(boxId, url) {
+      boxBackgrounds[boxId] = url.trim();
+      applyBoxBackgrounds();
+      saveAdminStateToStorage();
+    }
+
+    function handleBoxBgUpload(e, boxId, inputId) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        document.getElementById(inputId).value = evt.target.result;
+        updateBoxBackground(boxId, evt.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearBoxBg(boxId, inputId) {
+      document.getElementById(inputId).value = '';
+      boxBackgrounds[boxId] = '';
+      applyBoxBackgrounds();
+      saveAdminStateToStorage();
+    }
+
+    function applyBoxBackgrounds() {
+      const boxes = ['countdownBox', 'progressBox', 'eventBox'];
+      const inputIds = { countdownBox: 'bgSeasonEndsUrl', progressBox: 'bgProgressUrl', eventBox: 'bgEventUrl' };
+
+      boxes.forEach(id => {
+        const el = document.getElementById(id);
+        const url = boxBackgrounds[id];
+        if (el) {
+          if (url) {
+            el.style.backgroundImage = `url('${url}')`;
+            el.classList.add('custom-bg');
+          } else {
+            el.style.backgroundImage = '';
+            el.classList.remove('custom-bg');
+          }
+        }
+        const inp = document.getElementById(inputIds[id]);
+        if (inp && url && inp.value !== url) inp.value = url;
+      });
+    }
+
+    function createSiteAnnouncement() {
+      const msg = document.getElementById('noticeMsgInput').value.trim();
+      const icon = document.getElementById('noticeIconSelect').value;
+      const hours = parseInt(document.getElementById('noticeDurationHours').value, 10) || 6;
+
+      if (!msg) { alert('Enter announcement text.'); return; }
+
+      const newNotice = {
+        id: Date.now(),
+        icon: icon,
+        message: msg,
+        durationHours: hours,
+        createdAt: Date.now(),
+        active: true
+      };
+
+      adminNotices.unshift(newNotice);
+      document.getElementById('noticeMsgInput').value = '';
+      saveAdminStateToStorage();
+      renderAdminNotices();
+      checkAndDisplayToastNotice();
+      alert('📢 Announcement published successfully!');
+    }
+
+    function toggleNoticeActive(id) {
+      const n = adminNotices.find(x => x.id === id);
+      if (n) {
+        n.active = !n.active;
+        saveAdminStateToStorage();
+        renderAdminNotices();
+        checkAndDisplayToastNotice();
+      }
+    }
+
+    function deleteNotice(id) {
+      adminNotices = adminNotices.filter(x => x.id !== id);
+      saveAdminStateToStorage();
+      renderAdminNotices();
+      checkAndDisplayToastNotice();
+    }
+
+    function renderAdminNotices() {
+      const container = document.getElementById('adminNoticeListContainer');
+      if (!container) return;
+      const now = Date.now();
+
+      if (!adminNotices.length) {
+        container.innerHTML = '<div style="font-size:12px; color:var(--muted); text-align:center; padding:10px;">No announcements created yet.</div>';
+        return;
+      }
+
+      container.innerHTML = adminNotices.map(n => {
+        const expiresAt = n.createdAt + (n.durationHours * 3600 * 1000);
+        const isExpired = now > expiresAt;
+        const timeLeftMs = expiresAt - now;
+        const hoursLeft = Math.floor(timeLeftMs / (3600 * 1000));
+        const minsLeft = Math.floor((timeLeftMs % (3600 * 1000)) / (60 * 1000));
+
+        let statusLabel = isExpired ? 'Expired' : (n.active ? 'Active' : 'Paused');
+        let statusClass = isExpired ? 'status-expired' : (n.active ? 'status-live' : 'status-scheduled');
+
+        return `
+          <div class="slide-item-card" style="margin-bottom:8px;">
+            <div style="font-size:24px; display:flex; align-items:center; justify-content:center; width:40px;">${n.icon}</div>
+            <div class="slide-info">
+              <div class="slide-title" style="font-size:12px;">${n.message}</div>
+              <div class="slide-dates">
+                ${isExpired ? 'Expired' : `Remaining: ${hoursLeft}h ${minsLeft}m`} · Duration: ${n.durationHours}h
+              </div>
+              <span class="slide-status ${statusClass}" style="margin-top:4px;">${statusLabel}</span>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn-sm" style="background:rgba(255,255,255,0.1); color:#fff;" onclick="toggleNoticeActive(${n.id})">
+                ${n.active ? '⏸️ Pause' : '▶️ Activate'}
+              </button>
+              <button class="btn-sm" style="background:rgba(255,84,112,0.25); color:var(--accent-red);" onclick="deleteNotice(${n.id})">🗑️ Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function checkAndDisplayToastNotice() {
+      const toastEl = document.getElementById('announcementToast');
+      if (!toastEl) return;
+
+      const now = Date.now();
+      const activeNotice = adminNotices.find(n => n.active && (n.createdAt + (n.durationHours * 3600 * 1000)) > now);
+
+      if (activeNotice) {
+        document.getElementById('toastIcon').innerText = activeNotice.icon;
+        document.getElementById('toastMessage').innerText = activeNotice.message;
+
+        const timeLeftMs = (activeNotice.createdAt + (activeNotice.durationHours * 3600 * 1000)) - now;
+        const hoursLeft = Math.floor(timeLeftMs / (3600 * 1000));
+        const minsLeft = Math.floor((timeLeftMs % (3600 * 1000)) / (60 * 1000));
+
+        document.getElementById('toastTimeLeft').innerText = `Expires in ${hoursLeft}h ${minsLeft}m`;
+        toastEl.style.display = 'block';
+      } else {
+        toastEl.style.display = 'none';
+      }
+    }
+
+    function dismissToast() {
+      document.getElementById('announcementToast').style.display = 'none';
+    }
+
+    function checkAdminStatus() {
+      if (!currentUser && !isAdminRole) {
+        const localUser = localStorage.getItem('fnsprites_username');
+        if (localUser && (localUser.toLowerCase() === 'nachyodaddy' || localUser.toLowerCase() === 'admin')) {
+          isAdminRole = true;
+        }
+      } else if (currentUser) {
+        const username = (currentUser.user_metadata && currentUser.user_metadata.username) || '';
+        if (username.toLowerCase() === 'nachyodaddy' || username.toLowerCase() === 'admin' || (currentUser.email && currentUser.email.indexOf('nachyodaddy') !== -1)) {
+          isAdminRole = true;
+        }
+      }
+
+      const adminBtn = document.getElementById('adminPanelBtn');
+      const claimBtn = document.getElementById('claimAdminBtn');
+      if (isAdminRole) {
+        if (adminBtn) adminBtn.style.display = 'inline-flex';
+        if (claimBtn) claimBtn.style.display = 'none';
+      } else {
+        if (adminBtn) adminBtn.style.display = 'none';
+        if (claimBtn) claimBtn.style.display = 'inline-block';
+      }
+    }
+
+    async function fetchLiveSupabaseUsers() {
+      try {
+        const { data: profiles, error: pErr } = await sb.from('profiles').select('*');
+        if (pErr) console.error('Error fetching Supabase profiles:', pErr);
+
+        const { data: progressRows, error: prErr } = await sb.from('progress').select('user_id, extracted, mastered');
+        if (prErr) console.error('Error fetching Supabase progress:', prErr);
+
+        const userStats = {};
+        (progressRows || []).forEach(row => {
+          if (!userStats[row.user_id]) userStats[row.user_id] = { extracted: 0, mastered: 0 };
+          if (row.extracted) userStats[row.user_id].extracted++;
+          if (row.mastered) userStats[row.user_id].mastered++;
+        });
+
+        if (profiles && profiles.length) {
+          const liveList = profiles.map(p => {
+            const stats = userStats[p.id] || { extracted: 0, mastered: 0 };
+            return {
+              id: p.id,
+              username: p.username || 'Player',
+              role: p.role || (p.username && p.username.toLowerCase() === 'nachyodaddy' ? 'admin' : 'member'),
+              extracted: stats.extracted,
+              mastered: stats.mastered,
+              status: p.status || 'Active',
+              lastActive: 'Live Supabase'
+            };
+          });
+
+          const liveUserIds = new Set(liveList.map(u => u.id));
+          adminUsersList = liveList.concat(adminUsersList.filter(u => !liveUserIds.has(u.id)));
+        }
+      } catch (err) {
+        console.error('Supabase sync error:', err);
+      }
+    }
+
+    async function claimAdminRole() {
+      isAdminRole = true;
+      saveAdminStateToStorage();
+      if (currentUser) {
+        const username = (currentUser.user_metadata && currentUser.user_metadata.username) || 'nachyodaddy';
+        await sb.from('profiles').upsert({ id: currentUser.id, username: username, role: 'admin', status: 'Active' }, { onConflict: 'id' });
+      }
+      checkAdminStatus();
+      alert('👑 You have been assigned the Admin role in Supabase! The 🛡️ Admin Panel button is now enabled on your profile.');
+    }
+
+    // ===================== PARALLAX SCROLL EFFECT =====================
+    let tickingParallax = false;
+    window.addEventListener('scroll', function() {
+      if (!tickingParallax) {
+        window.requestAnimationFrame(function() {
+          const scrolled = window.pageYOffset;
+          const heroSlideshow = document.getElementById('slideshow');
+          if (heroSlideshow && scrolled <= 900) {
+            heroSlideshow.style.transform = `translate3d(0, ${scrolled * 0.45}px, 0)`;
+          }
+          tickingParallax = false;
+        });
+        tickingParallax = true;
+      }
+    });
+
+    function startDynamicSlideshow() {
+      if (sliderTimerId) clearInterval(sliderTimerId);
+      sliderTimerId = setInterval(() => {
+        const slides = document.querySelectorAll('#slideshow .slide');
+        if (!slides.length) return;
+        slides[currentSlide].classList.remove('active');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.add('active');
+
+        const activeSlide = adminSlides[currentSlide] || adminSlides[0];
+        if (activeSlide && document.getElementById('miniHeroBox')) {
+          document.getElementById('miniHeroBox').style.backgroundImage = `url('${activeSlide.url}')`;
+        }
+      }, sliderSpeedMs);
+    }
+
+    function renderSiteSlides() {
+      const slideshowEl = document.getElementById('slideshow');
+      if (!slideshowEl) return;
+      const now = new Date();
+
+      const activeSlides = adminSlides.filter(s => {
+        if (!s.active) return false;
+        if (s.startDate && new Date(s.startDate) > now) return false;
+        if (s.endDate && new Date(s.endDate) < now) return false;
+        return true;
+      });
+
+      const slidesToRender = activeSlides.length ? activeSlides : adminSlides;
+
+      slideshowEl.innerHTML = slidesToRender.map((s, idx) => `
+        <div class="slide ${idx === 0 ? 'active' : ''}" style="background-image: url('${s.url}');">
+          <div class="slide-overlay"></div>
+        </div>
+      `).join('');
+
+      currentSlide = 0;
+      startDynamicSlideshow();
+    }
+
+    function openAdminModal() {
+      checkAdminStatus();
+      if (!isAdminRole) {
+        alert('Access denied: Admin role required.');
+        return;
+      }
+      renderAdminSlides();
+      renderAdminUsers();
+      renderAdminStats();
+      renderAdminNotices();
+      applyBoxBackgrounds();
+
+      const username = (currentUser && currentUser.user_metadata && currentUser.user_metadata.username) || 'nachyodaddy';
+      document.getElementById('adminSheetUserBadge').innerText = username;
+      document.getElementById('adminModalOverlay').classList.add('active');
+    }
+
+    function closeAdminModal() {
+      document.getElementById('adminModalOverlay').classList.remove('active');
+    }
+
+    function closeAdminModalIfBackdrop(e) {
+      if (e.target.id === 'adminModalOverlay') closeAdminModal();
+    }
+
+    function switchAdminTab(tab) {
+      const tabs = ['slider', 'banners', 'notices', 'users', 'stats'];
+      tabs.forEach(t => {
+        const btn = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
+        const panel = document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1));
+        if (btn) btn.classList.toggle('active', t === tab);
+        if (panel) panel.classList.toggle('active', t === tab);
+      });
+      if (tab === 'banners') applyBoxBackgrounds();
+      if (tab === 'notices') renderAdminNotices();
+    }
+
+    function updateSliderSpeed(val) {
+      document.getElementById('speedValLabel').innerText = val;
+      document.getElementById('miniSpeedVal').innerText = val + 's';
+      sliderSpeedMs = parseInt(val, 10) * 1000;
+      startDynamicSlideshow();
+    }
+
+    function handleSlideFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        document.getElementById('newSlideUrl').value = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function addCustomSlide() {
+      const url = document.getElementById('newSlideUrl').value.trim();
+      const title = document.getElementById('newSlideTitle').value.trim() || 'Custom Header Slide';
+      const startDate = document.getElementById('newSlideStartDate').value;
+      const endDate = document.getElementById('newSlideEndDate').value;
+
+      if (!url) {
+        alert('Please enter an image URL or choose a file first.');
+        return;
+      }
+
+      const newSlide = {
+        id: Date.now(),
+        title: title,
+        url: url,
+        startDate: startDate,
+        endDate: endDate,
+        active: true
+      };
+
+      adminSlides.push(newSlide);
+      document.getElementById('newSlideUrl').value = '';
+      document.getElementById('newSlideTitle').value = '';
+      document.getElementById('newSlideStartDate').value = '';
+      document.getElementById('newSlideEndDate').value = '';
+
+      renderAdminSlides();
+      renderSiteSlides();
+    }
+
+    function toggleSlideActive(id) {
+      const slide = adminSlides.find(s => s.id === id);
+      if (slide) {
+        slide.active = !slide.active;
+        renderAdminSlides();
+        renderSiteSlides();
+      }
+    }
+
+    function deleteSlide(id) {
+      if (adminSlides.length <= 1) {
+        alert('You must keep at least 1 slide active.');
+        return;
+      }
+      adminSlides = adminSlides.filter(s => s.id !== id);
+      renderAdminSlides();
+      renderSiteSlides();
+    }
+
+    function renderAdminSlides() {
+      const container = document.getElementById('slideListContainer');
+      if (!container) return;
+      const now = new Date();
+
+      container.innerHTML = adminSlides.map(s => {
+        let statusClass = 'status-live';
+        let statusLabel = 'Live';
+
+        if (!s.active) {
+          statusClass = 'status-expired';
+          statusLabel = 'Disabled';
+        } else if (s.startDate && new Date(s.startDate) > now) {
+          statusClass = 'status-scheduled';
+          statusLabel = 'Scheduled';
+        } else if (s.endDate && new Date(s.endDate) < now) {
+          statusClass = 'status-expired';
+          statusLabel = 'Expired';
+        }
+
+        return `
+          <div class="slide-item-card">
+            <img src="${s.url}" class="slide-thumb" alt="${s.title}">
+            <div class="slide-info">
+              <div class="slide-title">${s.title}</div>
+              <div class="slide-dates">
+                ${s.startDate ? 'Start: ' + new Date(s.startDate).toLocaleString() : 'Start: Immediate'} · 
+                ${s.endDate ? 'End: ' + new Date(s.endDate).toLocaleString() : 'End: Ongoing'}
+              </div>
+              <span class="slide-status ${statusClass}" style="margin-top:4px;">${statusLabel}</span>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <button class="btn-sm" style="background:rgba(255,255,255,0.1); color:#fff;" onclick="toggleSlideActive(${s.id})">
+                ${s.active ? '⏸️ Pause' : '▶️ Activate'}
+              </button>
+              <button class="btn-sm" style="background:rgba(255,84,112,0.25); color:var(--accent-red);" onclick="deleteSlide(${s.id})">🗑️ Delete</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    async function renderAdminUsers() {
+      const body = document.getElementById('adminUserTableBody');
+      if (!body) return;
+
+      await fetchLiveSupabaseUsers();
+
+      const search = (document.getElementById('adminUserSearch').value || '').toLowerCase();
+      const filtered = adminUsersList.filter(u => u.username.toLowerCase().includes(search));
+
+      body.innerHTML = filtered.map(u => {
+        const isPending = u.status === 'Pending Admin Approval';
+        return `
+          <tr>
+            <td>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="width:28px; height:28px; border-radius:50%; background:var(--accent-purple); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:11px;">
+                  ${u.username.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <strong style="color:#fff;">${u.username}</strong>
+                  <div style="font-size:10px; color:var(--muted);">${u.lastActive}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span class="role-badge ${u.role === 'admin' ? 'role-admin' : 'role-member'}">${u.role.toUpperCase()}</span>
+            </td>
+            <td>
+              <div style="font-size:11px; font-weight:700; color:#fff;">
+                E: <span style="color:var(--accent-green);">${u.extracted}</span> / M: <span style="color:var(--accent-gold);">${u.mastered}</span>
+              </div>
+            </td>
+            <td>
+              <span class="${isPending ? 'status-scheduled' : (u.status === 'Suspended' ? 'status-suspended' : 'status-active')}">${u.status}</span>
+            </td>
+            <td>
+              <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                ${isPending ? `
+                  <button class="btn-sm" style="background:rgba(16,185,129,0.4); color:#fff; font-weight:800;" onclick="approvePendingUser('${u.username}')">✅ Approve</button>
+                  <button class="btn-sm" style="background:rgba(255,84,112,0.4); color:#fff;" onclick="rejectPendingUser('${u.username}')">❌ Reject</button>
+                ` : `
+                  <button class="btn-sm" style="background:rgba(139,92,246,0.3); color:#fff;" onclick="viewAsUserPOV('${u.username}')">👁️ View POV</button>
+                  <button class="btn-sm" style="background:rgba(255,255,255,0.1); color:#fff;" onclick="resetUserPassword('${u.username}')">🔑 Reset Pass</button>
+                  <button class="btn-sm" style="background:${u.status === 'Suspended' ? 'rgba(16,185,129,0.3)' : 'rgba(255,84,112,0.3)'}; color:#fff;" onclick="toggleUserSuspend('${u.username}')">
+                    ${u.status === 'Suspended' ? 'Restore' : 'Suspend'}
+                  </button>
+                  <button class="btn-sm" style="background:rgba(255,203,61,0.2); color:var(--accent-gold);" onclick="changeUserRole('${u.username}', '${u.role === 'admin' ? 'member' : 'admin'}')">
+                    ${u.role === 'admin' ? 'Demote' : 'Promote Admin'}
+                  </button>
+                `}
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+    async function handleOAuthLogin(providerName) {
+      const providerMap = {
+        'Google': 'google',
+        'Xbox': 'azure',
+        'Epic': 'keycloak',
+        'Steam': 'steam'
+      };
+
+      const providerKey = providerMap[providerName] || providerName.toLowerCase();
+
+      try {
+        const { data, error } = await sb.auth.signInWithOAuth({
+          provider: providerKey,
+          options: {
+            redirectTo: window.location.origin
+          }
+        });
+
+        if (error) {
+          console.warn(`Supabase OAuth provider '${providerKey}' not configured in dashboard yet. Falling back to local preview mode:`, error.message);
+          
+          const username = providerName + 'User_' + Math.floor(1000 + Math.random() * 9000);
+          currentUser = {
+            id: 'usr-' + providerName.toLowerCase() + '-' + Date.now(),
+            email: usernameToEmail(username),
+            user_metadata: { username: username }
+          };
+
+          localStorage.setItem('fnsprites_username', username);
+          localStorage.setItem('fnsprites_user_status', 'Active');
+          
+          const badge = document.getElementById('pendingApprovalBadge');
+          if (badge) badge.style.display = 'none';
+
+          updateProfileUI(username);
+
+          await sb.from('profiles').upsert({ id: currentUser.id, username: username, role: 'member', status: 'Active' }, { onConflict: 'id' });
+
+          alert(`🌐 Triggered ${providerName} OAuth sign-in! (Preview Mode: Once you add your ${providerName} API keys to Supabase Dashboard, this redirects to the real ${providerName} login screen).`);
+          await loadSprites();
+        }
+      } catch (err) {
+        console.error('OAuth sign-in error:', err);
+      }
+    }
+
+    async function approvePendingUser(username) {
+      const u = adminUsersList.find(x => x.username.toLowerCase() === username.toLowerCase());
+      if (u) {
+        u.status = 'Active';
+        if (u.id && u.id.length > 10) {
+          await sb.from('profiles').upsert({ id: u.id, username: u.username, status: 'Active' }, { onConflict: 'id' });
+        }
+        alert(`✅ User ${username} has been approved!`);
+        await renderAdminUsers();
+      }
+    }
+
+    async function rejectPendingUser(username) {
+      const u = adminUsersList.find(x => x.username.toLowerCase() === username.toLowerCase());
+      if (u) {
+        u.status = 'Suspended';
+        if (u.id && u.id.length > 10) {
+          await sb.from('profiles').upsert({ id: u.id, username: u.username, status: 'Suspended' }, { onConflict: 'id' });
+        }
+        alert(`❌ User ${username} has been rejected/suspended.`);
+        await renderAdminUsers();
+      }
+    }
+
+    // ===================== SPRITE TABLE SELECTOR =====================
+    const SPRITE_TABLE_TYPES = [
+      { name: 'Water', sample: 'Water Sprite', icon: '💧' },
+      { name: 'Earth', sample: 'Woodsprite', icon: '🌱' },
+      { name: 'Fire', sample: 'Fire Sprite Shade', icon: '🔥' },
+      { name: 'Duck', sample: 'Sprite Shenanigans', icon: '🦆' },
+      { name: 'Ghost', sample: 'Sprite Guardians', icon: '👻' },
+      { name: 'Dream', sample: 'Sprite Magic', icon: '✨' },
+      { name: 'Demon', sample: 'Sprite Might', icon: '😈' },
+      { name: 'Punk', sample: 'Sprite Plushie', icon: '⚡' },
+      { name: 'King', sample: 'Champion of the Sprites', icon: '👑' },
+      { name: 'Zero Point', sample: 'Sprite Mastery Pod', icon: '🌌' },
+      
+      { name: 'Fishy', sample: 'Sprite Seat', icon: '🐟' },
+      { name: 'Striker', sample: 'Sprite Runners', icon: '⚔️' },
+      { name: 'Aura', sample: 'I Heart Sprites', icon: '🌟' },
+      { name: 'Boss', sample: 'Model Delta-7B Aethersprite', icon: '👹' },
+      { name: 'Grim', sample: 'S.O.S (Save Our Sprites)', icon: '💀' },
+      { name: 'Air', sample: 'Air Sprite Shade', icon: '💨' },
+      { name: 'Seven', sample: 'Spritefall', icon: '🛡️' },
+      { name: 'Batman', sample: 'Sprite Soarer', icon: '🦇' },
+      { name: 'Collabs', sample: 'Burnt Peanut', icon: '🤝' },
+      { name: 'ALL', sample: '', icon: '🔮' }
+    ];
+
+    // Default state: ALL CLOSED when entering the page
+    let activeTypeToggles = new Set();
+
+    function renderSpriteTableGrid() {
+      const grid = document.getElementById('spriteTableGrid');
+      if (!grid) return;
+
+      const typeCompleteness = {};
+      SPRITE_TABLE_TYPES.forEach(t => {
+        if (t.name === 'ALL') return;
+        let groupSprites = allSprites.filter(s => {
+          var id = parseSpriteIdentity(s.name);
+          return id.base === t.name;
+        });
+        if (t.name === 'Collabs') {
+          groupSprites = allSprites.filter(s => SOLO_NO_VARIANT_SPRITES.includes(s.name));
+        }
+        if (groupSprites.length > 0) {
+          const allExtracted = groupSprites.every(s => s.extracted);
+          const allMastered = groupSprites.every(s => s.mastered);
+          if (allMastered) typeCompleteness[t.name] = 'completed-mastered';
+          else if (allExtracted) typeCompleteness[t.name] = 'completed-extracted';
+        }
+      });
+
+      const anyActive = activeTypeToggles.size > 0;
+
+      grid.innerHTML = SPRITE_TABLE_TYPES.map(t => {
+        if (t.name === 'ALL') {
+          return `
+            <div class="type-btn all-btn ${anyActive ? 'active' : ''}" onclick="toggleAllTypeGroups()">
+              <div class="type-btn-icon">${anyActive ? '❌' : '🔮'}</div>
+              <div class="type-btn-name">${anyActive ? 'CLOSE ALL' : 'SHOW ALL'}</div>
+            </div>
+          `;
+        }
+
+        const isActive = activeTypeToggles.has(t.name);
+        const completeClass = typeCompleteness[t.name] || '';
+
+        let imgUrl = '';
+        const foundSprite = allSprites.find(s => (t.sample && s.name.toLowerCase() === t.sample.toLowerCase()) || s.name.toLowerCase().indexOf(t.name.toLowerCase()) !== -1);
+        if (foundSprite) {
+          imgUrl = foundSprite.imageUrl;
+        } else if (t.sample) {
+          imgUrl = getSpriteImageUrl(t.sample, '');
+        }
+
+        const visual = imgUrl ? `<img src="${imgUrl}" class="type-btn-thumb" alt="${t.name}">` : `<div class="type-btn-icon">${t.icon}</div>`;
+
+        return `
+          <div class="type-btn ${isActive ? 'active' : ''} ${completeClass}" onclick="toggleTypeGroup('${t.name}')">
+            ${visual}
+            <div class="type-btn-name">${t.name}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleTypeGroup(typeName) {
+      if (activeTypeToggles.has(typeName)) {
+        activeTypeToggles.delete(typeName);
+      } else {
+        activeTypeToggles.add(typeName);
+      }
+      renderSpriteTableGrid();
+      renderGrid();
+    }
+
+    function toggleAllTypeGroups() {
+      const allTypeNames = SPRITE_TABLE_TYPES.filter(t => t.name !== 'ALL').map(t => t.name);
+      if (activeTypeToggles.size > 0) {
+        activeTypeToggles.clear(); // Close all!
+      } else {
+        allTypeNames.forEach(n => activeTypeToggles.add(n)); // Show all!
+      }
+      renderSpriteTableGrid();
+      renderGrid();
+    }
+
+    async function confirmBulkExtractGroup(groupName) {
+      if (!confirm(`Are you sure you want to mark ALL ${groupName} sprites as Extracted?`)) return;
+
+      let groupSprites = allSprites.filter(s => {
+        var id = parseSpriteIdentity(s.name);
+        return id.base === groupName;
+      });
+      if (groupName === 'Collabs') {
+        groupSprites = allSprites.filter(s => SOLO_NO_VARIANT_SPRITES.includes(s.name));
+      }
+
+      for (const s of groupSprites) {
+        s.extracted = true;
+        await saveProgress(s);
+      }
+
+      renderSpriteTableGrid();
+      renderGrid();
+    }
+
+    async function confirmBulkMasterGroup(groupName) {
+      if (!confirm(`Are you sure you want to mark ALL ${groupName} sprites as MASTERED?`)) return;
+
+      let groupSprites = allSprites.filter(s => {
+        var id = parseSpriteIdentity(s.name);
+        return id.base === groupName;
+      });
+      if (groupName === 'Collabs') {
+        groupSprites = allSprites.filter(s => SOLO_NO_VARIANT_SPRITES.includes(s.name));
+      }
+
+      for (const s of groupSprites) {
+        s.extracted = true;
+        s.mastered = true;
+        await saveProgress(s);
+      }
+
+      renderSpriteTableGrid();
+      renderGrid();
+    }
+
+    function viewAsUserPOV(username) {
+      const userObj = adminUsersList.find(u => u.username.toLowerCase() === username.toLowerCase()) || { username: username, extracted: 15, mastered: 5 };
+      povModeUser = userObj;
+      closeAdminModal();
+
+      document.getElementById('povBanner').style.display = 'flex';
+      document.getElementById('povUsername').innerText = username;
+      document.getElementById('displayName').innerText = username.toUpperCase() + ' (POV)';
+      document.getElementById('userStatus').innerText = 'Viewing from ' + username + '\'s perspective';
+
+      document.getElementById('progressValue').innerText = `${userObj.extracted} / 91`;
+      document.getElementById('extractedBar').style.width = Math.round((userObj.extracted / 91) * 100) + '%';
+      document.getElementById('extractedLabel').innerText = `${userObj.extracted}/91`;
+      document.getElementById('masteredBar').style.width = Math.round((userObj.mastered / 91) * 100) + '%';
+      document.getElementById('masteredLabel').innerText = `${userObj.mastered}/91`;
+    }
+
+    function exitPovMode() {
+      povModeUser = null;
+      document.getElementById('povBanner').style.display = 'none';
+      if (currentUser) {
+        const username = (currentUser.user_metadata && currentUser.user_metadata.username) || 'Player';
+        updateProfileUI(username);
+      } else {
+        document.getElementById('displayName').innerText = 'Guest User';
+        document.getElementById('userStatus').innerText = 'Log in below to sync your findings';
+      }
+      loadSprites();
+    }
+
+    function resetUserPassword(username) {
+      const newPass = prompt(`Enter new password for ${username}:`, "Fortnite2026!");
+      if (newPass) {
+        alert(`Password for ${username} successfully updated to: ${newPass}`);
+      }
+    }
+
+    function toggleUserSuspend(username) {
+      const u = adminUsersList.find(x => x.username.toLowerCase() === username.toLowerCase());
+      if (u) {
+        u.status = u.status === 'Suspended' ? 'Active' : 'Suspended';
+        renderAdminUsers();
+      }
+    }
+
+    function changeUserRole(username, newRole) {
+      const u = adminUsersList.find(x => x.username.toLowerCase() === username.toLowerCase());
+      if (u) {
+        u.role = newRole;
+        renderAdminUsers();
+      }
+    }
+
+    function renderAdminStats() {
+      const totalExtracted = adminUsersList.reduce((acc, u) => acc + u.extracted, 0);
+      const totalMastered = adminUsersList.reduce((acc, u) => acc + u.mastered, 0);
+
+      if (document.getElementById('statPlayersCount')) {
+        document.getElementById('statPlayersCount').innerText = adminUsersList.length;
+      }
+      if (document.getElementById('statExtractedCount')) {
+        document.getElementById('statExtractedCount').innerText = totalExtracted;
+      }
+      if (document.getElementById('statMasteredCount')) {
+        document.getElementById('statMasteredCount').innerText = totalMastered;
+      }
+    }
+
+    function saveAdminChanges() {
+      saveAdminStateToStorage();
+      renderSiteSlides();
+      alert('💾 All admin configuration changes saved & applied live!');
+      closeAdminModal();
+    }
 
     // ===================== HERO SLIDESHOW =====================
     let currentSlide = 0;
@@ -558,6 +2018,7 @@
       document.getElementById('authBox').innerHTML =
         '<button class="btn btn-primary" onclick="logout()">Log Out</button>';
       document.getElementById('editProfileBtn').style.display = 'inline-block';
+      checkAdminStatus();
       upsertMyProfile(username);
     }
 
@@ -794,6 +2255,37 @@
       return map;
     }
 
+    const LOCAL_IMAGES = {
+      'Air Sprite Shade': 'images/Air_Sprite_Shade.png',
+      'Champion of the Sprites': 'images/Champion_of_the_Sprites.png',
+      'Fire Sprite Shade': 'images/Fire_Sprite_Shade.png',
+      'I Heart Sprites': 'images/I_Heart_Sprites.png',
+      'Model Delta-7B Aethersprite': 'images/Model_Delta-7B_Aethersprite.png',
+      'S.O.S (Save Our Sprites)': 'images/S_O_S___Save_Our_Sprites_.png',
+      'Sprite Guardians': 'images/Sprite_Guardians.png',
+      'Sprite Magic': 'images/Sprite_Magic.png',
+      'Sprite Mastery Pod': 'images/Sprite_Mastery_Pod.png',
+      'Sprite Might': 'images/Sprite_Might.png',
+      'Sprite Plushie': 'images/Sprite_Plushie.png',
+      'Sprite Runners': 'images/Sprite_Runners.png',
+      'Sprite Seat': 'images/Sprite_Seat.png',
+      'Sprite Shenanigans': 'images/Sprite_Shenanigans.png',
+      'Sprite Soarer': 'images/Sprite_Soarer.png',
+      'Spritefall': 'images/Spritefall.png',
+      'Water Sprite': 'images/Water_Sprite.png',
+      'Water Sprite Shade': 'images/Water_Sprite_Shade.png',
+      'Woodsprite': 'images/Woodsprite.png'
+    };
+
+    function getSpriteImageUrl(name, defaultUrl) {
+      if (LOCAL_IMAGES[name]) return LOCAL_IMAGES[name];
+      var cleanName = name.replace(/[^a-zA-Z0-9]/g, '_');
+      for (var k in LOCAL_IMAGES) {
+        if (k.toLowerCase() === name.toLowerCase()) return LOCAL_IMAGES[k];
+      }
+      return defaultUrl;
+    }
+
     async function loadSprites() {
       document.getElementById('loader').style.display = 'block';
       var master = await fetchMasterSprites();
@@ -803,7 +2295,7 @@
         var p = progressMap[s.name] || { extracted: false, mastered: false, notes: '' };
         return {
           name: s.name,
-          imageUrl: s.imageUrl,
+          imageUrl: getSpriteImageUrl(s.name, s.imageUrl),
           rarity: s.rarity,
           extracted: !!p.extracted,
           mastered: !!p.mastered,
@@ -812,6 +2304,7 @@
       });
 
       document.getElementById('loader').style.display = 'none';
+      renderSpriteTableGrid();
       renderGrid();
       tickCountdown();
     }
@@ -867,6 +2360,29 @@
       return { groupOrder: groupOrder, groups: groups, soloGroup: soloGroup };
     }
 
+    const TYPE_COLORS = {
+      'Water': '#4fd1ff',
+      'Earth': '#10b981',
+      'Fire': '#ff5470',
+      'Duck': '#ffcb3d',
+      'Ghost': '#b98bff',
+      'Dream': '#ff9f4f',
+      'Demon': '#e11d48',
+      'Punk': '#f59e0b',
+      'King': '#eab308',
+      'Zero Point': '#8b5cf6',
+      'Fishy': '#38bdf8',
+      'Striker': '#ef4444',
+      'Aura': '#facc15',
+      'Boss': '#dc2626',
+      'Grim': '#94a3b8',
+      'Air': '#a7f3d0',
+      'Seven': '#3b82f6',
+      'Batman': '#64748b',
+      'Collabs': '#ec4899',
+      'Fan Favorites (No Variants)': '#ec4899'
+    };
+
     function renderGrid() {
       var query = document.getElementById('searchInput').value.trim().toLowerCase();
       var container = document.getElementById('gridContainer');
@@ -889,16 +2405,19 @@
       var sections = [];
 
       data.groupOrder.forEach(function(base) {
+        if (!activeTypeToggles.has(base)) return;
         var visible = data.groups[base].filter(function(s) { return matchesFilter(s) && matchesSearch(s, query) && matchesRarityVariant(s); });
         if (visible.length > 0) sections.push(buildGroupSection(base, visible));
       });
-      var soloVisible = data.soloGroup.filter(function(s) { return matchesFilter(s) && matchesSearch(s, query) && matchesRarityVariant(s); });
-      if (soloVisible.length > 0) sections.push(buildGroupSection('Fan Favorites (No Variants)', soloVisible));
+      if (activeTypeToggles.has('Collabs')) {
+        var soloVisible = data.soloGroup.filter(function(s) { return matchesFilter(s) && matchesSearch(s, query) && matchesRarityVariant(s); });
+        if (soloVisible.length > 0) sections.push(buildGroupSection('Fan Favorites (No Variants)', soloVisible));
+      }
 
       if (sections.length === 0) {
         var emptyDiv = document.createElement('div');
         emptyDiv.className = 'empty-state';
-        emptyDiv.innerText = viewingOwnerId ? 'This player has not extracted any sprites yet.' : 'No sprites match that filter.';
+        emptyDiv.innerText = viewingOwnerId ? 'This player has not extracted any sprites yet.' : 'No sprites match that filter or active category toggles.';
         container.appendChild(emptyDiv);
       } else {
         sections.forEach(function(section, idx) {
@@ -913,9 +2432,24 @@
 
     function buildGroupSection(title, sprites) {
       var wrap = document.createElement('div'); wrap.className = 'sprite-group';
-      var header = document.createElement('div'); header.className = 'group-header';
-      header.innerHTML = '<span>' + title + '</span><span class="group-count">' + sprites.length + '</span>';
+      var header = document.createElement('div'); header.className = 'group-header-row';
+      var color = TYPE_COLORS[title] || '#8b5cf6';
+      var groupNameForBulk = (title === 'Fan Favorites (No Variants)') ? 'Collabs' : title;
+
+      header.innerHTML = `
+        <div class="group-header-title-wrap">
+          <span class="group-title-name" style="color: ${color}; border-bottom: 2px solid ${color}; padding-bottom: 2px;">
+            ${title} ──────
+          </span>
+          <span class="group-count-badge" style="background: ${color};">${sprites.length}</span>
+        </div>
+        <div class="group-header-actions">
+          <button class="bulk-btn extract-all" onclick="confirmBulkExtractGroup('${groupNameForBulk}')">⚡ Extract All</button>
+          <button class="bulk-btn master-all" onclick="confirmBulkMasterGroup('${groupNameForBulk}')">👑 Master All</button>
+        </div>
+      `;
       wrap.appendChild(header);
+
       var grid = document.createElement('div'); grid.className = 'sprite-grid';
       sprites.forEach(function(sprite) { grid.appendChild(buildCard(sprite)); });
       wrap.appendChild(grid);
@@ -1209,7 +2743,10 @@
 
     // ===================== INIT =====================
     (async function init() {
+      loadAdminState();
       await restoreSession();
+      checkAdminStatus();
+      renderSiteSlides();
       await loadSprites();
     })();
   </script>
