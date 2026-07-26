@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E">
   <title>Fortnite Sprite Tracker</title>
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -13,124 +14,240 @@
       --accent-purple: #8b5cf6;
       --accent-purple-hover: #7c3aed;
       --accent-green: #10b981;
+      --accent-gold: #ffcb3d;
+      --accent-red: #ff5470;
       --text: #eef1ff;
       --muted: #8a90ad;
       --border-radius: 14px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background-color: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 1rem; }
-    .container { max-width: 1400px; margin: 0 auto; }
+    body { background-color: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 1rem 1rem 3rem; }
+    .container { max-width: 1400px; margin: 0 auto; position: relative; }
 
-    /* Fortnite Hero Slideshow */
+    /* ============ GUIDE LINK ICONS ============ */
+    .guide-link {
+      position: fixed; top: 16px; right: 16px;
+      width: 38px; height: 38px; border-radius: 50%;
+      background: var(--card-bg); border: 2px solid rgba(255,255,255,0.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; text-decoration: none; z-index: 50;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+      transition: transform 0.15s ease, border-color 0.15s ease;
+    }
+    .guide-link:hover { transform: translateY(-2px) scale(1.05); border-color: var(--accent-purple); }
+    .guide-link.secondary { right: 64px; }
+
+    /* ============ HERO SLIDESHOW (unchanged look) ============ */
     .hero-slideshow {
-      position: relative;
-      width: 100%;
-      height: 220px;
-      border-radius: 16px;
-      overflow: hidden;
-      margin-bottom: 1.5rem;
+      position: relative; width: 100%; height: 220px;
+      border-radius: 16px; overflow: hidden; margin-bottom: 1.25rem;
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
-
     .slide {
-      position: absolute;
-      top: 0; left: 0; width: 100%; height: 100%;
-      opacity: 0;
-      transition: opacity 1s ease-in-out;
-      background-size: cover;
-      background-position: center;
-      display: flex;
-      align-items: flex-end;
-      padding: 1.5rem;
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      opacity: 0; transition: opacity 1s ease-in-out;
+      background-size: cover; background-position: center;
+      display: flex; align-items: flex-end; padding: 1.5rem;
     }
-
     .slide.active { opacity: 1; }
     .slide-overlay {
       background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(13,15,26,0.95) 100%);
       position: absolute; inset: 0;
     }
-
     .slide-caption {
       position: relative; z-index: 2;
       font-size: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
       text-shadow: 0 2px 8px rgba(0,0,0,0.8);
     }
 
-    /* Left-Anchored Responsive Profile Banner */
+    /* ============ STAT ROW (new: countdown / progress / event) ============ */
+    .stat-row {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      margin-bottom: 1.25rem;
+    }
+    .stat-box {
+      flex: 1; min-width: 200px;
+      background: var(--card-bg); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 12px 16px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 6px; }
+    .stat-value { font-size: 18px; font-weight: 700; }
+    .stat-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    #countdownBox.state-green { border-color: var(--accent-green); box-shadow: 0 0 14px rgba(16,185,129,0.3); }
+    #countdownBox.state-yellow { border-color: var(--accent-gold); box-shadow: 0 0 14px rgba(255,203,61,0.35); }
+    #countdownBox.state-red { border-color: var(--accent-red); box-shadow: 0 0 16px rgba(255,84,112,0.45); }
+    #countdownBox.state-complete { border-color: var(--accent-gold); box-shadow: 0 0 20px rgba(255,203,61,0.55); }
+    #countdownBox.state-green .stat-value { color: var(--accent-green); }
+    #countdownBox.state-yellow .stat-value { color: var(--accent-gold); }
+    #countdownBox.state-red .stat-value { color: var(--accent-red); }
+    #countdownBox.state-complete .stat-value { color: var(--accent-gold); }
+    .event-box a { color: var(--accent-purple); text-decoration: none; font-weight: 700; }
+    .event-box a:hover { text-decoration: underline; }
+
+    /* ============ PROFILE BANNER (unchanged look) ============ */
     .profile-banner {
-      display: flex;
-      align-items: center;
-      gap: 1.25rem;
-      background: var(--card-bg);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      padding: 1.25rem;
-      margin-bottom: 2rem;
-      flex-wrap: wrap;
+      display: flex; align-items: center; gap: 1.25rem;
+      background: var(--card-bg); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 1.25rem; margin-bottom: 1.5rem; flex-wrap: wrap;
     }
-
-    .avatar-wrapper {
-      position: relative;
-      width: 76px; height: 76px;
-      flex-shrink: 0;
-    }
-
+    .avatar-wrapper { position: relative; width: 76px; height: 76px; flex-shrink: 0; }
     .profile-photo {
-      width: 100%; height: 100%;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid var(--accent-purple);
-      background: #1e293b;
+      width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+      border: 3px solid var(--accent-purple); background: #1e293b;
     }
-
     .avatar-edit-badge {
-      position: absolute; bottom: 0; right: 0;
-      width: 26px; height: 26px; border-radius: 50%;
+      position: absolute; bottom: 0; right: 0; width: 26px; height: 26px; border-radius: 50%;
       background: #1e293b; border: 1px solid rgba(255,255,255,0.2);
       color: #fff; font-size: 0.75rem; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
     }
-
     .user-info { flex-grow: 1; }
     .user-name { font-size: 1.4rem; font-weight: 800; }
     .user-status { font-size: 0.85rem; color: var(--muted); }
-
-    .auth-box {
-      display: flex; gap: 0.5rem; margin-left: auto; align-items: center;
-    }
-
+    .auth-box { display: flex; gap: 0.5rem; margin-left: auto; align-items: center; flex-wrap: wrap; }
     .input-field {
       background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
       color: #fff; padding: 0.5rem 0.75rem; border-radius: 8px; font-size: 0.85rem;
     }
-
-    .btn {
-      padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700;
-      cursor: pointer; border: none; font-size: 0.85rem;
-    }
+    .btn { padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700; cursor: pointer; border: none; font-size: 0.85rem; }
     .btn-primary { background: var(--accent-purple); color: #fff; }
     .btn-primary:hover { background: var(--accent-purple-hover); }
+    .btn-link { background: none; color: var(--muted); text-decoration: underline; font-size: 0.78rem; padding: 0; }
+    .auth-mode-note { width: 100%; font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
 
-    /* Sprite Grid */
+    /* ============ CONTROLS ============ */
+    .controls {
+      display: flex; flex-wrap: wrap; gap: 10px; align-items: center;
+      justify-content: center; margin-bottom: 1.25rem;
+    }
+    #searchInput {
+      flex: 1; min-width: 200px; padding: 8px 14px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.15); background: var(--card-bg); color: var(--text); font-size: 13px; outline: none;
+    }
+    .filter-chip {
+      padding: 7px 14px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.15);
+      background: var(--card-bg); color: var(--muted); font-size: 12px; cursor: pointer;
+    }
+    .filter-chip.active { color: #fff; background: var(--accent-purple); border-color: transparent; font-weight: 700; }
+
+    /* ============ GROUPS ============ */
+    .sprite-group { margin-bottom: 4px; }
+    .group-header {
+      font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;
+      color: var(--muted); margin: 0 0 10px 2px; display: flex; align-items: center; gap: 8px;
+    }
+    .group-count {
+      font-size: 10px; font-weight: 700; color: #fff; background: var(--accent-purple);
+      padding: 2px 8px; border-radius: 999px;
+    }
+    .group-divider {
+      border: none; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12) 15%, rgba(255,255,255,0.12) 85%, transparent);
+      margin: 22px 0;
+    }
+
+    /* ============ SPRITE GRID / CARDS ============ */
     .sprite-grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 1.25rem;
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.1rem;
     }
     @media (max-width: 1200px) { .sprite-grid { grid-template-columns: repeat(4, 1fr); } }
     @media (max-width: 900px) { .sprite-grid { grid-template-columns: repeat(3, 1fr); } }
     @media (max-width: 600px) { .sprite-grid { grid-template-columns: repeat(2, 1fr); } }
 
     .sprite-card {
-      background: var(--card-bg); border-radius: var(--border-radius);
-      padding: 1rem; text-align: center; border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--border-radius); padding: 1rem; text-align: center;
+      border: 2px solid rgba(255,255,255,0.08); position: relative; cursor: pointer;
+      opacity: 0.5; transition: transform 0.15s ease, opacity 0.2s ease, border-color 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
     }
+    .sprite-card:hover { transform: translateY(-3px); filter: brightness(1.15); }
+    .sprite-card.extracted { opacity: 1; border-color: var(--accent-green); box-shadow: 0 0 14px rgba(16,185,129,0.3); }
+    .sprite-card.mastered { opacity: 1; border-color: var(--accent-gold); box-shadow: 0 0 18px rgba(255,203,61,0.5); }
+
+    .buyback-badge {
+      position: absolute; top: 8px; left: 8px; font-size: 10px; font-weight: 700;
+      padding: 3px 7px; border-radius: 999px; background: rgba(15,18,32,0.85);
+      color: var(--accent-gold); border: 1px solid rgba(255,203,61,0.4); z-index: 2;
+    }
+    .badge-row { position: absolute; top: 8px; right: 8px; z-index: 2; }
+    .badge-ex { font-size: 10px; font-weight: 700; padding: 3px 7px; border-radius: 999px; background: var(--accent-green); color: #06202b; }
+    .crown-icon {
+      position: absolute; top: -10px; left: 50%; transform: translateX(-50%); font-size: 20px;
+      filter: drop-shadow(0 0 6px rgba(255,203,61,0.8)); z-index: 2;
+    }
+    .thumb-wrap {
+      width: 100%; aspect-ratio: 1/1; background: rgba(0,0,0,0.18); border-radius: 10px;
+      overflow: hidden; display: flex; align-items: center; justify-content: center; margin-bottom: 10px;
+    }
+    .thumb-wrap img { width: 100%; height: 100%; object-fit: contain; }
+    .sprite-name { font-size: 13px; font-weight: 700; margin-bottom: 8px; min-height: 32px; display: flex; align-items: center; justify-content: center; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+    .toggle-row { display: flex; gap: 6px; }
+    .icon-toggle-btn {
+      flex: 1; background: rgba(13,15,26,0.55); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+      padding: 6px; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0.4;
+      transition: opacity 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+    .icon-toggle-btn.on { opacity: 1; }
+    .icon-toggle-btn.on.ex-btn { border-color: var(--accent-green); box-shadow: 0 0 8px rgba(16,185,129,0.5); }
+    .icon-toggle-btn.on.mst-btn { border-color: var(--accent-gold); box-shadow: 0 0 8px rgba(255,203,61,0.5); }
+    .icon-toggle-btn:disabled { opacity: 0.15; cursor: not-allowed; }
+    .icon-toggle-btn.text-btn { font-size: 10px; font-weight: 700; color: #fff; }
+    .note-btn {
+      flex: 0 0 auto; width: 32px; background: rgba(13,15,26,0.55); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px; font-size: 13px; cursor: pointer; opacity: 0.5;
+    }
+    .note-btn.has-note { opacity: 1; border-color: var(--accent-purple); box-shadow: 0 0 8px rgba(139,92,246,0.5); }
+    .empty-state, .loader { text-align: center; color: var(--muted); margin-top: 40px; font-size: 14px; }
+
+    /* ============ MODALS ============ */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(6,7,15,0.75); backdrop-filter: blur(3px);
+      z-index: 100; align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #161a2b; border: 2px solid rgba(255,255,255,0.12); border-radius: 16px;
+      max-width: 420px; width: 100%; padding: 26px; position: relative; padding-bottom: 60px;
+    }
+    .modal-close { position: absolute; top: 12px; right: 14px; background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; }
+    .modal-thumb { width: 140px; height: 140px; margin: 0 auto 14px; border-radius: 12px; background: rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .modal-thumb img { width: 100%; height: 100%; object-fit: contain; }
+    .modal-name { text-align: center; font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+    .modal-variant { display: block; text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+    .modal-section { margin-bottom: 14px; }
+    .modal-section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--muted); margin-bottom: 4px; }
+    .modal-section-body { font-size: 14px; line-height: 1.5; }
+    .modal-section-body.bonus { color: var(--accent-gold); font-weight: 700; }
+    .modal-note-section { margin-top: 16px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); }
+    .modal-note-body { font-size: 13px; color: var(--muted); font-style: italic; white-space: pre-wrap; }
+    .modal-rarity-badge {
+      position: absolute; bottom: 16px; right: 16px; font-size: 10px; font-weight: 700; text-transform: uppercase;
+      padding: 5px 12px; border-radius: 999px; color: #06202b; background: var(--accent-gold); white-space: nowrap;
+    }
+    @media (max-width: 700px) {
+      .modal-overlay { padding: 0; align-items: stretch; }
+      .modal-box { max-width: 100%; width: 100%; height: 100%; border-radius: 0; overflow-y: auto; padding-bottom: 80px; }
+    }
+    .note-modal-box { background: #161a2b; border: 2px solid rgba(255,255,255,0.12); border-radius: 16px; max-width: 380px; width: 100%; padding: 22px; }
+    .note-modal-title { font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+    #noteTextarea {
+      width: 100%; min-height: 100px; resize: vertical; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 8px; color: var(--text); font-family: inherit; font-size: 13px; padding: 10px; outline: none;
+    }
+    .note-modal-actions { display: flex; gap: 10px; margin-top: 12px; }
+    .note-modal-actions button { flex: 1; padding: 9px; border-radius: 8px; border: none; font-size: 13px; font-weight: 700; cursor: pointer; }
+    .note-save-btn { background: var(--accent-purple); color: #fff; }
+    .note-cancel-btn { background: rgba(255,255,255,0.08); color: var(--muted); }
   </style>
 </head>
 <body>
+
+  <a class="guide-link secondary" href="https://accountshark.net/blog/fortnite-chapter-7-season-3-sprites" target="_blank" rel="noopener" title="Every Sprite, Ability &amp; Drop Rate (AccountShark)">🦈</a>
+  <a class="guide-link" href="https://www.ign.com/wikis/fortnite/Sprites_Checklist_and_Guide_-_All_Variants_and_Abilities_List" target="_blank" rel="noopener" title="Full Sprites Guide (IGN)">📖</a>
+
   <div class="container">
-    
+
     <!-- Fortnite Slideshow Header -->
     <div class="hero-slideshow" id="slideshow">
       <div class="slide active" style="background-image: url('https://cdn2.unrealengine.com/fn-social-ch5s1-1920x1080-2a54fb263632.jpg');">
@@ -140,6 +257,25 @@
       <div class="slide" style="background-image: url('https://cdn2.unrealengine.com/keyart-1920x1080-4927f88410fb.jpg');">
         <div class="slide-overlay"></div>
         <div class="slide-caption">Sprite Hunt Event Live</div>
+      </div>
+    </div>
+
+    <!-- Stat Row: countdown / progress / next event -->
+    <div class="stat-row">
+      <div class="stat-box" id="countdownBox">
+        <div class="stat-label">Season Ends In</div>
+        <div class="stat-value" id="countdownValue">--</div>
+        <div class="stat-sub">Chapter 7 Season 3 ("Runners")</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Collection Progress</div>
+        <div class="stat-value" id="progressValue">0 / 0</div>
+        <div class="stat-sub" id="progressSub">Log in to track your own</div>
+      </div>
+      <div class="stat-box event-box">
+        <div class="stat-label">Next Sprite Event</div>
+        <div class="stat-value"><a href="https://beebom.com/fortnite-sprite-events-schedule/" target="_blank" rel="noopener">Shiny Hours</a></div>
+        <div class="stat-sub">July 25, 2026 · 2 PM &amp; 9 PM ET</div>
       </div>
     </div>
 
@@ -156,30 +292,77 @@
         <div class="user-status" id="userStatus">Log in below to sync your findings</div>
       </div>
 
-      <!-- Custom Auth Form (No Google Required) -->
       <div class="auth-box" id="authBox">
         <input type="text" id="loginUsername" placeholder="Username" class="input-field" />
         <input type="password" id="loginPassword" placeholder="Password" class="input-field" />
         <button class="btn btn-primary" onclick="login()">Log In</button>
+        <button class="btn-link" onclick="signUp()">Need an account? Sign Up</button>
+        <div class="auth-mode-note">Kids: use any username you like, it's just for this site.</div>
       </div>
     </div>
 
-    <!-- Collection Grid Container -->
-    <div id="spriteContainer" class="sprite-grid">
-      <!-- Cards render dynamically -->
+    <div class="controls">
+      <input type="text" id="searchInput" placeholder="Search sprites..." oninput="renderGrid()">
+      <div class="filter-chip active" data-filter="all" onclick="setFilter('all')">All</div>
+      <div class="filter-chip" data-filter="extracted" onclick="setFilter('extracted')">Extracted</div>
+      <div class="filter-chip" data-filter="mastered" onclick="setFilter('mastered')">Mastered</div>
+      <div class="filter-chip" data-filter="untouched" onclick="setFilter('untouched')">Untouched</div>
     </div>
 
+    <!-- Collection Grid Container -->
+    <div id="gridContainer"></div>
+    <div id="loader" class="loader">Loading sprites...</div>
+  </div>
+
+  <!-- INFO MODAL -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeModalIfBackdrop(event)">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-thumb"><img id="modalImg" src="" alt=""></div>
+      <div class="modal-name" id="modalName"></div>
+      <div class="modal-variant" id="modalVariantBadge"></div>
+      <div class="modal-section">
+        <div class="modal-section-title">What it does</div>
+        <div class="modal-section-body" id="modalAbility"></div>
+      </div>
+      <div class="modal-section">
+        <div class="modal-section-title">Variant bonus effect</div>
+        <div class="modal-section-body bonus" id="modalBonus"></div>
+      </div>
+      <div class="modal-note-section">
+        <div class="modal-section-title">Your note</div>
+        <div class="modal-note-body" id="modalNote"></div>
+      </div>
+      <div class="modal-rarity-badge" id="modalRarity"></div>
+    </div>
+  </div>
+
+  <!-- NOTE MODAL -->
+  <div class="modal-overlay" id="noteModalOverlay" onclick="closeNoteModalIfBackdrop(event)">
+    <div class="note-modal-box">
+      <div class="note-modal-title" id="noteModalTitle">Add a note</div>
+      <textarea id="noteTextarea" placeholder="Where'd you get it? What day?"></textarea>
+      <div class="note-modal-actions">
+        <button class="note-cancel-btn" onclick="closeNoteModal()">Cancel</button>
+        <button class="note-save-btn" onclick="saveNote()">Save</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    // Initialize Supabase Credentials
+    // ===================== SUPABASE SETUP =====================
     const SUPABASE_URL = "https://oereylignfdcrnafqpix.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_Sz7H2GqdGiX5Z6X0BPrm9Q_iloAP-2O";
-    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    let currentUser = null;   // Supabase auth user object, or null if signed out
+    let allSprites = [];      // merged master + this user's progress
+    let currentFilter = 'all';
+    let allCollected = false;
+    let currentNoteSprite = null;
+
+    // ===================== HERO SLIDESHOW =====================
     let currentSlide = 0;
-
-    // Slideshow Loop
     setInterval(() => {
       const slides = document.querySelectorAll('.slide');
       slides[currentSlide].classList.remove('active');
@@ -187,54 +370,496 @@
       slides[currentSlide].classList.add('active');
     }, 5000);
 
-    // Custom Login Function
-    async function login() {
-      const username = document.getElementById('loginUsername').value.trim().toLowerCase();
-      const password = document.getElementById('loginPassword').value;
-      const email = `${username}@fnsprites.local`;
-
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        alert("Login failed: " + error.message);
-      } else {
-        updateProfileUI(data.user, username);
-      }
+    // ===================== AUTH =====================
+    function usernameToEmail(username) {
+      return username.trim().toLowerCase() + '@fnsprites.local';
     }
 
-    function updateProfileUI(user, username) {
+    async function signUp() {
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      if (!username || !password) { alert('Pick a username and password first.'); return; }
+      if (password.length < 6) { alert('Password needs to be at least 6 characters.'); return; }
+
+      const { data, error } = await sb.auth.signUp({
+        email: usernameToEmail(username),
+        password: password,
+        options: { data: { username: username } }
+      });
+
+      if (error) {
+        alert('Sign up failed: ' + error.message);
+        return;
+      }
+      currentUser = data.user;
+      updateProfileUI(username);
+      await loadSprites();
+    }
+
+    async function login() {
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      if (!username || !password) { alert('Enter your username and password.'); return; }
+
+      const { data, error } = await sb.auth.signInWithPassword({
+        email: usernameToEmail(username),
+        password: password
+      });
+
+      if (error) {
+        alert('Login failed: ' + error.message);
+        return;
+      }
+      currentUser = data.user;
+      updateProfileUI(username);
+      await loadSprites();
+    }
+
+    function updateProfileUI(username) {
       document.getElementById('displayName').innerText = username.toUpperCase();
-      document.getElementById('userStatus').innerText = "Logged in & Syncing";
-      document.getElementById('authBox').innerHTML = `<button class="btn btn-primary" onclick="logout()">Log Out</button>`;
+      document.getElementById('userStatus').innerText = 'Logged in & syncing your own collection';
+      document.getElementById('progressSub').innerText = 'Your own private progress';
+      document.getElementById('authBox').innerHTML =
+        '<button class="btn btn-primary" onclick="logout()">Log Out</button>';
     }
 
     async function logout() {
-      await supabase.auth.signOut();
+      await sb.auth.signOut();
       location.reload();
     }
 
-    // Avatar Upload Handler
+    // Restore session automatically on page load (so kids don't have to
+    // retype their password every visit).
+    async function restoreSession() {
+      const { data } = await sb.auth.getSession();
+      if (data.session && data.session.user) {
+        currentUser = data.session.user;
+        const username = (currentUser.user_metadata && currentUser.user_metadata.username) || 'Player';
+        updateProfileUI(username);
+      }
+    }
+
+    // ===================== AVATAR UPLOAD =====================
     async function uploadAvatar(event) {
       const file = event.target.files[0];
       if (!file) return;
 
-      const user = (await supabase.auth.getUser()).data.user;
-      if (!user) {
-        alert("Please log in first to change your photo!");
+      if (!currentUser) {
+        alert('Please log in first to change your photo!');
         return;
       }
 
       const fileExt = file.name.split('.').pop();
-      const filePath = `avatars/${user.id}.${fileExt}`;
+      const filePath = `avatars/${currentUser.id}.${fileExt}`;
 
-      let { error: uploadError } = await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
+      let { error: uploadError } = await sb.storage.from('avatars').upload(filePath, file, { upsert: true });
       if (uploadError) {
-        alert("Upload error: " + uploadError.message);
+        alert('Upload error: ' + uploadError.message);
         return;
       }
 
-      const { data } = supabase.storage.from('avatars').getPublicUrl(filePath);
-      document.getElementById('profilePhoto').src = data.publicUrl;
+      const { data } = sb.storage.from('avatars').getPublicUrl(filePath);
+      document.getElementById('profilePhoto').src = data.publicUrl + '?t=' + Date.now();
     }
+
+    // ===================== SPRITE LORE / DATA (shared with the Sheets version) =====================
+    var EXTRACTED_LABEL = 'Extracted';
+    var MASTERED_LABEL = 'Mastered';
+
+    var SOLO_NO_VARIANT_SPRITES = ['Burnt Peanut', 'Pollo', 'Vini Jr.'];
+
+    var RARITY_COLORS = { 'Rare': '#4fd1ff', 'Epic': '#b98bff', 'Legendary': '#ff9f4f', 'Mythic': '#ff5470' };
+
+    var VARIANT_GRADIENTS = {
+      'Base':     'radial-gradient(circle at 30% 20%, #1c5f7a 0%, #12293a 55%, #0d0f1a 100%)',
+      'Gold':     'radial-gradient(circle at 30% 20%, #a67a1f 0%, #3f2d0d 55%, #0d0f1a 100%)',
+      'Gummy':    'radial-gradient(circle at 30% 20%, #a02a6c 0%, #3a1027 55%, #0d0f1a 100%)',
+      'Galaxy':   'radial-gradient(circle at 30% 20%, #6b2fae 0%, #281045 55%, #0d0f1a 100%)',
+      'Holofoil': 'linear-gradient(135deg, #2f8fae 0%, #7a3fae 45%, #ae2f7a 80%, #0d0f1a 100%)',
+      'Gem':      'radial-gradient(circle at 30% 20%, #1f9c6b 0%, #0d3a28 55%, #0d0f1a 100%)',
+      'Cube':     'radial-gradient(circle at 30% 20%, #1f9c9c 0%, #0d3a3a 55%, #0d0f1a 100%)'
+    };
+
+    var SPRITE_ABILITIES = {
+      'Water':        'Replenish shields while standing in water!',
+      'Earth':        'You have a chance to find additional rare items when opening chests.',
+      'Fire':         'Creates a fiery burst when you deal enough damage to an enemy!',
+      'Fishy':        'Swim speed is greatly increased. Taking damage also briefly increases movement speed.',
+      'Air':          'Increases sprinting speed and jump height. Also nullifies fall damage.',
+      'Duck':         'Emoting or Jamming replenishes your shield.',
+      'Ghost':        'Grants a temporary cloak for a duration upon reloading.',
+      'King':         'Your Pickaxe deals significantly more damage.',
+      'Demon':        'Siphon some health and shields when you eliminate an opponent.',
+      'Aura':         'Gain a Shock Rock charge when you deal enough damage to enemies.',
+      'Striker':      'Gain the Overdrive effect when you Mantle, Hurdle, or Wall Scramble.',
+      'Dream':        'Grants a random item at each level, exploding with legendary loot at Max Level.',
+      'Punk':         'Wild card — possibly nothing... or infinitely something.',
+      'Boss':         'Grants an increase to your max HP and Shield.',
+      'Seven':        'Enemy player foot trails become visible in the world for your squad.',
+      'Zero Point':   'Spawns a Shield Bubble Jr. when you use a healing item on yourself (excluding splashes and grenades).',
+      'Burnt Peanut': 'When eliminating players, you may find more loot — sometimes even Mythic loot.',
+      'Grim':         'Marks anyone who attacks you for a duration.',
+      'Batman':       'Grants the ability to launch into the air and deploy the Bat Cape.',
+      'Vini Jr.':     'Sprinting briefly makes your slide destructive. Slide-kicking enemies increases fire rate and reload speed.',
+      'Pollo':        'Upon earning an elimination, slowly replenishes shield for you and nearby squad members.'
+    };
+
+    var VARIANT_BONUS = {
+      'Base':     'No bonus — this is the standard collectible sprite.',
+      'Gold':     'Adds 3x bonus Sprite XP from eliminations.',
+      'Gummy':    'Adds 20% more Sprite Dust upon extraction.',
+      'Galaxy':   'Adds 30% more ammunition whenever you loot it.',
+      'Holofoil': 'Gives your whole squad a 5% chance to find rare Sprite Variants (Gold, Gummy, Galaxy) when looting chests.',
+      'Gem':      'Reduces fall damage.',
+      'Cube':     'Grants you the Overdrive effect while you are inside the Storm.'
+    };
+
+    var VARIANT_PREFIXES = ['Gold', 'Gummy', 'Galaxy', 'Holofoil', 'Gem', 'Cube'];
+
+    function parseSpriteIdentity(name) {
+      for (var i = 0; i < VARIANT_PREFIXES.length; i++) {
+        var prefix = VARIANT_PREFIXES[i];
+        if (name.indexOf(prefix + ' ') === 0) {
+          return { base: name.substring(prefix.length + 1), variant: prefix };
+        }
+      }
+      return { base: name, variant: 'Base' };
+    }
+
+    var BASE_RARITY_TIER = {
+      'Water': 'Rare', 'Earth': 'Rare', 'Fire': 'Rare', 'Fishy': 'Rare', 'Air': 'Rare',
+      'Duck': 'Epic', 'Ghost': 'Epic', 'King': 'Epic', 'Demon': 'Epic', 'Aura': 'Epic', 'Striker': 'Epic',
+      'Dream': 'Legendary', 'Punk': 'Legendary', 'Boss': 'Legendary', 'Seven': 'Legendary',
+      'Zero Point': 'Mythic', 'Burnt Peanut': 'Mythic', 'Grim': 'Mythic', 'Batman': 'Mythic',
+      'Vini Jr.': 'Mythic', 'Pollo': 'Mythic'
+    };
+
+    var BUYBACK_COST = {
+      'Rare': { base: 100, special: 4000 }, 'Epic': { base: 3000, special: 6000 },
+      'Legendary': { base: 5000, special: 10000 }, 'Mythic': { base: 7500, special: 15000 }
+    };
+    var BUYBACK_BASE_OVERRIDES = { 'Air': 2000 };
+
+    var SPRITE_DROP_RATES = {
+      'Water': { base: 13.92 }, 'Earth': { base: 13.92 }, 'Fire': { base: 13.92 }, 'Fishy': { base: 13.79 }, 'Air': { base: 0 },
+      'Duck': { base: 5.22 }, 'Ghost': { base: 5.22 }, 'King': { base: 5.22 }, 'Demon': { base: 5.22 },
+      'Aura': { base: 5.74, Gold: 0.07, Gummy: 0.04, Galaxy: 0.02 }, 'Striker': { base: 5.74 },
+      'Dream': { base: 2.436 }, 'Punk': { base: 2.436 }, 'Boss': { base: 2.63 },
+      'Seven': { base: 6.98, Gold: 0.31, Gummy: 0.23, Galaxy: 0.12, Holofoil: 0.05 },
+      'Zero Point': { base: 1.044 }, 'Burnt Peanut': { base: 1.5 }, 'Grim': { base: 0.000098 },
+      'Batman': { base: 2.23, Gold: 0.1, Gummy: 0.07, Galaxy: 0.04, Holofoil: 0.01 },
+      'Vini Jr.': { base: 0 }, 'Pollo': { base: 0 }
+    };
+    var SECRET_SPRITES = ['Pollo', 'Vini Jr.'];
+
+    function getBaseTier(identity) { return BASE_RARITY_TIER[identity.base] || 'Rare'; }
+    function getBuybackCost(identity) {
+      var tier = getBaseTier(identity);
+      var costs = BUYBACK_COST[tier];
+      if (identity.variant !== 'Base') return costs.special;
+      if (BUYBACK_BASE_OVERRIDES[identity.base] !== undefined) return BUYBACK_BASE_OVERRIDES[identity.base];
+      return costs.base;
+    }
+    function getDropRate(identity) {
+      var rates = SPRITE_DROP_RATES[identity.base];
+      if (!rates) return null;
+      if (identity.variant === 'Base') return rates.base;
+      if (rates[identity.variant] !== undefined) return rates[identity.variant];
+      return null;
+    }
+    function formatPercent(p) {
+      if (p === 0) return '0%';
+      if (p < 0.01) return p.toFixed(6).replace(/0+$/, '').replace(/\.$/, '') + '%';
+      return p.toFixed(2) + '%';
+    }
+    function buildRarityLabel(identity) {
+      var tier = getBaseTier(identity);
+      var percent = getDropRate(identity);
+      var label = '';
+      if (percent !== null && percent !== undefined) label += formatPercent(percent) + ' ';
+      label += tier;
+      if (identity.variant !== 'Base') label += ' Special';
+      if (SECRET_SPRITES.indexOf(identity.base) !== -1) label += ' · Secret';
+      return label;
+    }
+
+    // ===================== SEASON COUNTDOWN =====================
+    var SEASON_END = new Date('2026-08-19T09:00:00-04:00');
+    function tickCountdown() {
+      var box = document.getElementById('countdownBox');
+      var valueEl = document.getElementById('countdownValue');
+      if (allCollected) {
+        box.className = 'stat-box state-complete';
+        valueEl.innerText = '🏅 No sweat, You got \'em all';
+        return;
+      }
+      var diffMs = SEASON_END - new Date();
+      if (diffMs <= 0) { box.className = 'stat-box state-red'; valueEl.innerText = 'Season has ended'; return; }
+      var totalSeconds = Math.floor(diffMs / 1000);
+      var days = Math.floor(totalSeconds / 86400);
+      var hours = Math.floor((totalSeconds % 86400) / 3600);
+      var minutes = Math.floor((totalSeconds % 3600) / 60);
+      var seconds = totalSeconds % 60;
+      valueEl.innerText = days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's';
+      var state = 'state-green';
+      if (days <= 5) state = 'state-red'; else if (days <= 15) state = 'state-yellow';
+      box.className = 'stat-box ' + state;
+    }
+    setInterval(tickCountdown, 1000);
+
+    // ===================== DATA LOAD =====================
+    // Master sprite list comes straight from the original public source -
+    // no separate hosting/sync step needed for that part.
+    async function fetchMasterSprites() {
+      var baseUrl = 'https://staticvacant.github.io/fnsprites/';
+      var res = await fetch(baseUrl + 'sprites-data.js');
+      var jsContent = await res.text();
+      var objRegex = /\{\s*id:\s*"([^"]+)"\s*,\s*name:\s*"([^"]+)"\s*,\s*theme:\s*"([^"]+)"\s*,\s*rarity:\s*"([^"]+)"\s*,\s*unreleased:\s*(true|false)\s*\}/g;
+      var match;
+      var sprites = [];
+      while ((match = objRegex.exec(jsContent)) !== null) {
+        if (match[5] === 'true') continue; // skip unreleased
+        sprites.push({
+          name: match[2],
+          imageUrl: baseUrl + 'sprites/' + match[1] + '.png',
+          rarity: match[4]
+        });
+      }
+      return sprites;
+    }
+
+    async function fetchMyProgress() {
+      if (!currentUser) return {};
+      var { data, error } = await sb.from('progress').select('*').eq('user_id', currentUser.id);
+      if (error) { console.error(error); return {}; }
+      var map = {};
+      data.forEach(function(row) {
+        map[row.sprite_name] = { extracted: row.extracted, mastered: row.mastered, notes: row.notes || '' };
+      });
+      return map;
+    }
+
+    async function loadSprites() {
+      document.getElementById('loader').style.display = 'block';
+      var master = await fetchMasterSprites();
+      var progressMap = await fetchMyProgress();
+
+      allSprites = master.map(function(s) {
+        var p = progressMap[s.name] || { extracted: false, mastered: false, notes: '' };
+        return {
+          name: s.name,
+          imageUrl: s.imageUrl,
+          rarity: s.rarity,
+          extracted: !!p.extracted,
+          mastered: !!p.mastered,
+          notes: p.notes || ''
+        };
+      });
+
+      document.getElementById('loader').style.display = 'none';
+      renderGrid();
+      tickCountdown();
+    }
+
+    async function saveProgress(sprite) {
+      if (!currentUser) {
+        alert('Log in (or sign up) first so your progress has somewhere to live!');
+        return false;
+      }
+      var { error } = await sb.from('progress').upsert({
+        user_id: currentUser.id,
+        sprite_name: sprite.name,
+        extracted: sprite.extracted,
+        mastered: sprite.mastered,
+        notes: sprite.notes
+      }, { onConflict: 'user_id,sprite_name' });
+      if (error) { alert('Could not save: ' + error.message); return false; }
+      return true;
+    }
+
+    // ===================== FILTER / GROUPING ===================== 
+    function setFilter(f) {
+      currentFilter = f;
+      document.querySelectorAll('.filter-chip').forEach(function(chip) {
+        chip.classList.toggle('active', chip.dataset.filter === f);
+      });
+      renderGrid();
+    }
+    function matchesFilter(sprite) {
+      if (currentFilter === 'extracted') return sprite.extracted;
+      if (currentFilter === 'mastered') return sprite.mastered;
+      if (currentFilter === 'untouched') return !sprite.extracted && !sprite.mastered;
+      return true;
+    }
+    function matchesSearch(sprite, query) { return !query || sprite.name.toLowerCase().indexOf(query) !== -1; }
+
+    function buildGroups() {
+      var groupOrder = [], groups = {}, soloGroup = [];
+      allSprites.forEach(function(sprite) {
+        var identity = parseSpriteIdentity(sprite.name);
+        if (SOLO_NO_VARIANT_SPRITES.indexOf(identity.base) !== -1) { soloGroup.push(sprite); return; }
+        if (!groups[identity.base]) { groups[identity.base] = []; groupOrder.push(identity.base); }
+        groups[identity.base].push(sprite);
+      });
+      return { groupOrder: groupOrder, groups: groups, soloGroup: soloGroup };
+    }
+
+    function renderGrid() {
+      var query = document.getElementById('searchInput').value.trim().toLowerCase();
+      var container = document.getElementById('gridContainer');
+      container.innerHTML = '';
+      var data = buildGroups();
+      var sections = [];
+
+      data.groupOrder.forEach(function(base) {
+        var visible = data.groups[base].filter(function(s) { return matchesFilter(s) && matchesSearch(s, query); });
+        if (visible.length > 0) sections.push(buildGroupSection(base, visible));
+      });
+      var soloVisible = data.soloGroup.filter(function(s) { return matchesFilter(s) && matchesSearch(s, query); });
+      if (soloVisible.length > 0) sections.push(buildGroupSection('Fan Favorites (No Variants)', soloVisible));
+
+      if (sections.length === 0) {
+        container.innerHTML = '<div class="empty-state">No sprites match that filter.</div>';
+      } else {
+        sections.forEach(function(section, idx) {
+          container.appendChild(section);
+          if (idx < sections.length - 1) {
+            var hr = document.createElement('hr'); hr.className = 'group-divider'; container.appendChild(hr);
+          }
+        });
+      }
+      updateProgress();
+    }
+
+    function buildGroupSection(title, sprites) {
+      var wrap = document.createElement('div'); wrap.className = 'sprite-group';
+      var header = document.createElement('div'); header.className = 'group-header';
+      header.innerHTML = '<span>' + title + '</span><span class="group-count">' + sprites.length + '</span>';
+      wrap.appendChild(header);
+      var grid = document.createElement('div'); grid.className = 'sprite-grid';
+      sprites.forEach(function(sprite) { grid.appendChild(buildCard(sprite)); });
+      wrap.appendChild(grid);
+      return wrap;
+    }
+
+    function buildCard(sprite) {
+      var identity = parseSpriteIdentity(sprite.name);
+      var card = document.createElement('div');
+      card.className = 'sprite-card' + (sprite.mastered ? ' mastered' : sprite.extracted ? ' extracted' : '');
+      card.style.background = VARIANT_GRADIENTS[identity.variant] || VARIANT_GRADIENTS['Base'];
+      card.onclick = function() { openModal(sprite); };
+
+      var buyback = document.createElement('div'); buyback.className = 'buyback-badge';
+      buyback.innerText = '🪙 ' + getBuybackCost(identity).toLocaleString();
+      card.appendChild(buyback);
+
+      if (sprite.mastered) {
+        var crown = document.createElement('div'); crown.className = 'crown-icon'; crown.innerText = '👑';
+        card.appendChild(crown);
+      }
+      var badgeRow = document.createElement('div'); badgeRow.className = 'badge-row';
+      if (sprite.extracted) badgeRow.innerHTML = '<span class="badge-ex">EX</span>';
+      card.appendChild(badgeRow);
+
+      var thumbWrap = document.createElement('div'); thumbWrap.className = 'thumb-wrap';
+      var img = document.createElement('img'); img.src = sprite.imageUrl; img.alt = sprite.name; img.loading = 'lazy';
+      thumbWrap.appendChild(img); card.appendChild(thumbWrap);
+
+      var name = document.createElement('div'); name.className = 'sprite-name'; name.innerText = sprite.name;
+      card.appendChild(name);
+
+      var toggleRow = document.createElement('div'); toggleRow.className = 'toggle-row';
+
+      var exBtn = document.createElement('button');
+      exBtn.className = 'icon-toggle-btn text-btn ex-btn' + (sprite.extracted ? ' on' : '');
+      exBtn.innerText = sprite.extracted ? '✓ Extracted' : 'Extracted';
+
+      var mBtn = document.createElement('button');
+      mBtn.className = 'icon-toggle-btn text-btn mst-btn' + (sprite.mastered ? ' on' : '');
+      mBtn.disabled = !sprite.extracted;
+      mBtn.title = sprite.extracted ? '' : 'Extract this sprite first';
+      mBtn.innerText = sprite.mastered ? '★ Mastered' : 'Mastered';
+
+      exBtn.onclick = async function(e) {
+        e.stopPropagation();
+        var newExtracted = !sprite.extracted;
+        var newMastered = newExtracted ? sprite.mastered : false;
+        await applyStatusChange(sprite, newExtracted, newMastered);
+      };
+      mBtn.onclick = async function(e) {
+        e.stopPropagation();
+        if (mBtn.disabled) return;
+        await applyStatusChange(sprite, sprite.extracted, !sprite.mastered);
+      };
+
+      var noteBtn = document.createElement('button');
+      noteBtn.className = 'note-btn' + (sprite.notes ? ' has-note' : '');
+      noteBtn.innerText = '📝';
+      noteBtn.onclick = function(e) { e.stopPropagation(); openNoteModal(sprite); };
+
+      toggleRow.appendChild(exBtn); toggleRow.appendChild(mBtn); toggleRow.appendChild(noteBtn);
+      card.appendChild(toggleRow);
+      return card;
+    }
+
+    async function applyStatusChange(sprite, newExtracted, newMastered) {
+      var prevExtracted = sprite.extracted, prevMastered = sprite.mastered;
+      sprite.extracted = newExtracted; sprite.mastered = newMastered;
+      var ok = await saveProgress(sprite);
+      if (!ok) { sprite.extracted = prevExtracted; sprite.mastered = prevMastered; }
+      renderGrid(); tickCountdown();
+    }
+
+    function updateProgress() {
+      var total = allSprites.length;
+      var extractedCount = allSprites.filter(function(s) { return s.extracted; }).length;
+      document.getElementById('progressValue').innerText = extractedCount + ' / ' + total;
+      allCollected = total > 0 && extractedCount === total;
+    }
+
+    // ===================== INFO MODAL =====================
+    function openModal(sprite) {
+      var identity = parseSpriteIdentity(sprite.name);
+      document.getElementById('modalImg').src = sprite.imageUrl;
+      document.getElementById('modalName').innerText = sprite.name;
+      document.getElementById('modalVariantBadge').innerText = identity.variant + ' variant · ' + identity.base + ' sprite';
+      document.getElementById('modalAbility').innerText = SPRITE_ABILITIES[identity.base] || 'Ability details TBD.';
+      document.getElementById('modalBonus').innerText = VARIANT_BONUS[identity.variant] || VARIANT_BONUS['Base'];
+      document.getElementById('modalNote').innerText = sprite.notes || 'No note yet — tap 📝 on the card to add one.';
+      var tier = getBaseTier(identity);
+      var rarityEl = document.getElementById('modalRarity');
+      rarityEl.innerText = buildRarityLabel(identity);
+      rarityEl.style.background = RARITY_COLORS[tier] || '#8a90ad';
+      document.getElementById('modalOverlay').classList.add('open');
+    }
+    function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+    function closeModalIfBackdrop(e) { if (e.target.id === 'modalOverlay') closeModal(); }
+
+    // ===================== NOTE MODAL =====================
+    function openNoteModal(sprite) {
+      currentNoteSprite = sprite;
+      document.getElementById('noteModalTitle').innerText = (sprite.notes ? 'Edit note — ' : 'Add a note — ') + sprite.name;
+      document.getElementById('noteTextarea').value = sprite.notes || '';
+      document.getElementById('noteModalOverlay').classList.add('open');
+    }
+    function closeNoteModal() { document.getElementById('noteModalOverlay').classList.remove('open'); currentNoteSprite = null; }
+    function closeNoteModalIfBackdrop(e) { if (e.target.id === 'noteModalOverlay') closeNoteModal(); }
+    async function saveNote() {
+      if (!currentNoteSprite) return;
+      var sprite = currentNoteSprite;
+      var prevNotes = sprite.notes;
+      sprite.notes = document.getElementById('noteTextarea').value;
+      var ok = await saveProgress(sprite);
+      if (!ok) { sprite.notes = prevNotes; return; }
+      closeNoteModal();
+      renderGrid();
+    }
+
+    // ===================== INIT =====================
+    (async function init() {
+      await restoreSession();
+      await loadSprites();
+    })();
   </script>
 </body>
 </html>
