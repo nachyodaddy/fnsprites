@@ -295,9 +295,9 @@
       <div class="auth-box" id="authBox">
         <input type="text" id="loginUsername" placeholder="Username" class="input-field" />
         <input type="password" id="loginPassword" placeholder="Password" class="input-field" />
-        <button class="btn btn-primary" onclick="login()">Log In</button>
-        <button class="btn-link" onclick="signUp()">Need an account? Sign Up</button>
-        <div class="auth-mode-note">Kids: use any username you like, it's just for this site.</div>
+        <button class="btn btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()">Log In</button>
+        <button class="btn-link" id="authToggleLink" onclick="toggleAuthMode()">Need an account? Sign Up</button>
+        <div class="auth-mode-note" id="authModeNote">Kids: use any username you like, it's just for this site.</div>
       </div>
     </div>
 
@@ -371,8 +371,36 @@
     }, 5000);
 
     // ===================== AUTH =====================
+    let authMode = 'login'; // 'login' or 'signup'
+
     function usernameToEmail(username) {
       return username.trim().toLowerCase() + '@fnsprites.local';
+    }
+
+    function toggleAuthMode() {
+      authMode = authMode === 'login' ? 'signup' : 'login';
+      const submitBtn = document.getElementById('authSubmitBtn');
+      const toggleLink = document.getElementById('authToggleLink');
+      const note = document.getElementById('authModeNote');
+
+      if (authMode === 'signup') {
+        submitBtn.innerText = 'Create Account';
+        toggleLink.innerText = 'Already have an account? Log In';
+        note.innerText = "Pick any username and a password (6+ characters) - this creates a brand new account.";
+      } else {
+        submitBtn.innerText = 'Log In';
+        toggleLink.innerText = "Need an account? Sign Up";
+        note.innerText = "Kids: use any username you like, it's just for this site.";
+      }
+    }
+
+    // Single entry point - the button always does whatever mode we're currently in.
+    async function handleAuthSubmit() {
+      if (authMode === 'signup') {
+        await signUp();
+      } else {
+        await login();
+      }
     }
 
     async function signUp() {
