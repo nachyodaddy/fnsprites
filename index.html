@@ -2346,33 +2346,68 @@
     // no separate hosting/sync step needed for that part.
     async function fetchMasterSprites() {
       var baseUrl = 'https://staticvacant.github.io/fnsprites/';
-      var res = await fetch(baseUrl + 'sprites-data.js');
-      var jsContent = await res.text();
-      var objRegex = /\{\s*id:\s*"([^"]+)"\s*,\s*name:\s*"([^"]+)"\s*,\s*theme:\s*"([^"]+)"\s*,\s*rarity:\s*"([^"]+)"\s*,\s*unreleased:\s*(true|false)\s*\}/g;
-      var match;
-      var sprites = [];
-      while ((match = objRegex.exec(jsContent)) !== null) {
-        if (match[5] === 'true') continue; // skip unreleased
-        var name = match[2];
-        if (name.indexOf('Gem ') === 0) continue; // Gem variants were vaulted/never actually released
-        sprites.push({
-          name: name,
-          imageUrl: baseUrl + 'sprites/' + match[1] + '.png',
-          rarity: match[4]
-        });
+      try {
+        var res = await fetch(baseUrl + 'sprites-data.js');
+        if (res.ok) {
+          var jsContent = await res.text();
+          var objRegex = /\{\s*id:\s*"([^"]+)"\s*,\s*name:\s*"([^"]+)"\s*,\s*theme:\s*"([^"]+)"\s*,\s*rarity:\s*"([^"]+)"\s*,\s*unreleased:\s*(true|false)\s*\}/g;
+          var match;
+          var sprites = [];
+          while ((match = objRegex.exec(jsContent)) !== null) {
+            if (match[5] === 'true') continue; // skip unreleased
+            var name = match[2];
+            if (name.indexOf('Gem ') === 0) continue; // Gem variants were vaulted/never actually released
+            sprites.push({
+              name: name,
+              imageUrl: baseUrl + 'sprites/' + match[1] + '.png',
+              rarity: match[4]
+            });
+          }
+          if (sprites.length > 0) return sprites;
+        }
+      } catch (e) {
+        console.warn('Network note: Using built-in master sprites list:', e.message);
       }
-      return sprites;
+
+      return [
+        { name: 'Water Sprite', imageUrl: getSpriteImageUrl('Water Sprite', ''), rarity: 'Rare' },
+        { name: 'Water Sprite Shade', imageUrl: getSpriteImageUrl('Water Sprite Shade', ''), rarity: 'Rare' },
+        { name: 'Woodsprite', imageUrl: getSpriteImageUrl('Woodsprite', ''), rarity: 'Rare' },
+        { name: 'Fire Sprite Shade', imageUrl: getSpriteImageUrl('Fire Sprite Shade', ''), rarity: 'Rare' },
+        { name: 'Air Sprite Shade', imageUrl: getSpriteImageUrl('Air Sprite Shade', ''), rarity: 'Rare' },
+        { name: 'Sprite Shenanigans', imageUrl: getSpriteImageUrl('Sprite Shenanigans', ''), rarity: 'Epic' },
+        { name: 'Sprite Guardians', imageUrl: getSpriteImageUrl('Sprite Guardians', ''), rarity: 'Epic' },
+        { name: 'Sprite Magic', imageUrl: getSpriteImageUrl('Sprite Magic', ''), rarity: 'Epic' },
+        { name: 'Sprite Might', imageUrl: getSpriteImageUrl('Sprite Might', ''), rarity: 'Epic' },
+        { name: 'Sprite Plushie', imageUrl: getSpriteImageUrl('Sprite Plushie', ''), rarity: 'Legendary' },
+        { name: 'Champion of the Sprites', imageUrl: getSpriteImageUrl('Champion of the Sprites', ''), rarity: 'Epic' },
+        { name: 'Sprite Mastery Pod', imageUrl: getSpriteImageUrl('Sprite Mastery Pod', ''), rarity: 'Mythic' },
+        { name: 'Sprite Seat', imageUrl: getSpriteImageUrl('Sprite Seat', ''), rarity: 'Rare' },
+        { name: 'Sprite Runners', imageUrl: getSpriteImageUrl('Sprite Runners', ''), rarity: 'Epic' },
+        { name: 'I Heart Sprites', imageUrl: getSpriteImageUrl('I Heart Sprites', ''), rarity: 'Epic' },
+        { name: 'Model Delta-7B Aethersprite', imageUrl: getSpriteImageUrl('Model Delta-7B Aethersprite', ''), rarity: 'Legendary' },
+        { name: 'S.O.S (Save Our Sprites)', imageUrl: getSpriteImageUrl('S.O.S (Save Our Sprites)', ''), rarity: 'Mythic' },
+        { name: 'Spritefall', imageUrl: getSpriteImageUrl('Spritefall', ''), rarity: 'Legendary' },
+        { name: 'Sprite Soarer', imageUrl: getSpriteImageUrl('Sprite Soarer', ''), rarity: 'Mythic' },
+        { name: 'Burnt Peanut', imageUrl: getSpriteImageUrl('Burnt Peanut', ''), rarity: 'Mythic' }
+      ];
     }
 
     async function fetchMyProgress() {
-      if (!currentUser) return {};
-      var { data, error } = await sb.from('progress').select('*').eq('user_id', currentUser.id);
-      if (error) { console.error(error); return {}; }
-      var map = {};
-      data.forEach(function(row) {
-        map[row.sprite_name] = { extracted: row.extracted, mastered: row.mastered, notes: row.notes || '' };
-      });
-      return map;
+      const activeUserId = povModeUser ? povModeUser.id : (currentUser ? currentUser.id : null);
+      if (!activeUserId) return {};
+      try {
+        var { data, error } = await sb.from('progress').select('*').eq('user_id', activeUserId);
+        if (error) { console.error(error); return {}; }
+        var map = {};
+        (data || []).forEach(function(row) {
+          map[row.sprite_name] = { extracted: row.extracted, mastered: row.mastered, notes: row.notes || '' };
+        });
+        return map;
+      } catch(e) {
+        console.warn('Error fetching progress from Supabase:', e.message);
+        return {};
+      }
     }
 
     const LOCAL_IMAGES = {
@@ -2407,26 +2442,33 @@
     }
 
     async function loadSprites() {
-      document.getElementById('loader').style.display = 'block';
-      var master = await fetchMasterSprites();
-      var progressMap = await fetchMyProgress();
+      const loader = document.getElementById('loader');
+      if (loader) loader.style.display = 'block';
+      loadWishlist();
 
-      allSprites = master.map(function(s) {
-        var p = progressMap[s.name] || { extracted: false, mastered: false, notes: '' };
-        return {
-          name: s.name,
-          imageUrl: getSpriteImageUrl(s.name, s.imageUrl),
-          rarity: s.rarity,
-          extracted: !!p.extracted,
-          mastered: !!p.mastered,
-          notes: p.notes || ''
-        };
-      });
+      try {
+        var master = await fetchMasterSprites();
+        var progressMap = await fetchMyProgress();
 
-      document.getElementById('loader').style.display = 'none';
-      renderSpriteTableGrid();
-      renderGrid();
-      tickCountdown();
+        allSprites = master.map(function(s) {
+          var p = progressMap[s.name] || { extracted: false, mastered: false, notes: '' };
+          return {
+            name: s.name,
+            imageUrl: getSpriteImageUrl(s.name, s.imageUrl),
+            rarity: s.rarity,
+            extracted: !!p.extracted,
+            mastered: !!p.mastered,
+            notes: p.notes || ''
+          };
+        });
+      } catch (err) {
+        console.error('Error during loadSprites:', err);
+      } finally {
+        if (loader) loader.style.display = 'none';
+        renderSpriteTableGrid();
+        renderGrid();
+        tickCountdown();
+      }
     }
 
     async function saveProgress(sprite) {
