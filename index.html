@@ -37,6 +37,98 @@
     }
     .guide-link:hover { transform: translateY(-2px) scale(1.05); border-color: var(--accent-purple); }
     .guide-link.secondary { right: 64px; }
+    .guide-link.profile-link-btn { right: 112px; }
+    .guide-link.chat-link { right: 160px; background: linear-gradient(135deg, #7c3aed, #10b981); border-color: rgba(255,255,255,0.3); }
+
+    /* ============ POV MODE SCREEN OVERLAY BORDER ============ */
+    .pov-screen-border {
+      position: fixed; inset: 0;
+      border: 6px solid #ffab00;
+      box-shadow: inset 0 0 35px rgba(255, 171, 0, 0.45);
+      pointer-events: none; z-index: 99999;
+      display: none;
+      animation: povPulseBorder 2.5s infinite ease-in-out;
+    }
+    @keyframes povPulseBorder {
+      0%, 100% { border-color: rgba(255, 171, 0, 0.95); box-shadow: inset 0 0 35px rgba(255, 171, 0, 0.5); }
+      50% { border-color: rgba(139, 92, 246, 0.95); box-shadow: inset 0 0 40px rgba(139, 92, 246, 0.6); }
+    }
+
+    .pov-banner-floating {
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+      background: rgba(22, 26, 43, 0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border: 2px solid #ffab00;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.7), 0 0 20px rgba(255, 171, 0, 0.4);
+      border-radius: 999px; padding: 10px 24px; z-index: 100000;
+      display: flex; align-items: center; gap: 16px; font-weight: 700; color: #fff; font-size: 14px;
+    }
+
+    /* ============ STICKY CONTROLS & SEARCH GLOW ============ */
+    #searchInput:focus {
+      border-color: var(--accent-purple) !important;
+      box-shadow: 0 0 16px rgba(139, 92, 246, 0.55);
+    }
+    .sticky-controls-wrap {
+      transition: all 0.3s ease;
+    }
+    .sticky-controls-wrap.is-sticky {
+      position: sticky; top: 10px; z-index: 90;
+      background: rgba(13, 15, 26, 0.94);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      padding: 12px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    /* ============ INLINE CATEGORY DIVIDERS ============ */
+    .category-divider {
+      display: flex; align-items: center; justify-content: center;
+      margin: 2.2rem 0 1.2rem; width: 100%;
+      text-transform: uppercase; letter-spacing: 2.5px; font-weight: 900; font-size: 13px;
+    }
+    .category-divider::before, .category-divider::after {
+      content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.14); margin: 0 16px;
+    }
+
+    /* ============ ROLE BADGES ============ */
+    .role-badge.role-moderator {
+      background: rgba(0, 242, 254, 0.2); color: #00f2fe; border: 1px solid rgba(0, 242, 254, 0.4);
+    }
+
+    /* ============ WISHLIST BUTTON & FILTER ============ */
+    .wishlist-btn {
+      padding: 5px 9px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(0,0,0,0.3); color: var(--muted); font-size: 11px; font-weight: 700; cursor: pointer;
+    }
+    .wishlist-btn.on { background: rgba(255, 84, 112, 0.25); color: #ff5470; border-color: rgba(255, 84, 112, 0.5); }
+    .filter-chip[data-filter="wishlist"].active { background: #ff5470; color: #fff; }
+
+    /* ============ USER PROFILE & INBOX MODAL STYLES (SKETCH 4) ============ */
+    .profile-modal-box {
+      background: rgba(22, 26, 43, 0.98); backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.15); border-radius: 20px;
+      width: 90%; max-width: 850px; max-height: 90vh; overflow-y: auto; padding: 24px; color: #fff;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.6); position: relative;
+    }
+    .inbox-card-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 20px; }
+    .inbox-stat-card {
+      background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s ease;
+    }
+    .inbox-stat-card:hover { border-color: var(--accent-purple); transform: translateY(-2px); }
+    .inbox-stat-card.active { border-color: var(--accent-gold); background: rgba(255, 203, 61, 0.1); }
+    .inbox-stat-num { font-size: 2rem; font-weight: 900; color: var(--accent-gold); }
+    .inbox-stat-title { font-size: 0.75rem; text-transform: uppercase; color: var(--muted); letter-spacing: 0.8px; margin-top: 4px; }
+
+    .inbox-list { display: flex; flex-direction: column; gap: 10px; }
+    .inbox-item {
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; padding: 14px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .inbox-item-body { flex: 1; }
+    .inbox-item-sender { font-size: 13px; font-weight: 800; color: var(--accent-gold); margin-bottom: 2px; }
+    .inbox-item-text { font-size: 12px; color: var(--text); line-height: 1.4; }
+    .inbox-item-time { font-size: 10px; color: var(--muted); margin-top: 4px; }
+    .btn-action-row { display: flex; gap: 6px; }
 
     /* ============ HERO SLIDESHOW (Full-Width Viewport Banner with Parallax) ============ */
     .hero-slideshow {
@@ -624,6 +716,12 @@
 </head>
 <body>
 
+  <!-- Full-Screen POV Overlay Border -->
+  <div id="povScreenBorder" class="pov-screen-border"></div>
+
+  <!-- Top-Right Navigation Icons -->
+  <a class="guide-link chat-link" href="#" onclick="openTrackrChatModal(); return false;" title="Trackr AI Chat Assistant">🤖</a>
+  <a class="guide-link profile-link-btn" href="#" onclick="openUserProfileModal(); return false;" title="My Profile & Inbox (Sketch #4)">👤</a>
   <a class="guide-link secondary" href="https://accountshark.net/blog/fortnite-chapter-7-season-3-sprites" target="_blank" rel="noopener" title="Every Sprite, Ability &amp; Drop Rate (AccountShark)">🦈</a>
   <a class="guide-link" href="https://www.ign.com/wikis/fortnite/Sprites_Checklist_and_Guide_-_All_Variants_and_Abilities_List" target="_blank" rel="noopener" title="Full Sprites Guide (IGN)">📖</a>
 
@@ -686,8 +784,8 @@
         <div class="user-status" id="userStatus">Log in below to sync your findings</div>
         
         <div style="display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;">
-          <button class="edit-profile-btn" id="editProfileBtn" style="display:none;" onclick="openEditProfileModal()">Edit Profile</button>
-          <button class="admin-panel-btn" id="adminPanelBtn" style="display:none;" onclick="openAdminModal()">🛡️ Admin Panel</button>
+          <button class="edit-profile-btn" id="editProfileBtn" style="display:none;" onclick="openUserProfileModal()">👤 My Profile &amp; Inbox</button>
+          <button class="admin-panel-btn" id="adminPanelBtn" style="display:none;" onclick="openAdminModal()">🛡️ Admin / Mod Console</button>
         </div>
       </div>
 
@@ -697,13 +795,14 @@
           <input type="password" id="loginPassword" placeholder="Password" class="input-field" />
           <button class="btn btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()">Log In</button>
           <button class="btn-link" id="authToggleLink" onclick="toggleAuthMode()">Need an account? Sign Up</button>
+          <button class="btn-link" onclick="openRulesModal()">📜 Community Rules</button>
         </div>
       </div>
 
       <!-- Bottom Row of Profile Panel -->
       <div id="bottomBannerRow" style="width: 100%; display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap; gap: 10px;">
         <!-- Left Side: Browse Players Button -->
-        <button class="browse-players-btn" id="browsePlayersBtn" onclick="openBrowsePlayers()">👥 Browse Players</button>
+        <button class="browse-players-btn" id="browsePlayersBtn" onclick="openBrowsePlayers()">👥 Browse Players Directory</button>
 
         <!-- Right Side: Sign in with OAuth Links & Notice -->
         <div id="oauthSection" style="display: flex; flex-direction: column; align-items: flex-end; margin-left: auto;">
@@ -719,44 +818,54 @@
       </div>
     </div>
 
-    <div class="controls">
-      <input type="text" id="searchInput" placeholder="Search sprites..." oninput="renderGrid()">
-      <div class="filter-chip active" data-filter="all" onclick="setFilter('all')">All</div>
-      <div class="filter-chip" data-filter="extracted" onclick="setFilter('extracted')">Extracted</div>
-      <div class="filter-chip" data-filter="mastered" onclick="setFilter('mastered')">Mastered</div>
-      <div class="filter-chip" data-filter="untouched" onclick="setFilter('untouched')">Untouched</div>
-      <select id="raritySelect" class="filter-select" onchange="renderGrid()">
-        <option value="">All Rarities</option>
-        <option value="Rare">Rare</option>
-        <option value="Epic">Epic</option>
-        <option value="Legendary">Legendary</option>
-        <option value="Mythic">Mythic</option>
-      </select>
-      <select id="variantSelect" class="filter-select" onchange="renderGrid()">
-        <option value="">All Variants</option>
-        <option value="Base">Base</option>
-        <option value="Gold">Gold</option>
-        <option value="Gummy">Gummy</option>
-        <option value="Galaxy">Galaxy</option>
-        <option value="Holofoil">Holofoil</option>
-        <option value="Cube">Cube</option>
-      </select>
-    </div>
-
-    <!-- SPRITE TABLE SELECTOR (2 Rows of 10 Types + Show All) -->
-    <div class="sprite-table-container">
-      <div class="sprite-table-header">
-        <span>🎮 Sprite Type Selector Table</span>
-        <span style="font-size:10px; color:var(--accent-purple);">Click any type to toggle group visibility · Completed groups glow!</span>
+    <!-- Controls Wrapper (Sticky Supported) -->
+    <div class="sticky-controls-wrap" id="stickyControlsWrap">
+      <div class="controls">
+        <input type="text" id="searchInput" placeholder="Search sprites..." oninput="renderGrid()">
+        <div class="filter-chip active" data-filter="all" onclick="setFilter('all')">All</div>
+        <div class="filter-chip" data-filter="extracted" onclick="setFilter('extracted')">Extracted</div>
+        <div class="filter-chip" data-filter="mastered" onclick="setFilter('mastered')">Mastered</div>
+        <div class="filter-chip" data-filter="untouched" onclick="setFilter('untouched')">Untouched</div>
+        <div class="filter-chip" data-filter="wishlist" onclick="setFilter('wishlist')">Wishlist ❤️</div>
+        <button class="filter-chip" id="stickyToggleBtn" onclick="toggleStickyControls()">🔒 Sticky</button>
+        <select id="raritySelect" class="filter-select" onchange="renderGrid()">
+          <option value="">All Rarities</option>
+          <option value="Rare">Rare</option>
+          <option value="Epic">Epic</option>
+          <option value="Legendary">Legendary</option>
+          <option value="Mythic">Mythic</option>
+        </select>
+        <select id="variantSelect" class="filter-select" onchange="renderGrid()">
+          <option value="">All Variants</option>
+          <option value="Base">Base</option>
+          <option value="Gold">Gold</option>
+          <option value="Gummy">Gummy</option>
+          <option value="Galaxy">Galaxy</option>
+          <option value="Holofoil">Holofoil</option>
+          <option value="Cube">Cube</option>
+        </select>
       </div>
-      <div class="sprite-table-grid" id="spriteTableGrid">
-        <!-- Populated dynamically -->
+
+      <!-- SPRITE TABLE SELECTOR (2 Rows of 10 Types + Show All) -->
+      <div class="sprite-table-container">
+        <div class="sprite-table-header">
+          <span>🎮 Sprite Type Selector Table</span>
+          <span style="font-size:10px; color:var(--accent-purple);">Click any type to toggle group visibility · Completed groups glow!</span>
+        </div>
+        <div class="sprite-table-grid" id="spriteTableGrid">
+          <!-- Populated dynamically -->
+        </div>
       </div>
     </div>
 
     <!-- Collection Grid Container -->
     <div id="gridContainer"></div>
     <div id="loader" class="loader">Loading sprites...</div>
+
+    <!-- Footer Report Issue Action -->
+    <div style="text-align:center; margin-top: 2.5rem;">
+      <button class="btn" style="background:rgba(22, 26, 43, 0.85); border:1px solid rgba(255,255,255,0.15); color:var(--muted); font-size:12px; border-radius:999px; padding:8px 20px;" onclick="openReportIssueModal()">🚩 Report Issue / Feedback</button>
+    </div>
   </div>
 
   <!-- INFO MODAL -->
@@ -807,18 +916,170 @@
     </div>
   </div>
 
-  <!-- BROWSE PLAYERS MODAL -->
+  <!-- DEDICATED USER PROFILE & MESSAGING INBOX MODAL (SKETCH #4) -->
+  <div class="modal-overlay" id="userProfileModalOverlay" onclick="closeUserProfileModalIfBackdrop(event)">
+    <div class="profile-modal-box">
+      <button class="modal-close" onclick="closeUserProfileModal()">✕</button>
+      <div style="display:flex; align-items:center; gap:16px; margin-bottom:20px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:16px; flex-wrap:wrap;">
+        <div style="position:relative;">
+          <img id="userModalAvatar" src="https://placehold.co/150x150/1e293b/8b5cf6?text=User" style="width:84px; height:84px; border-radius:50%; object-fit:cover; border:3px solid var(--accent-purple);" alt="Avatar">
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:1.4rem; font-weight:900;" id="userModalName">PLAYER NAME</div>
+          <input type="text" id="userModalBio" placeholder="Tagline / Bio (e.g. I got that swag in a bag)" class="input-field" style="width:100%; margin-top:6px; font-size:12px;" onchange="saveProfileCustomization()" />
+        </div>
+      </div>
+
+      <!-- Avatar & Style Customization (Sketch #3) -->
+      <div class="admin-card" style="margin-bottom:20px;">
+        <div class="admin-card-title">🎨 Avatar & Photo Customization (Sketch #3)</div>
+        <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:8px;">
+          <div>
+            <label class="form-label">Border Glow Color</label>
+            <input type="color" id="avatarBorderColor" value="#8b5cf6" style="height:35px; width:50px; background:none; border:none; cursor:pointer;" onchange="updateAvatarStyle()" />
+          </div>
+          <div style="flex:1;">
+            <label class="form-label">Sprite Icon Avatar</label>
+            <select id="spriteAvatarSelect" class="form-control" onchange="updateAvatarStyle()">
+              <option value="">(Custom Uploaded Photo)</option>
+              <option value="Water Sprite">Water Sprite</option>
+              <option value="Fire Sprite Shade">Fire Sprite Shade</option>
+              <option value="Air Sprite Shade">Air Sprite Shade</option>
+              <option value="Champion of the Sprites">Champion of the Sprites</option>
+              <option value="Sprite Magic">Sprite Magic</option>
+              <option value="Woodsprite">Woodsprite</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Counter Cards for Messages & Requests (Sketch #4) -->
+      <div class="inbox-card-grid">
+        <div class="inbox-stat-card active" id="tabCardMessages" onclick="switchInboxTab('messages')">
+          <div class="inbox-stat-num" id="countMessagesNum">0</div>
+          <div class="inbox-stat-title">💬 Direct Messages</div>
+        </div>
+        <div class="inbox-stat-card" id="tabCardRequests" onclick="switchInboxTab('requests')">
+          <div class="inbox-stat-num" id="countRequestsNum">0</div>
+          <div class="inbox-stat-title">🤝 Trade Requests</div>
+        </div>
+      </div>
+
+      <!-- Tab View 1: Direct Messages -->
+      <div id="inboxViewMessages" class="inbox-section">
+        <div class="admin-card-title" style="margin-bottom:10px;">📩 Messages Inbox (Always On for Admin & Mod Notices)</div>
+        <div id="userMessagesContainer" class="inbox-list"></div>
+      </div>
+
+      <!-- Tab View 2: Trade Requests -->
+      <div id="inboxViewRequests" class="inbox-section" style="display:none;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div class="admin-card-title">🔍 Pending Trade &amp; Extraction Requests</div>
+          <div style="font-size:11px; color:var(--muted);">
+            Accept Trade Requests: 
+            <select id="tradePrivacySelect" class="input-field" style="padding:2px 6px; font-size:11px;" onchange="updateTradePrivacy(this.value)">
+              <option value="everyone">Everyone</option>
+              <option value="friends">Friends Only</option>
+              <option value="off">Off</option>
+            </select>
+          </div>
+        </div>
+        <div id="userRequestsContainer" class="inbox-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ISSUE DIRECT NOTICE MODAL (MODERATOR & ADMIN TOOL) -->
+  <div class="modal-overlay" id="issueNoticeModalOverlay" onclick="closeIssueNoticeModalIfBackdrop(event)">
+    <div class="note-modal-box">
+      <div class="note-modal-title">📢 Issue Targeted Notice to User</div>
+      <input type="hidden" id="noticeTargetUserId" />
+      <div style="font-size:12px; color:var(--muted); margin-bottom:10px;">Sending notice to player: <strong id="noticeTargetUsername" style="color:#fff;">Player</strong></div>
+      <textarea id="noticeMessageText" placeholder="Write official message or warning to appear directly in their profile inbox..." style="width:100%; height:100px; padding:10px; border-radius:8px; background:rgba(0,0,0,0.3); color:#fff; border:1px solid rgba(255,255,255,0.15); margin-bottom:10px;"></textarea>
+      <div class="note-modal-actions">
+        <button class="note-cancel-btn" onclick="closeIssueNoticeModal()">Cancel</button>
+        <button class="note-save-btn" onclick="sendTargetedNotice()">📨 Send Direct Notice</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TRACKR AI CHAT MODAL -->
+  <div class="modal-overlay" id="trackrChatModalOverlay" onclick="closeTrackrChatModalIfBackdrop(event)">
+    <div class="profile-modal-box" style="max-width:550px;">
+      <button class="modal-close" onclick="closeTrackrChatModal()">✕</button>
+      <div style="font-size:1.3rem; font-weight:900; color:var(--accent-purple); margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+        🤖 Trackr AI Assistant
+      </div>
+      <div id="chatHistory" style="height:250px; overflow-y:auto; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:12px; margin-bottom:12px; display:flex; flex-direction:column; gap:8px;">
+        <div style="background:rgba(139,92,246,0.2); padding:8px 12px; border-radius:8px; font-size:12px; max-width:85%;">
+          👋 Hi! I'm Trackr AI. Ask me about Fortnite Sprite locations, buyback costs, shiny hours, or drop rates!
+        </div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <input type="text" id="chatInput" placeholder="Ask Trackr AI a question..." class="input-field" style="flex:1;" onkeypress="if(event.key==='Enter') sendTrackrChatMessage()" />
+        <button class="btn btn-primary" onclick="sendTrackrChatMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORT ISSUE MODAL -->
+  <div class="modal-overlay" id="reportIssueModalOverlay" onclick="closeReportIssueModalIfBackdrop(event)">
+    <div class="note-modal-box">
+      <div class="note-modal-title">🚩 Report Issue / Feedback</div>
+      <textarea id="reportIssueText" placeholder="Describe any bug, missing sprite data, or suggestion for the site admins..." style="width:100%; height:100px; padding:10px; border-radius:8px; background:rgba(0,0,0,0.3); color:#fff; border:1px solid rgba(255,255,255,0.15); margin-bottom:10px;"></textarea>
+      <div class="note-modal-actions">
+        <button class="note-cancel-btn" onclick="closeReportIssueModal()">Cancel</button>
+        <button class="note-save-btn" onclick="submitReportIssue()">Submit Report</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMUNITY RULES MODAL -->
+  <div class="modal-overlay" id="rulesModalOverlay" onclick="closeRulesModalIfBackdrop(event)">
+    <div class="profile-modal-box" style="max-width:600px;">
+      <button class="modal-close" onclick="closeRulesModal()">✕</button>
+      <div style="font-size:1.4rem; font-weight:900; color:var(--accent-gold); margin-bottom:12px;">📜 SpriteTrackr Community Rules</div>
+      <div style="font-size:13px; line-height:1.6; color:var(--text);">
+        <p style="margin-bottom:8px;">1. <strong>Respect All Players:</strong> Keep profile names, bios, and notes family-friendly.</p>
+        <p style="margin-bottom:8px;">2. <strong>Fair Trade Requests:</strong> Do not spam other players with trade requests.</p>
+        <p style="margin-bottom:8px;">3. <strong>Account Moderation:</strong> Moderators &amp; Admins monitor community guidelines and may reset avatars or suspend violating accounts.</p>
+      </div>
+      <div style="text-align:right; margin-top:16px;">
+        <button class="btn btn-primary" onclick="closeRulesModal()">I Understand</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENHANCED BROWSE PLAYERS DIRECTORY MODAL (SKETCH #2) -->
   <div class="modal-overlay" id="browsePlayersOverlay" onclick="closeBrowsePlayersIfBackdrop(event)">
-    <div class="player-list-box">
-      <div class="player-list-title">Browse Players</div>
+    <div class="player-list-box" style="max-width:700px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:10px;">
+        <div class="player-list-title" style="margin:0;">👥 Players Directory</div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <select id="filterRegionSelect" class="input-field" style="font-size:11px; padding:4px 8px;" onchange="openBrowsePlayers()">
+            <option value="">All Regions</option>
+            <option value="NA-East">NA-East</option>
+            <option value="NA-West">NA-West</option>
+            <option value="Europe">Europe</option>
+            <option value="Oceania">Oceania</option>
+          </select>
+          <select id="filterPlatformSelect" class="input-field" style="font-size:11px; padding:4px 8px;" onchange="openBrowsePlayers()">
+            <option value="">All Platforms</option>
+            <option value="PC">PC</option>
+            <option value="Xbox">Xbox</option>
+            <option value="PlayStation">PlayStation</option>
+            <option value="Switch">Switch</option>
+          </select>
+        </div>
+      </div>
       <div id="playerListContainer"><div class="player-empty">Loading players...</div></div>
     </div>
   </div>
 
-  <!-- POV BANNER -->
-  <div id="povBanner" class="pov-banner" style="display:none;">
-    <span>👁️ <strong>POV MODE ACTIVE:</strong> Viewing site as <span id="povUsername">User</span> (Read-Only)</span>
-    <button onclick="exitPovMode()" class="btn-sm btn-primary">Exit POV Mode</button>
+  <!-- FLOATING POV BOTTOM BANNER -->
+  <div id="povBanner" class="pov-banner-floating" style="display:none;">
+    <span>👁️ Viewing as <strong id="povUsername">User</strong> (POV Mode Active)</span>
+    <button onclick="exitPovMode()" class="btn btn-primary" style="padding:4px 14px; font-size:12px;">Exit User's Profile</button>
   </div>
 
   <!-- ADMIN MANAGEMENT PANEL (SLIDE-UP BOTTOM SHEET MODAL) -->
@@ -1097,245 +1358,44 @@
     let viewingOwnerName = '';
     let myHeartsAndRequests = { hearts: {}, requests: {} }; // keyed by "ownerId::spriteName"
 
-    // ===================== ADMIN & ROLE STATE =====================
+    // ===================== ADMIN & MODERATOR ROLE STATE =====================
     let isAdminRole = false;
+    let isModeratorRole = false;
     let povModeUser = null;
-    let sliderSpeedMs = 5000;
-    let sliderTimerId = null;
+    let myWishlist = {};
+    let isStickyActive = false;
 
-    let adminSlides = [
-      { id: 1, title: "Chapter 7 Season 3: Runners", url: "https://i.ytimg.com/vi/emZfQYbDR74/maxresdefault.jpg", startDate: "", endDate: "", active: true },
-      { id: 2, title: "Sprite Hunt Event Live", url: "https://static.beebom.com/wp-content/uploads/2026/07/Fortnite-Sprite-Events.png?w=1168&quality=75", startDate: "", endDate: "", active: true }
+    let userMessages = [
+      { id: 1, sender: '📢 Admin Announcement', text: 'Welcome to Fortnite Chapter 7 Season 3! Double XP Shiny Hours start this Friday.', time: '2 hours ago' },
+      { id: 2, sender: '🛡️ Moderator Notice', text: 'Your account is verified and in good standing. Have fun tracking sprites!', time: '1 day ago' }
     ];
-
-    let adminUsersList = [
-      { id: "usr-nachyodaddy", username: "nachyodaddy", role: "admin", extracted: 48, mastered: 18, status: "Active", lastActive: "Just now" },
-      { id: "usr-woodlane", username: "WoodlanePlayer", role: "member", extracted: 22, mastered: 5, status: "Active", lastActive: "2 hours ago" },
-      { id: "usr-fortknight", username: "FortKnight99", role: "member", extracted: 61, mastered: 24, status: "Active", lastActive: "1 day ago" },
-      { id: "usr-spritemaster", username: "SpriteMasterX", role: "member", extracted: 91, mastered: 91, status: "Active", lastActive: "3 days ago" },
-      { id: "usr-banneduser", username: "ShadowGamer", role: "member", extracted: 2, mastered: 0, status: "Suspended", lastActive: "2 weeks ago" }
+    let userRequests = [
+      { id: 101, requester: 'FortKnight99', spriteName: 'Air Sprite Shade', status: 'pending', time: '3 hours ago' },
+      { id: 102, requester: 'SpriteMasterX', spriteName: 'Champion of the Sprites', status: 'pending', time: '5 hours ago' }
     ];
-
-    let boxBackgrounds = {
-      countdownBox: '',
-      progressBox: '',
-      eventBox: ''
-    };
-
-    let adminNotices = [
-      { id: 1, icon: '📢', message: '🔥 Double XP Sprite Event is active! Get ready for Shiny Hours!', durationHours: 24, createdAt: Date.now(), active: true }
-    ];
-
-    function loadAdminState() {
-      const savedSlides = localStorage.getItem('fnsprites_admin_slides');
-      if (savedSlides) {
-        try { adminSlides = JSON.parse(savedSlides); } catch(e) {}
-      }
-      const savedSpeed = localStorage.getItem('fnsprites_admin_speed');
-      if (savedSpeed) {
-        sliderSpeedMs = parseInt(savedSpeed, 10) * 1000;
-        const input = document.getElementById('sliderSpeedRange');
-        if (input) input.value = Math.round(sliderSpeedMs / 1000);
-        const lbl = document.getElementById('speedValLabel');
-        if (lbl) lbl.innerText = Math.round(sliderSpeedMs / 1000);
-      }
-      const savedUsers = localStorage.getItem('fnsprites_admin_users');
-      if (savedUsers) {
-        try { adminUsersList = JSON.parse(savedUsers); } catch(e) {}
-      }
-      const savedAdmin = localStorage.getItem('fnsprites_is_admin');
-      if (savedAdmin === 'true') {
-        isAdminRole = true;
-      }
-      const savedBoxBgs = localStorage.getItem('fnsprites_box_backgrounds');
-      if (savedBoxBgs) {
-        try { boxBackgrounds = JSON.parse(savedBoxBgs); } catch(e) {}
-      }
-      const savedNotices = localStorage.getItem('fnsprites_admin_notices');
-      if (savedNotices) {
-        try { adminNotices = JSON.parse(savedNotices); } catch(e) {}
-      }
-      applyBoxBackgrounds();
-      checkAndDisplayToastNotice();
-    }
-
-    function saveAdminStateToStorage() {
-      localStorage.setItem('fnsprites_admin_slides', JSON.stringify(adminSlides));
-      localStorage.setItem('fnsprites_admin_speed', (sliderSpeedMs / 1000).toString());
-      localStorage.setItem('fnsprites_admin_users', JSON.stringify(adminUsersList));
-      localStorage.setItem('fnsprites_is_admin', isAdminRole ? 'true' : 'false');
-      localStorage.setItem('fnsprites_box_backgrounds', JSON.stringify(boxBackgrounds));
-      localStorage.setItem('fnsprites_admin_notices', JSON.stringify(adminNotices));
-    }
-
-    function updateBoxBackground(boxId, url) {
-      boxBackgrounds[boxId] = url.trim();
-      applyBoxBackgrounds();
-      saveAdminStateToStorage();
-    }
-
-    function handleBoxBgUpload(e, boxId, inputId) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        document.getElementById(inputId).value = evt.target.result;
-        updateBoxBackground(boxId, evt.target.result);
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function clearBoxBg(boxId, inputId) {
-      document.getElementById(inputId).value = '';
-      boxBackgrounds[boxId] = '';
-      applyBoxBackgrounds();
-      saveAdminStateToStorage();
-    }
-
-    function applyBoxBackgrounds() {
-      const boxes = ['countdownBox', 'progressBox', 'eventBox'];
-      const inputIds = { countdownBox: 'bgSeasonEndsUrl', progressBox: 'bgProgressUrl', eventBox: 'bgEventUrl' };
-
-      boxes.forEach(id => {
-        const el = document.getElementById(id);
-        const url = boxBackgrounds[id];
-        if (el) {
-          if (url) {
-            el.style.backgroundImage = `url('${url}')`;
-            el.classList.add('custom-bg');
-          } else {
-            el.style.backgroundImage = '';
-            el.classList.remove('custom-bg');
-          }
-        }
-        const inp = document.getElementById(inputIds[id]);
-        if (inp && url && inp.value !== url) inp.value = url;
-      });
-    }
-
-    function createSiteAnnouncement() {
-      const msg = document.getElementById('noticeMsgInput').value.trim();
-      const icon = document.getElementById('noticeIconSelect').value;
-      const hours = parseInt(document.getElementById('noticeDurationHours').value, 10) || 6;
-
-      if (!msg) { alert('Enter announcement text.'); return; }
-
-      const newNotice = {
-        id: Date.now(),
-        icon: icon,
-        message: msg,
-        durationHours: hours,
-        createdAt: Date.now(),
-        active: true
-      };
-
-      adminNotices.unshift(newNotice);
-      document.getElementById('noticeMsgInput').value = '';
-      saveAdminStateToStorage();
-      renderAdminNotices();
-      checkAndDisplayToastNotice();
-      alert('📢 Announcement published successfully!');
-    }
-
-    function toggleNoticeActive(id) {
-      const n = adminNotices.find(x => x.id === id);
-      if (n) {
-        n.active = !n.active;
-        saveAdminStateToStorage();
-        renderAdminNotices();
-        checkAndDisplayToastNotice();
-      }
-    }
-
-    function deleteNotice(id) {
-      adminNotices = adminNotices.filter(x => x.id !== id);
-      saveAdminStateToStorage();
-      renderAdminNotices();
-      checkAndDisplayToastNotice();
-    }
-
-    function renderAdminNotices() {
-      const container = document.getElementById('adminNoticeListContainer');
-      if (!container) return;
-      const now = Date.now();
-
-      if (!adminNotices.length) {
-        container.innerHTML = '<div style="font-size:12px; color:var(--muted); text-align:center; padding:10px;">No announcements created yet.</div>';
-        return;
-      }
-
-      container.innerHTML = adminNotices.map(n => {
-        const expiresAt = n.createdAt + (n.durationHours * 3600 * 1000);
-        const isExpired = now > expiresAt;
-        const timeLeftMs = expiresAt - now;
-        const hoursLeft = Math.floor(timeLeftMs / (3600 * 1000));
-        const minsLeft = Math.floor((timeLeftMs % (3600 * 1000)) / (60 * 1000));
-
-        let statusLabel = isExpired ? 'Expired' : (n.active ? 'Active' : 'Paused');
-        let statusClass = isExpired ? 'status-expired' : (n.active ? 'status-live' : 'status-scheduled');
-
-        return `
-          <div class="slide-item-card" style="margin-bottom:8px;">
-            <div style="font-size:24px; display:flex; align-items:center; justify-content:center; width:40px;">${n.icon}</div>
-            <div class="slide-info">
-              <div class="slide-title" style="font-size:12px;">${n.message}</div>
-              <div class="slide-dates">
-                ${isExpired ? 'Expired' : `Remaining: ${hoursLeft}h ${minsLeft}m`} · Duration: ${n.durationHours}h
-              </div>
-              <span class="slide-status ${statusClass}" style="margin-top:4px;">${statusLabel}</span>
-            </div>
-            <div style="display:flex; gap:6px;">
-              <button class="btn-sm" style="background:rgba(255,255,255,0.1); color:#fff;" onclick="toggleNoticeActive(${n.id})">
-                ${n.active ? '⏸️ Pause' : '▶️ Activate'}
-              </button>
-              <button class="btn-sm" style="background:rgba(255,84,112,0.25); color:var(--accent-red);" onclick="deleteNotice(${n.id})">🗑️ Delete</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function checkAndDisplayToastNotice() {
-      const toastEl = document.getElementById('announcementToast');
-      if (!toastEl) return;
-
-      const now = Date.now();
-      const activeNotice = adminNotices.find(n => n.active && (n.createdAt + (n.durationHours * 3600 * 1000)) > now);
-
-      if (activeNotice) {
-        document.getElementById('toastIcon').innerText = activeNotice.icon;
-        document.getElementById('toastMessage').innerText = activeNotice.message;
-
-        const timeLeftMs = (activeNotice.createdAt + (activeNotice.durationHours * 3600 * 1000)) - now;
-        const hoursLeft = Math.floor(timeLeftMs / (3600 * 1000));
-        const minsLeft = Math.floor((timeLeftMs % (3600 * 1000)) / (60 * 1000));
-
-        document.getElementById('toastTimeLeft').innerText = `Expires in ${hoursLeft}h ${minsLeft}m`;
-        toastEl.style.display = 'block';
-      } else {
-        toastEl.style.display = 'none';
-      }
-    }
-
-    function dismissToast() {
-      document.getElementById('announcementToast').style.display = 'none';
-    }
 
     function checkAdminStatus() {
-      if (!currentUser && !isAdminRole) {
-        const localUser = localStorage.getItem('fnsprites_username');
-        if (localUser && (localUser.toLowerCase() === 'nachyodaddy' || localUser.toLowerCase() === 'admin')) {
+      const localUser = (localStorage.getItem('fnsprites_username') || '').toLowerCase();
+      if (!currentUser && !isAdminRole && !isModeratorRole) {
+        if (localUser === 'nachyodaddy' || localUser === 'admin') {
           isAdminRole = true;
+        } else if (localUser === 'mod' || localUser === 'moderator') {
+          isModeratorRole = true;
         }
       } else if (currentUser) {
-        const username = (currentUser.user_metadata && currentUser.user_metadata.username) || '';
-        if (username.toLowerCase() === 'nachyodaddy' || username.toLowerCase() === 'admin' || (currentUser.email && currentUser.email.indexOf('nachyodaddy') !== -1)) {
+        const username = ((currentUser.user_metadata && currentUser.user_metadata.username) || '').toLowerCase();
+        if (username === 'nachyodaddy' || username === 'admin' || (currentUser.email && currentUser.email.indexOf('nachyodaddy') !== -1)) {
           isAdminRole = true;
+        } else if (username === 'mod' || username === 'moderator') {
+          isModeratorRole = true;
         }
       }
 
       const adminBtn = document.getElementById('adminPanelBtn');
-      if (adminBtn) adminBtn.style.display = isAdminRole ? 'inline-flex' : 'none';
+      if (adminBtn) {
+        adminBtn.style.display = (isAdminRole || isModeratorRole) ? 'inline-flex' : 'none';
+        adminBtn.innerText = isAdminRole ? '🛡️ Admin Panel' : '🛡️ Moderator Panel';
+      }
     }
 
     async function fetchLiveSupabaseUsers() {
@@ -1522,6 +1582,7 @@
       document.getElementById('newSlideStartDate').value = '';
       document.getElementById('newSlideEndDate').value = '';
 
+      saveAdminStateToStorage();
       renderAdminSlides();
       renderSiteSlides();
     }
@@ -1530,6 +1591,7 @@
       const slide = adminSlides.find(s => s.id === id);
       if (slide) {
         slide.active = !slide.active;
+        saveAdminStateToStorage();
         renderAdminSlides();
         renderSiteSlides();
       }
@@ -1541,6 +1603,7 @@
         return;
       }
       adminSlides = adminSlides.filter(s => s.id !== id);
+      saveAdminStateToStorage();
       renderAdminSlides();
       renderSiteSlides();
     }
@@ -2379,6 +2442,7 @@
       if (currentFilter === 'extracted') return sprite.extracted;
       if (currentFilter === 'mastered') return sprite.mastered;
       if (currentFilter === 'untouched') return !sprite.extracted && !sprite.mastered;
+      if (currentFilter === 'wishlist') return !!myWishlist[sprite.name];
       return true;
     }
     function matchesSearch(sprite, query) { return !query || sprite.name.toLowerCase().indexOf(query) !== -1; }
@@ -2439,7 +2503,7 @@
 
         var viewingNote = document.createElement('div');
         viewingNote.style.cssText = 'color:var(--muted); font-size:13px; margin-bottom:14px;';
-        viewingNote.innerText = 'Viewing ' + viewingOwnerName.toUpperCase() + '\'s extracted sprites. Heart a sprite or request it if you want to trade for it.';
+        viewingNote.innerText = 'Viewing ' + viewingOwnerName.toUpperCase() + '\'s extracted sprites. Heart a sprite, add it to your Wishlist, or request a trade for it.';
         container.appendChild(viewingNote);
       }
 
@@ -2459,7 +2523,7 @@
       if (sections.length === 0) {
         var emptyDiv = document.createElement('div');
         emptyDiv.className = 'empty-state';
-        emptyDiv.innerText = viewingOwnerId ? 'This player has not extracted any sprites yet.' : 'No sprites match that filter or active category toggles.';
+        emptyDiv.innerText = viewingOwnerId ? 'This player has not extracted any sprites yet.' : (currentFilter === 'wishlist' ? 'Your Wishlist is empty — click ❤️ Wishlist on any sprite to bookmark it!' : 'No sprites match that filter or active category toggles.');
         container.appendChild(emptyDiv);
       } else {
         sections.forEach(function(section, idx) {
@@ -2479,13 +2543,13 @@
       var groupNameForBulk = (title === 'Fan Favorites (No Variants)') ? 'Collabs' : title;
 
       header.innerHTML = `
-        <div class="group-header-title-wrap">
-          <span class="group-title-name" style="color: ${color}; border-bottom: 2px solid ${color}; padding-bottom: 2px;">
-            ${title} ──────
-          </span>
-          <span class="group-count-badge" style="background: ${color};">${sprites.length}</span>
+        <div class="category-divider" style="color:${color};">
+          <span>— ${title} —</span>
         </div>
-        <div class="group-header-actions">
+        <div class="group-header-title-wrap" style="margin-bottom:8px;">
+          <span class="group-count-badge" style="background: ${color};">${sprites.length} Sprites</span>
+        </div>
+        <div class="group-header-actions" style="margin-bottom:12px;">
           <button class="bulk-btn extract-all" onclick="confirmBulkExtractGroup('${groupNameForBulk}')">⚡ Extract All</button>
           <button class="bulk-btn master-all" onclick="confirmBulkMasterGroup('${groupNameForBulk}')">👑 Master All</button>
         </div>
@@ -2550,14 +2614,43 @@
         await applyStatusChange(sprite, sprite.extracted, !sprite.mastered);
       };
 
+      var wishBtn = document.createElement('button');
+      wishBtn.className = 'wishlist-btn' + (myWishlist[sprite.name] ? ' on' : '');
+      wishBtn.innerText = myWishlist[sprite.name] ? '❤️ Wishlist' : '🤍 Wishlist';
+      wishBtn.onclick = function(e) { e.stopPropagation(); toggleWishlist(sprite); };
+
       var noteBtn = document.createElement('button');
       noteBtn.className = 'note-btn' + (sprite.notes ? ' has-note' : '');
       noteBtn.innerText = '📝';
       noteBtn.onclick = function(e) { e.stopPropagation(); openNoteModal(sprite); };
 
-      toggleRow.appendChild(exBtn); toggleRow.appendChild(mBtn); toggleRow.appendChild(noteBtn);
+      toggleRow.appendChild(exBtn); toggleRow.appendChild(mBtn); toggleRow.appendChild(wishBtn); toggleRow.appendChild(noteBtn);
       card.appendChild(toggleRow);
       return card;
+    }
+
+    async function loadSprites() {
+      loadWishlist();
+      document.getElementById('loader').style.display = 'block';
+      var master = await fetchMasterSprites();
+      var progressMap = await fetchMyProgress();
+
+      allSprites = master.map(function(s) {
+        var p = progressMap[s.name] || { extracted: false, mastered: false, notes: '' };
+        return {
+          name: s.name,
+          imageUrl: getSpriteImageUrl(s.name, s.imageUrl),
+          rarity: s.rarity,
+          extracted: !!p.extracted,
+          mastered: !!p.mastered,
+          notes: p.notes || ''
+        };
+      });
+
+      document.getElementById('loader').style.display = 'none';
+      renderSpriteTableGrid();
+      renderGrid();
+      tickCountdown();
     }
 
     async function applyStatusChange(sprite, newExtracted, newMastered) {
@@ -2628,6 +2721,7 @@
       var key = viewingOwnerId + '::' + sprite.name;
       var hearted = !!myHeartsAndRequests.hearts[key];
       var requested = !!myHeartsAndRequests.requests[key];
+      var isWishlisted = !!myWishlist[sprite.name];
 
       var card = document.createElement('div');
       card.className = 'sprite-card extracted';
@@ -2652,6 +2746,11 @@
 
       var toggleRow = document.createElement('div'); toggleRow.className = 'toggle-row';
 
+      var wishBtn = document.createElement('button');
+      wishBtn.className = 'wishlist-btn' + (isWishlisted ? ' on' : '');
+      wishBtn.innerText = isWishlisted ? '❤️ Wishlist' : '🤍 Wishlist';
+      wishBtn.onclick = function(e) { e.stopPropagation(); toggleWishlist(sprite); };
+
       var heartBtn = document.createElement('button');
       heartBtn.className = 'heart-btn' + (hearted ? ' on' : '');
       heartBtn.innerText = hearted ? '❤️ Loved' : '🤍 Heart';
@@ -2663,7 +2762,7 @@
       reqBtn.disabled = requested;
       reqBtn.onclick = async function(e) { e.stopPropagation(); await sendRequest(sprite); };
 
-      toggleRow.appendChild(heartBtn); toggleRow.appendChild(reqBtn);
+      toggleRow.appendChild(wishBtn); toggleRow.appendChild(heartBtn); toggleRow.appendChild(reqBtn);
       card.appendChild(toggleRow);
       return card;
     }
@@ -2713,9 +2812,24 @@
       container.innerHTML = '';
       others.forEach(function(p) {
         var row = document.createElement('div'); row.className = 'player-row';
-        row.onclick = function() { viewPlayerProfile(p.id, p.username || 'Player'); };
         var avatarUrl = p.avatar_url || 'https://placehold.co/80x80/1e293b/8b5cf6?text=U';
-        row.innerHTML = '<img src="' + avatarUrl + '" alt="' + p.username + '"><div class="player-row-name">' + (p.username || 'Player').toUpperCase() + '</div>';
+        
+        var left = document.createElement('div');
+        left.style.cssText = 'display:flex; align-items:center; gap:12px; cursor:pointer; flex:1;';
+        left.onclick = function() { viewPlayerProfile(p.id, p.username || 'Player'); };
+        left.innerHTML = '<img src="' + avatarUrl + '" alt="' + p.username + '"><div class="player-row-name">' + (p.username || 'Player').toUpperCase() + '</div>';
+        
+        row.appendChild(left);
+
+        if (isAdminRole || isModeratorRole) {
+          var povBtn = document.createElement('button');
+          povBtn.className = 'btn-sm';
+          povBtn.style.cssText = 'background:rgba(139,92,246,0.3); color:#fff; font-size:11px;';
+          povBtn.innerText = '👁️ POV';
+          povBtn.onclick = function(e) { e.stopPropagation(); viewAsUserPOV(p.username || 'Player'); };
+          row.appendChild(povBtn);
+        }
+
         container.appendChild(row);
       });
     }
@@ -2786,9 +2900,9 @@
     // ===================== INIT =====================
     (async function init() {
       loadAdminState();
+      renderSiteSlides();
       await restoreSession();
       checkAdminStatus();
-      renderSiteSlides();
       await loadSprites();
     })();
   </script>
