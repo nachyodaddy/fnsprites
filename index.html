@@ -1374,21 +1374,28 @@
       { id: 102, requester: 'SpriteMasterX', spriteName: 'Champion of the Sprites', status: 'pending', time: '5 hours ago' }
     ];
 
-    function checkAdminStatus() {
+    async function checkAdminStatus() {
       const localUser = (localStorage.getItem('fnsprites_username') || '').toLowerCase();
-      if (!currentUser && !isAdminRole && !isModeratorRole) {
-        if (localUser === 'nachyodaddy' || localUser === 'admin') {
-          isAdminRole = true;
-        } else if (localUser === 'mod' || localUser === 'moderator') {
-          isModeratorRole = true;
+      
+      if (currentUser) {
+        try {
+          const { data: p } = await sb.from('profiles').select('role').eq('id', currentUser.id).single();
+          if (p && p.role) {
+            isAdminRole = (p.role === 'admin');
+            isModeratorRole = (p.role === 'moderator' || p.role === 'admin');
+          } else {
+            const username = ((currentUser.user_metadata && currentUser.user_metadata.username) || '').toLowerCase();
+            isAdminRole = (username === 'nachyodaddy' || username === 'admin' || currentUser.email.includes('nachyodaddy'));
+            isModeratorRole = isAdminRole || (username === 'mod' || username === 'moderator');
+          }
+        } catch(e) {
+          const username = ((currentUser.user_metadata && currentUser.user_metadata.username) || '').toLowerCase();
+          isAdminRole = (username === 'nachyodaddy' || username === 'admin');
+          isModeratorRole = isAdminRole || (username === 'mod' || username === 'moderator');
         }
-      } else if (currentUser) {
-        const username = ((currentUser.user_metadata && currentUser.user_metadata.username) || '').toLowerCase();
-        if (username === 'nachyodaddy' || username === 'admin' || (currentUser.email && currentUser.email.indexOf('nachyodaddy') !== -1)) {
-          isAdminRole = true;
-        } else if (username === 'mod' || username === 'moderator') {
-          isModeratorRole = true;
-        }
+      } else {
+        isAdminRole = (localUser === 'nachyodaddy' || localUser === 'admin');
+        isModeratorRole = isAdminRole || (localUser === 'mod' || localUser === 'moderator');
       }
 
       const adminBtn = document.getElementById('adminPanelBtn');
@@ -1423,6 +1430,7 @@
               extracted: stats.extracted,
               mastered: stats.mastered,
               status: p.status || 'Active',
+              bio: p.bio || '',
               lastActive: 'Live Supabase'
             };
           });
@@ -1661,6 +1669,7 @@
 
       body.innerHTML = filtered.map(u => {
         const isPending = u.status === 'Pending Admin Approval';
+        const roleClass = u.role === 'admin' ? 'role-admin' : (u.role === 'moderator' ? 'role-moderator' : 'role-member');
         return `
           <tr>
             <td>
@@ -1675,7 +1684,7 @@
               </div>
             </td>
             <td>
-              <span class="role-badge ${u.role === 'admin' ? 'role-admin' : 'role-member'}">${u.role.toUpperCase()}</span>
+              <span class="role-badge ${roleClass}">${u.role.toUpperCase()}</span>
             </td>
             <td>
               <div style="font-size:11px; font-weight:700; color:#fff;">
@@ -1692,13 +1701,18 @@
                   <button class="btn-sm" style="background:rgba(255,84,112,0.4); color:#fff;" onclick="rejectPendingUser('${u.username}')">❌ Reject</button>
                 ` : `
                   <button class="btn-sm" style="background:rgba(139,92,246,0.3); color:#fff;" onclick="viewAsUserPOV('${u.username}')">👁️ View POV</button>
-                  <button class="btn-sm" style="background:rgba(255,255,255,0.1); color:#fff;" onclick="resetUserPassword('${u.username}')">🔑 Reset Pass</button>
+                  <button class="btn-sm" style="background:rgba(0,242,254,0.25); color:#00f2fe;" onclick="openIssueNoticeModal('${u.id}', '${u.username}')">📢 Notice</button>
+                  <button class="btn-sm" style="background:rgba(255,255,255,0.1); color:#fff;" onclick="resetUserPhoto('${u.username}')">📷 Reset Photo</button>
                   <button class="btn-sm" style="background:${u.status === 'Suspended' ? 'rgba(16,185,129,0.3)' : 'rgba(255,84,112,0.3)'}; color:#fff;" onclick="toggleUserSuspend('${u.username}')">
                     ${u.status === 'Suspended' ? 'Restore' : 'Suspend'}
                   </button>
-                  <button class="btn-sm" style="background:rgba(255,203,61,0.2); color:var(--accent-gold);" onclick="changeUserRole('${u.username}', '${u.role === 'admin' ? 'member' : 'admin'}')">
-                    ${u.role === 'admin' ? 'Demote' : 'Promote Admin'}
-                  </button>
+                  ${isAdminRole ? `
+                    <select class="btn-sm" style="background:rgba(255,203,61,0.2); color:var(--accent-gold); border:none; cursor:pointer;" onchange="changeUserRole('${u.username}', this.value)">
+                      <option value="member" ${u.role==='member'?'selected':''}>Member</option>
+                      <option value="moderator" ${u.role==='moderator'?'selected':''}>Moderator</option>
+                      <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+                    </select>
+                  ` : ''}
                 `}
               </div>
             </td>
@@ -1903,20 +1917,21 @@
     }
 
     function viewAsUserPOV(username) {
-      const userObj = adminUsersList.find(u => u.username.toLowerCase() === username.toLowerCase()) || { username: username, extracted: 15, mastered: 5 };
+      const userObj = adminUsersList.find(u => u.username.toLowerCase() === username.toLowerCase()) || { id: 'usr-' + username, username: username, extracted: 15, mastered: 5 };
       povModeUser = userObj;
       closeAdminModal();
+      if (document.getElementById('browsePlayersOverlay')) closeBrowsePlayers();
 
-      document.getElementById('povBanner').style.display = 'flex';
+      const border = document.getElementById('povScreenBorder');
+      if (border) border.style.display = 'block';
+      const banner = document.getElementById('povBanner');
+      if (banner) banner.style.display = 'flex';
+
       document.getElementById('povUsername').innerText = username;
-      document.getElementById('displayName').innerText = username.toUpperCase() + ' (POV)';
-      document.getElementById('userStatus').innerText = 'Viewing from ' + username + '\'s perspective';
+      document.getElementById('displayName').innerText = username.toUpperCase() + ' (POV Mode)';
+      document.getElementById('userStatus').innerText = 'POV MODE ACTIVE: Complete actions on behalf of ' + username;
 
-      document.getElementById('progressValue').innerText = `${userObj.extracted} / 91`;
-      document.getElementById('extractedBar').style.width = Math.round((userObj.extracted / 91) * 100) + '%';
-      document.getElementById('extractedLabel').innerText = `${userObj.extracted}/91`;
-      document.getElementById('masteredBar').style.width = Math.round((userObj.mastered / 91) * 100) + '%';
-      document.getElementById('masteredLabel').innerText = `${userObj.mastered}/91`;
+      loadSprites();
     }
 
     function exitPovMode() {
@@ -2415,12 +2430,13 @@
     }
 
     async function saveProgress(sprite) {
-      if (!currentUser) {
+      const activeUserId = povModeUser ? povModeUser.id : (currentUser ? currentUser.id : null);
+      if (!activeUserId) {
         alert('Log in (or sign up) first so your progress has somewhere to live!');
         return false;
       }
       var { error } = await sb.from('progress').upsert({
-        user_id: currentUser.id,
+        user_id: activeUserId,
         sprite_name: sprite.name,
         extracted: sprite.extracted,
         mastered: sprite.mastered,
