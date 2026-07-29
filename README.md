@@ -1,4 +1,4 @@
-# Fortnite Sprite Tracker (fnsprites / SpriteTrackr)
+# Fortnite Sprite Tracker (SpriteTrackr / fnsprites)
 
 An interactive web application for tracking Fortnite Sprites (Chapter 7 Season 3 "Runners"), Extracted & Mastered crowns, Wishlists, Player Profiles, Trade Requests, and Rarity/Variant collections.
 
