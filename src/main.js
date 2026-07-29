@@ -28,6 +28,45 @@
       { id: 102, requester: 'SpriteMasterX', spriteName: 'Champion of the Sprites', status: 'pending', time: '5 hours ago' }
     ];
 
+    function loadAdminState() {
+      try {
+        const saved = localStorage.getItem('fnsprites_admin_state');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.slides) adminSlides = parsed.slides;
+          if (parsed.speed) sliderSpeedMs = parsed.speed;
+        }
+      } catch (e) {}
+    }
+
+    function saveAdminStateToStorage() {
+      try {
+        localStorage.setItem('fnsprites_admin_state', JSON.stringify({
+          slides: adminSlides,
+          speed: sliderSpeedMs
+        }));
+      } catch (e) {}
+    }
+
+    function loadWishlist() {
+      try {
+        const saved = localStorage.getItem('fnsprites_wishlist');
+        if (saved) myWishlist = JSON.parse(saved);
+      } catch (e) {}
+    }
+
+    function toggleWishlist(sprite) {
+      if (myWishlist[sprite.name]) {
+        delete myWishlist[sprite.name];
+      } else {
+        myWishlist[sprite.name] = true;
+      }
+      try {
+        localStorage.setItem('fnsprites_wishlist', JSON.stringify(myWishlist));
+      } catch (e) {}
+      renderGrid();
+    }
+
     async function checkAdminStatus() {
       const localUser = (localStorage.getItem('fnsprites_username') || '').toLowerCase();
       
@@ -1095,13 +1134,14 @@
       'Woodsprite': 'images/Woodsprite.png'
     };
 
+    const SUPABASE_STORAGE_URL = 'https://oereylignfdcrnafqpix.supabase.co/storage/v1/object/public/sprites/';
+
     function getSpriteImageUrl(name, defaultUrl) {
-      if (LOCAL_IMAGES[name]) return LOCAL_IMAGES[name];
-      var cleanName = name.replace(/[^a-zA-Z0-9]/g, '_');
-      for (var k in LOCAL_IMAGES) {
-        if (k.toLowerCase() === name.toLowerCase()) return LOCAL_IMAGES[k];
+      if (defaultUrl && defaultUrl.startsWith('http') && !defaultUrl.includes('staticvacant.github.io')) {
+        return defaultUrl;
       }
-      return defaultUrl;
+      var cleanName = name.replace(/[^a-zA-Z0-9]/g, '_') + '.png';
+      return SUPABASE_STORAGE_URL + cleanName;
     }
 
     async function loadSprites() {
@@ -1309,7 +1349,15 @@
       card.appendChild(badgeRow);
 
       var thumbWrap = document.createElement('div'); thumbWrap.className = 'thumb-wrap';
-      var img = document.createElement('img'); img.src = sprite.imageUrl; img.alt = sprite.name; img.loading = 'lazy';
+      var img = document.createElement('img');
+      img.src = sprite.imageUrl;
+      img.alt = sprite.name;
+      img.loading = 'lazy';
+      img.onerror = function() {
+        this.onerror = null;
+        var color = (TYPE_COLORS[identity.base] || '#8b5cf6').replace('#', '');
+        this.src = 'https://placehold.co/300x300/' + color + '/ffffff.png?text=' + encodeURIComponent(sprite.name);
+      };
       thumbWrap.appendChild(img); card.appendChild(thumbWrap);
 
       var name = document.createElement('div'); name.className = 'sprite-name'; name.innerText = sprite.name;
