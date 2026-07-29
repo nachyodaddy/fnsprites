@@ -1,4 +1,4 @@
-﻿// ===================== SUPABASE SETUP =====================
+// ===================== SUPABASE SETUP =====================
     const SUPABASE_URL = "https://oereylignfdcrnafqpix.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_Sz7H2GqdGiX5Z6X0BPrm9Q_iloAP-2O";
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -1339,30 +1339,6 @@
       toggleRow.appendChild(exBtn); toggleRow.appendChild(mBtn); toggleRow.appendChild(wishBtn); toggleRow.appendChild(noteBtn);
       card.appendChild(toggleRow);
       return card;
-    }
-
-    async function loadSprites() {
-      loadWishlist();
-      document.getElementById('loader').style.display = 'block';
-      var master = await fetchMasterSprites();
-      var progressMap = await fetchMyProgress();
-
-      allSprites = master.map(function(s) {
-        var p = progressMap[s.name] || { extracted: false, mastered: false, notes: '' };
-        return {
-          name: s.name,
-          imageUrl: getSpriteImageUrl(s.name, s.imageUrl),
-          rarity: s.rarity,
-          extracted: !!p.extracted,
-          mastered: !!p.mastered,
-          notes: p.notes || ''
-        };
-      });
-
-      document.getElementById('loader').style.display = 'none';
-      renderSpriteTableGrid();
-      renderGrid();
-      tickCountdown();
     }
 
     async function applyStatusChange(sprite, newExtracted, newMastered) {
