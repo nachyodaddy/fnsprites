@@ -24,27 +24,27 @@
     
     <div class="nav-links desktop-nav-links">
       <button class="nav-btn active" id="navBtnTracker" data-page="tracker" onclick="switchPage('tracker')">
-        <img src="./public/assets/nav_tracker.png" class="nav-icon-img" alt="" />
+        <img src="./assets/nav_tracker.png" class="nav-icon-img" alt="" />
         <span>Sprite Tracker</span>
       </button>
       <button class="nav-btn" id="navBtnAnalytics" data-page="analytics" onclick="switchPage('analytics')">
-        <img src="./public/assets/nav_analytics.png" class="nav-icon-img" alt="" />
+        <img src="./assets/nav_analytics.png" class="nav-icon-img" alt="" />
         <span>Analytics &amp; Ranks</span>
       </button>
       <button class="nav-btn" id="navBtnMap" data-page="map" onclick="switchPage('map')">
-        <img src="./public/assets/nav_map.png" class="nav-icon-img" alt="" />
+        <img src="./assets/nav_map.png" class="nav-icon-img" alt="" />
         <span>Spawn Map</span>
       </button>
       <button class="nav-btn" id="navBtnCalculator" data-page="calculator" onclick="switchPage('calculator')">
-        <img src="./public/assets/nav_calculator.png" class="nav-icon-img" alt="" />
+        <img src="./assets/nav_calculator.png" class="nav-icon-img" alt="" />
         <span>Dust Calculator</span>
       </button>
       <button class="nav-btn" id="navBtnTrades" data-page="trades" onclick="switchPage('trades')">
-        <img src="./public/assets/nav_trades.png" class="nav-icon-img" alt="" />
+        <img src="./assets/nav_trades.png" class="nav-icon-img" alt="" />
         <span>Trade Hub</span>
       </button>
       <button class="nav-btn" id="navBtnGuide" data-page="guide" onclick="switchPage('guide')">
-        <img src="./public/assets/nav_guide.png" class="nav-icon-img" alt="" />
+        <img src="./assets/nav_guide.png" class="nav-icon-img" alt="" />
         <span>Guide &amp; FAQ</span>
       </button>
     </div>
@@ -69,7 +69,7 @@
 
       <div class="mega-menu-grid">
         <div class="mega-card active" onclick="switchPage('tracker'); toggleMegaMenu();">
-          <img src="./public/assets/nav_tracker.png" class="mega-card-icon" alt="" />
+          <img src="./assets/nav_tracker.png" class="mega-card-icon" alt="" />
           <div class="mega-card-body">
             <div class="mega-card-title">🎮 Sprite Tracker</div>
             <div class="mega-card-desc">Track and master all 12 Chapter 7 Season 3 Sprites</div>
@@ -77,7 +77,7 @@
         </div>
 
         <div class="mega-card" onclick="switchPage('analytics'); toggleMegaMenu();">
-          <img src="./public/assets/nav_analytics.png" class="mega-card-icon" alt="" />
+          <img src="./assets/nav_analytics.png" class="mega-card-icon" alt="" />
           <div class="mega-card-body">
             <div class="mega-card-title">📊 Analytics &amp; Ranks</div>
             <div class="mega-card-desc">Live collector leaderboards and mastery meters</div>
@@ -85,7 +85,7 @@
         </div>
 
         <div class="mega-card" onclick="switchPage('map'); toggleMegaMenu();">
-          <img src="./public/assets/nav_map.png" class="mega-card-icon" alt="" />
+          <img src="./assets/nav_map.png" class="mega-card-icon" alt="" />
           <div class="mega-card-body">
             <div class="mega-card-title">🗺️ Interactive Spawn Map</div>
             <div class="mega-card-desc">POI spawn locations and Shiny Hours event boosts</div>
@@ -93,7 +93,7 @@
         </div>
 
         <div class="mega-card" onclick="switchPage('calculator'); toggleMegaMenu();">
-          <img src="./public/assets/nav_calculator.png" class="mega-card-icon" alt="" />
+          <img src="./assets/nav_calculator.png" class="mega-card-icon" alt="" />
           <div class="mega-card-body">
             <div class="mega-card-title">💡 Dust Calculator</div>
             <div class="mega-card-desc">Sprite Buyback cost and July 2026 savings planner</div>
@@ -101,7 +101,7 @@
         </div>
 
         <div class="mega-card" onclick="switchPage('trades'); toggleMegaMenu();">
-          <img src="./public/assets/nav_trades.png" class="mega-card-icon" alt="" />
+          <img src="./assets/nav_trades.png" class="mega-card-icon" alt="" />
           <div class="mega-card-body">
             <div class="mega-card-title">🤝 Community Trade Hub</div>
             <div class="mega-card-desc">Trade offers, wishlist matches, and marketplace</div>
@@ -109,7 +109,7 @@
         </div>
 
         <div class="mega-card" onclick="switchPage('guide'); toggleMegaMenu();">
-          <img src="./public/assets/nav_guide.png" class="mega-card-icon" alt="" />
+          <img src="./assets/nav_guide.png" class="mega-card-icon" alt="" />
           <div class="mega-card-body">
             <div class="mega-card-title">❓ Getting Started &amp; FAQ</div>
             <div class="mega-card-desc">Walkthroughs, Shiny Hours schedule, and rules</div>
@@ -219,8 +219,6 @@
             <input type="text" id="loginUsername" placeholder="Username" class="input-field" />
             <input type="password" id="loginPassword" placeholder="Password" class="input-field" />
             <button class="btn btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()">Log In</button>
-            <button class="btn" style="background:rgba(139,92,246,0.25); color:var(--accent-purple); border:1px solid rgba(139,92,246,0.4); font-size:11px; padding:6px 12px; border-radius:8px;" onclick="quickLoginAs('nachyodaddy')">👑 Admin Test</button>
-            <button class="btn" style="background:rgba(16,185,129,0.25); color:var(--accent-green); border:1px solid rgba(16,185,129,0.4); font-size:11px; padding:6px 12px; border-radius:8px;" onclick="quickLoginAs('Player1')">👤 Member Test</button>
             <button class="btn-link" onclick="openRulesModal()">📜 Rules</button>
           </div>
         </div>
