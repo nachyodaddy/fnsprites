@@ -80,6 +80,17 @@
       transform: rotate(180deg);
     }
 
+    .nav-brand {
+      transition: opacity 0.35s cubic-bezier(0.4, 0, 0.2, 1), transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: opacity, transform;
+    }
+
+    .nav-brand.fade-out {
+      opacity: 0 !important;
+      pointer-events: none;
+      transform: translateY(-4px);
+    }
+
     .dock-toggle-arrow {
       transition: transform 0.3s ease;
       font-size: 10px;
