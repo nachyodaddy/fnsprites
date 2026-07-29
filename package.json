@@ -1,5 +1,5 @@
 {
-  "name": "fnsprites",
+  "name": "spritetrackr",
   "version": "1.0.0",
   "description": "Fortnite Sprite Tracker - Interactive Web App for Tracking extracted & mastered sprites",
   "main": "index.html",
@@ -12,6 +12,7 @@
   "keywords": [
     "fortnite",
     "sprite-tracker",
+    "spritetrackr",
     "fnsprites",
     "vite"
   ],
