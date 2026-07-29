@@ -724,12 +724,33 @@
 
     async function handleAuthSubmit() {
       const usernameInput = document.getElementById('loginUsername');
-      const username = usernameInput ? usernameInput.value.trim() : '';
+      const passwordInput = document.getElementById('loginPassword');
+      const username = (usernameInput ? usernameInput.value : '').trim();
+      const password = (passwordInput ? passwordInput.value : '').trim();
 
       if (!username) {
-        alert('Please enter a username to log in.');
+        alert('Please enter your username to log in.');
         return;
       }
+
+      try {
+        const email = username.includes('@') ? username : `${username.toLowerCase()}@fnsprites.com`;
+        const { data, error } = await sb.auth.signInWithPassword({
+          email: email,
+          password: password || 'defaultPassword123'
+        });
+
+        if (!error && data.user) {
+          currentUser = data.user;
+          localStorage.setItem('fnsprites_username', username);
+          await checkAdminStatus();
+          quickLoginAs(username);
+          return;
+        }
+      } catch (e) {
+        console.warn('Supabase auth fallback:', e.message);
+      }
+
       quickLoginAs(username);
     }
 
@@ -2203,38 +2224,6 @@
       if (overlay) overlay.style.display = 'none';
 
       alert('🟢 Maintenance mode ended. Site activity restored!');
-    }
-
-    async function handleAuthSubmit() {
-      const usernameInput = document.getElementById('loginUsername');
-      const passwordInput = document.getElementById('loginPassword');
-      const username = (usernameInput ? usernameInput.value : '').trim();
-      const password = (passwordInput ? passwordInput.value : '').trim();
-
-      if (!username) {
-        alert('Please enter your username or email address.');
-        return;
-      }
-
-      try {
-        const email = username.includes('@') ? username : `${username.toLowerCase()}@fnsprites.com`;
-        const { data, error } = await sb.auth.signInWithPassword({
-          email: email,
-          password: password || 'defaultPassword123'
-        });
-
-        if (!error && data.user) {
-          currentUser = data.user;
-          localStorage.setItem('fnsprites_username', username);
-          await checkAdminStatus();
-          quickLoginAs(username);
-          return;
-        }
-      } catch (e) {
-        console.warn('Supabase auth fallback:', e.message);
-      }
-
-      quickLoginAs(username);
     }
 
     // Site Title Fade-Out on Scroll
