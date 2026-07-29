@@ -2109,11 +2109,11 @@
 
     // ===================== MAINTENANCE MODE CONTROLLER =====================
     let maintenanceState = {
-      active: false,
+      active: true,
       warningActive: false,
       warningSecondsRemaining: 60,
-      durationMinutes: 60,
-      endTime: null,
+      durationMinutes: 120,
+      endTime: Date.now() + (120 * 60 * 1000),
       mainMessage: "All your sprites are safe. Sorry for the inconvenience. We'll be back in a moment.",
       subMessagePattern: "Travelling to destination. Will arrive in {time}"
     };
@@ -2126,11 +2126,14 @@
         if (saved) {
           const parsed = JSON.parse(saved);
           maintenanceState = Object.assign(maintenanceState, parsed);
-          if (maintenanceState.active) {
-            checkAndApplyMaintenanceOverlay();
-          } else if (maintenanceState.warningActive) {
-            startMaintenance60sWarning();
-          }
+        } else {
+          saveMaintenanceState();
+        }
+
+        if (maintenanceState.active) {
+          checkAndApplyMaintenanceOverlay();
+        } else if (maintenanceState.warningActive) {
+          startMaintenance60sWarning();
         }
       } catch (e) { console.error('Error loading maintenance state', e); }
     }
