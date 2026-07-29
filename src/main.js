@@ -1266,14 +1266,6 @@
 
     const SUPABASE_STORAGE_URL = 'https://oereylignfdcrnafqpix.supabase.co/storage/v1/object/public/sprites/';
 
-    function getSpriteImageUrl(name, defaultUrl) {
-      if (defaultUrl && defaultUrl.startsWith('http') && !defaultUrl.includes('staticvacant.github.io')) {
-        return defaultUrl;
-      }
-      var cleanName = name.replace(/[^a-zA-Z0-9]/g, '_') + '.png';
-      return SUPABASE_STORAGE_URL + cleanName;
-    }
-
     async function loadSprites() {
       const loader = document.getElementById('loader');
       if (loader) loader.style.display = 'block';
