@@ -211,6 +211,7 @@
           <div style="display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;">
             <button class="edit-profile-btn" id="editProfileBtn" style="display:none;" onclick="openUserProfileModal()">👤 My Profile &amp; Inbox</button>
             <button class="admin-panel-btn" id="adminPanelBtn" style="display:none;" onclick="openAdminModal()">🛡️ Admin / Mod Console</button>
+            <button class="admin-panel-btn" id="quickMaintBtn" style="display:none; background:rgba(255,84,112,0.15); color:#ff5470; border:1px solid rgba(255,84,112,0.3);" onclick="openAdminModal(); switchAdminTab('maintenance');">🛠️ Maintenance Mode</button>
           </div>
         </div>
 
@@ -787,8 +788,10 @@
     <div class="admin-sheet-box">
       <!-- Sheet Header -->
       <div class="admin-sheet-header">
-        <div class="admin-sheet-title">
-          🛡️ Admin Management Console <span class="admin-sheet-badge" id="adminSheetUserBadge">nachyodaddy</span>
+        <div class="admin-sheet-title" style="display:flex; align-items:center; flex-wrap:wrap; gap:8px;">
+          <span>🛡️ Admin Management Console</span>
+          <span class="admin-sheet-badge" id="adminSheetUserBadge">nachyodaddy</span>
+          <button class="btn-sm" style="background:rgba(255,84,112,0.2); color:#ff5470; border:1px solid rgba(255,84,112,0.4); margin-left:auto; border-radius:8px; font-weight:700; padding:4px 12px; cursor:pointer;" onclick="switchAdminTab('maintenance')">🛠️ Maintenance Control</button>
         </div>
         <button class="admin-sheet-close" onclick="closeAdminModal()">✕</button>
       </div>
@@ -1057,6 +1060,9 @@
               </div>
 
               <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;">
+                <button class="btn" style="background:#dc2626; color:#fff; font-weight:900; font-size:13px; padding:10px 20px; border-radius:10px; box-shadow:0 4px 15px rgba(220,38,38,0.5);" onclick="triggerInstantMaintenanceMode()">
+                  ⚡ EXECUTE INSTANT MAINTENANCE (0s Delay)
+                </button>
                 <button class="btn" style="background:#ff3355; color:#fff; font-weight:900; font-size:13px; padding:10px 20px; border-radius:10px; box-shadow:0 4px 15px rgba(255,51,85,0.4);" onclick="triggerMaintenanceExecutionPrompt()">
                   🛑 EXECUTE MAINTENANCE MODE (60s Warning)
                 </button>
