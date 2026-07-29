@@ -1064,6 +1064,86 @@
     }
     setInterval(tickCountdown, 1000);
 
+    const SPRITE_ID_MAP = {
+      'Water': 'water_basic',
+      'Gold Water': 'water_gold',
+      'Gummy Water': 'water_candy',
+      'Galaxy Water': 'water_galaxy',
+      'Holofoil Water': 'water_holofoil',
+
+      'Earth': 'earth_basic',
+      'Gold Earth': 'earth_gold',
+      'Gummy Earth': 'earth_candy',
+      'Galaxy Earth': 'earth_galaxy',
+      'Cube Earth': 'earth_rift',
+
+      'Fire': 'fire_basic',
+      'Gold Fire': 'fire_gold',
+      'Gummy Fire': 'fire_candy',
+      'Galaxy Fire': 'fire_galaxy',
+
+      'Air': 'air_basic',
+      'Gold Air': 'air_gold',
+      'Gummy Air': 'air_candy',
+      'Galaxy Air': 'air_galaxy',
+
+      'Fishy': 'fishy_basic',
+      'Gold Fishy': 'fishy_gold',
+
+      'Duck': 'duck_basic',
+      'Gold Duck': 'duck_gold',
+
+      'Ghost': 'ghost_basic',
+      'Gold Ghost': 'ghost_gold',
+
+      'King': 'king_basic',
+      'Gold King': 'king_gold',
+
+      'Demon': 'demon_basic',
+      'Gold Demon': 'demon_gold',
+
+      'Aura': 'aura_basic',
+      'Gold Aura': 'aura_gold',
+      'Gummy Aura': 'aura_candy',
+
+      'Striker': 'striker_basic',
+      'Gold Striker': 'striker_gold',
+
+      'Dream': 'dream_basic',
+      'Gold Dream': 'dream_gold',
+
+      'Punk': 'punk_basic',
+      'Gold Punk': 'punk_gold',
+
+      'Boss': 'boss_basic',
+      'Gold Boss': 'boss_gold',
+
+      'Seven': 'seven_basic',
+      'Gold Seven': 'seven_gold',
+      'Holofoil Seven': 'seven_holofoil',
+
+      'Zero Point': 'zeropoint_basic',
+      'Gold Zero Point': 'zeropoint_gold',
+
+      'Grim': 'grim_basic',
+      'Gold Grim': 'grim_gold',
+
+      'Batman': 'batman_basic',
+      'Gold Batman': 'batman_gold',
+
+      'Burnt Peanut': 'burnt_peanut'
+    };
+
+    function getSpriteImageUrl(name, defaultUrl) {
+      if (defaultUrl && defaultUrl.startsWith('http') && !defaultUrl.includes('oereylignfdcrnafqpix')) return defaultUrl;
+      const id = SPRITE_ID_MAP[name];
+      if (id) {
+        return 'https://staticvacant.github.io/fnsprites/sprites/' + id + '.png';
+      }
+      const cleanName = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+      return 'https://staticvacant.github.io/fnsprites/sprites/' + cleanName + '.png';
+    }
+
     // ===================== DATA LOAD =====================
     // Master sprite list comes straight from the original public source -
     // no separate hosting/sync step needed for that part.
