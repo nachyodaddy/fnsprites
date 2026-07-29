@@ -172,7 +172,7 @@
       transition: all 0.3s ease;
     }
     .sticky-controls-wrap.is-sticky {
-      position: sticky; top: 10px; z-index: 90;
+      position: sticky; top: 75px; z-index: 90;
       background: rgba(13, 15, 26, 0.94);
       backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       padding: 12px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.15);
@@ -817,16 +817,16 @@
     .main-nav-bar {
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 14px 28px;
-      background: transparent;
-      backdrop-filter: blur(0px);
-      -webkit-backdrop-filter: blur(0px);
-      border-bottom: 1px solid transparent;
-      box-shadow: none;
+      background: rgba(13, 15, 26, 0.96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
       transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
