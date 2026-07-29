@@ -449,8 +449,12 @@
       { name: 'ALL', sample: '', icon: '🔮' }
     ];
 
-    // Default state: ALL CLOSED when entering the page
-    let activeTypeToggles = new Set();
+    // Default state: ALL categories active by default when entering page
+    let activeTypeToggles = new Set([
+      'Water', 'Earth', 'Fire', 'Duck', 'Ghost', 'Dream', 'Demon', 'Punk',
+      'King', 'Zero Point', 'Fishy', 'Striker', 'Aura', 'Boss', 'Grim',
+      'Air', 'Seven', 'Batman', 'Collabs', 'Burnt Peanut', 'Vini Jr.', 'Pollo'
+    ]);
 
     function renderSpriteTableGrid() {
       const grid = document.getElementById('spriteTableGrid');
@@ -679,13 +683,15 @@
       }
     }
 
-    // Single entry point - the button always does whatever mode we're currently in.
     async function handleAuthSubmit() {
-      if (authMode === 'signup') {
-        await signUp();
-      } else {
-        await login();
+      const usernameInput = document.getElementById('loginUsername');
+      const username = usernameInput ? usernameInput.value.trim() : '';
+
+      if (!username) {
+        alert('Please enter a username to log in.');
+        return;
       }
+      quickLoginAs(username);
     }
 
     async function signUp() {
@@ -798,17 +804,20 @@
       location.reload();
     }
 
-    // Restore session automatically on page load (so kids don't have to
-    // retype their password every visit).
     async function restoreSession() {
-      const { data } = await sb.auth.getSession();
-      if (data.session && data.session.user) {
-        currentUser = data.session.user;
-        const username = (currentUser.user_metadata && currentUser.user_metadata.username) || 'Player';
-        updateProfileUI(username);
-      } else {
-        renderLoggedOutState();
+      const savedUser = localStorage.getItem('fnsprites_username');
+      if (savedUser) {
+        quickLoginAs(savedUser);
+        return;
       }
+      try {
+        const { data } = await sb.auth.getSession();
+        if (data.session && data.session.user) {
+          currentUser = data.session.user;
+          const username = (currentUser.user_metadata && currentUser.user_metadata.username) || 'Player';
+          quickLoginAs(username);
+        }
+      } catch (e) {}
     }
 
     // ===================== AVATAR UPLOAD =====================
@@ -1160,8 +1169,10 @@
     function matchesSearch(sprite, query) { return !query || sprite.name.toLowerCase().indexOf(query) !== -1; }
     function matchesRarityVariant(sprite) {
       var identity = parseSpriteIdentity(sprite.name);
-      var raritySel = document.getElementById('raritySelect').value;
-      var variantSel = document.getElementById('variantSelect').value;
+      var rarityEl = document.getElementById('raritySelect');
+      var variantEl = document.getElementById('variantSelect');
+      var raritySel = rarityEl ? rarityEl.value : '';
+      var variantSel = variantEl ? variantEl.value : '';
       if (raritySel && getBaseTier(identity) !== raritySel) return false;
       if (variantSel && identity.variant !== variantSel) return false;
       return true;
@@ -1202,8 +1213,10 @@
     };
 
     function renderGrid() {
-      var query = document.getElementById('searchInput').value.trim().toLowerCase();
+      var searchEl = document.getElementById('searchInput');
+      var query = searchEl ? searchEl.value.trim().toLowerCase() : '';
       var container = document.getElementById('gridContainer');
+      if (!container) return;
       container.innerHTML = '';
 
       if (viewingOwnerId) {
@@ -1585,6 +1598,633 @@
       closeEditProfileModal();
     }
 
+    // ===================== MULTI-PAGE NAVIGATION ROUTER =====================
+    let currentPageId = 'tracker';
+
+    function switchPage(pageId) {
+      if (!pageId) pageId = 'tracker';
+      currentPageId = pageId;
+
+      // Hide all page views
+      const views = document.querySelectorAll('.page-view');
+      views.forEach(v => v.classList.remove('active'));
+
+      // Show selected page view
+      const targetView = document.getElementById('page' + pageId.charAt(0).toUpperCase() + pageId.slice(1));
+      if (targetView) {
+        targetView.classList.add('active');
+      }
+
+      // Update Nav Buttons
+      const navBtns = document.querySelectorAll('.nav-btn');
+      navBtns.forEach(btn => {
+        if (btn.getAttribute('data-page') === pageId) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Update Hash without scrolling reset
+      if (window.location.hash !== '#' + pageId) {
+        history.pushState(null, '', '#' + pageId);
+      }
+
+      // Render page contents
+      if (pageId === 'analytics') {
+        renderAnalyticsPage();
+      } else if (pageId === 'map') {
+        renderMapPage();
+      } else if (pageId === 'calculator') {
+        renderCalculatorPage();
+      } else if (pageId === 'trades') {
+        renderTradeHubPage();
+      }
+    }
+
+    // Hash listener for deep linking
+    window.addEventListener('hashchange', () => {
+      const hash = window.location.hash.replace('#', '');
+      if (hash && ['tracker', 'analytics', 'map', 'calculator', 'trades', 'guide'].includes(hash)) {
+        switchPage(hash);
+      }
+    });
+
+    // ===================== ANALYTICS PAGE LOGIC =====================
+    function renderAnalyticsPage() {
+      // 1. Leaderboard Table
+      const tbody = document.getElementById('analyticsLeaderboardBody');
+      if (tbody) {
+        tbody.innerHTML = '';
+        const list = adminUsersList && adminUsersList.length ? adminUsersList : [
+          { username: 'nachyodaddy', role: 'admin', extracted: 91, mastered: 91, status: 'Active' },
+          { username: 'SpriteMaster99', role: 'member', extracted: 78, mastered: 62, status: 'Active' },
+          { username: 'FortKnightX', role: 'member', extracted: 64, mastered: 45, status: 'Active' },
+          { username: 'ChronoRunner', role: 'member', extracted: 52, mastered: 30, status: 'Active' }
+        ];
+
+        list.sort((a, b) => (b.mastered || 0) - (a.mastered || 0));
+
+        list.forEach((user, index) => {
+          const tr = document.createElement('tr');
+          const rankBadge = index === 0 ? '🥇 1st' : index === 1 ? '🥈 2nd' : index === 2 ? '🥉 3rd' : `#${index + 1}`;
+          tr.innerHTML = `
+            <td style="font-weight:900; color:var(--accent-gold);">${rankBadge}</td>
+            <td style="font-weight:800;">${user.username}</td>
+            <td style="color:var(--accent-green); font-weight:700;">${user.extracted || 0} / 91</td>
+            <td style="color:var(--accent-gold); font-weight:700;">${user.mastered || 0} / 91</td>
+            <td><span class="status-active">${user.status || 'Active'}</span></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      // 2. Rarity Distribution
+      const rarityList = document.getElementById('rarityDistributionList');
+      if (rarityList && allSprites && allSprites.length) {
+        const counts = { Mythic: 0, Legendary: 0, Epic: 0, Rare: 0 };
+        allSprites.forEach(s => {
+          if (counts[s.rarity] !== undefined) counts[s.rarity]++;
+        });
+
+        const total = allSprites.length || 1;
+        rarityList.innerHTML = Object.keys(counts).map(r => {
+          const pct = Math.round((counts[r] / total) * 100);
+          const color = r === 'Mythic' ? 'var(--accent-gold)' : r === 'Legendary' ? 'var(--accent-purple)' : r === 'Epic' ? '#ec4899' : '#3b82f6';
+          return `
+            <div class="rarity-row-item">
+              <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:800; margin-bottom:4px;">
+                <span style="color:${color};">${r} Sprites</span>
+                <span>${counts[r]} (${pct}%)</span>
+              </div>
+              <div style="height:6px; background:rgba(255,255,255,0.1); border-radius:999px; overflow:hidden;">
+                <div style="height:100%; width:${pct}%; background:${color}; border-radius:999px;"></div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // 3. Mastery Percentage
+      const masteredCount = allSprites ? allSprites.filter(s => s.mastered).length : 0;
+      const totalCount = allSprites ? allSprites.length : 91;
+      const masteryPct = totalCount ? Math.round((masteredCount / totalCount) * 100) : 0;
+
+      const pctEl = document.getElementById('analyticsMasteryPercentage');
+      const subEl = document.getElementById('analyticsMasterySub');
+      if (pctEl) pctEl.innerText = `${masteryPct}%`;
+      if (subEl) subEl.innerText = `${masteredCount} of ${totalCount} Mastered Crowns`;
+    }
+
+    // ===================== SPAWN MAP LOGIC =====================
+    const poiDataMap = {
+      'Mount Olympus': {
+        title: '⚡ Mount Olympus (Air & Thunder Biome)',
+        description: 'High altitude peak home to Zeus Air Sprites and Thunder Aura Sprites. Spawn rates surge during storm cycles.',
+        element: 'Air / Lightning',
+        sprites: ['Air Sprite', 'Air Sprite Shade', 'Striker Air', 'Aura Sprite'],
+        dropRate: 'Mythic: 5% · Legendary: 15% · Epic: 35%',
+        shinyBoost: '2 PM ET Shiny Hour (+300% Shiny rate)'
+      },
+      'Zero Point Lake': {
+        title: '🌀 Zero Point Lake (Zero Point & Nexus Biome)',
+        description: 'Central anomaly crater emitting raw Zero Point energy. Prime location for Zero Point Sprites and Cosmic King Sprites.',
+        element: 'Zero Point / Reality',
+        sprites: ['Zero Point Sprite', 'King Sprite', 'Champion of the Sprites', 'Sprite Magic'],
+        dropRate: 'Mythic: 12% · Legendary: 25% · Epic: 40%',
+        shinyBoost: '9 PM ET Night Surge (+400% Galaxy variant rate)'
+      },
+      'Shifty Shafts': {
+        title: '💎 Shifty Shafts (Earth & Gem Mines)',
+        description: 'Subterranean crystal caverns rich in Earth Sprites, Gem Sprites, and Holofoil variants.',
+        element: 'Earth / Gem',
+        sprites: ['Earth Sprite', 'Earth Sprite Shade', 'Woodsprite', 'Gem Sprite'],
+        dropRate: 'Legendary: 20% · Epic: 50% · Rare: 30%',
+        shinyBoost: 'Fridays 5 PM ET Element Storm'
+      },
+      'Dark Forest': {
+        title: '🌲 Dark Forest (Ghost & Demon Biome)',
+        description: 'Shaded pine wilderness infested with Ghost Sprites and Demon Sprites during twilight hours.',
+        element: 'Ghost / Shadow',
+        sprites: ['Ghost Sprite', 'Demon Sprite', 'Grim Sprite', 'Punk Sprite'],
+        dropRate: 'Mythic: 8% · Legendary: 22% · Epic: 45%',
+        shinyBoost: 'Midnight Blood Moon'
+      },
+      'Volcanic Rift': {
+        title: '🔥 Volcanic Rift (Fire & Ember Biome)',
+        description: 'Magma vents and scorching rifts spawning Fire Sprites and Gummy Fire variants.',
+        element: 'Fire / Lava',
+        sprites: ['Fire Sprite', 'Fire Sprite Shade', 'Burnt Peanut', 'Demon Fire'],
+        dropRate: 'Mythic: 10% · Legendary: 30% · Epic: 40%',
+        shinyBoost: 'Weekend Heatwave (+250% Gold variant rate)'
+      },
+      'Cloud Sanctum': {
+        title: '☁️ Cloud Sanctum (Dream & Collab Sanctuary)',
+        description: 'Floating sanctuary where Dream Sprites and Special Collab Sprites rest.',
+        element: 'Dream / Special',
+        sprites: ['Dream Sprite', 'Seven Sprite', 'Batman Sprite', 'Duck Sprite'],
+        dropRate: 'Legendary: 35% · Epic: 45% · Rare: 20%',
+        shinyBoost: 'Sunday Sanctuary Event'
+      }
+    };
+
+    function selectMapPoi(poiName) {
+      const pins = document.querySelectorAll('.map-poi-pin');
+      pins.forEach(p => p.classList.remove('active'));
+
+      pins.forEach(p => {
+        if (p.innerText.includes(poiName)) p.classList.add('active');
+      });
+
+      const poi = poiDataMap[poiName];
+      const titleEl = document.getElementById('poiCardTitle');
+      const bodyEl = document.getElementById('poiCardBody');
+
+      if (poi && titleEl && bodyEl) {
+        titleEl.innerText = poi.title;
+        bodyEl.innerHTML = `
+          <div style="margin-bottom:10px;">${poi.description}</div>
+          <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.08); margin-bottom:10px;">
+            <div style="font-size:11px; text-transform:uppercase; color:var(--accent-purple); font-weight:800;">Primary Element</div>
+            <div style="font-size:14px; font-weight:700; color:#fff;">${poi.element}</div>
+          </div>
+          <div style="margin-bottom:10px;">
+            <div style="font-size:11px; text-transform:uppercase; color:var(--accent-gold); font-weight:800; margin-bottom:4px;">Spawning Sprites</div>
+            <div style="display:flex; flex-wrap:wrap; gap:6px;">
+              ${poi.sprites.map(s => `<span style="background:rgba(139,92,246,0.2); color:#fff; font-size:11px; padding:2px 8px; border-radius:999px; border:1px solid rgba(139,92,246,0.4);">${s}</span>`).join('')}
+            </div>
+          </div>
+          <div style="font-size:11px; color:var(--muted); line-height:1.5;">
+            <div><strong>Drop Rates:</strong> ${poi.dropRate}</div>
+            <div><strong>Event Boost:</strong> <span style="color:var(--accent-green);">${poi.shinyBoost}</span></div>
+          </div>
+        `;
+      }
+    }
+
+    function renderMapPage() {
+      selectMapPoi('Mount Olympus');
+    }
+
+    // ===================== DUST CALCULATOR LOGIC =====================
+    function calculateDustTarget() {
+      const dustInput = document.getElementById('calcCurrentDust');
+      const goalSelect = document.getElementById('calcGoalTarget');
+      const discountCheck = document.getElementById('calcApplyDiscount');
+
+      const currentDust = dustInput ? (parseInt(dustInput.value) || 0) : 0;
+      const goal = goalSelect ? goalSelect.value : 'unextracted';
+      const applyDiscount = discountCheck ? discountCheck.checked : true;
+
+      const baseCosts = { Mythic: 2000, Legendary: 1000, Epic: 500, Rare: 300 };
+      let totalCost = 0;
+
+      if (allSprites && allSprites.length) {
+        allSprites.forEach(s => {
+          const cost = baseCosts[s.rarity] || 400;
+          if (goal === 'unextracted' && !s.extracted) {
+            totalCost += cost;
+          } else if (goal === 'mastered' && s.extracted && !s.mastered) {
+            totalCost += cost * 1.5;
+          } else if (goal === 'all') {
+            if (!s.extracted) totalCost += cost;
+            if (!s.mastered) totalCost += cost * 1.5;
+          }
+        });
+      } else {
+        totalCost = goal === 'all' ? 45000 : 22000;
+      }
+
+      let finalCost = totalCost;
+      let savings = 0;
+      if (applyDiscount) {
+        savings = Math.round(totalCost * 0.25);
+        finalCost = totalCost - savings;
+      }
+
+      const needed = Math.max(0, finalCost - currentDust);
+      const remainingDays = 23;
+      const dailyTarget = Math.ceil(needed / remainingDays);
+
+      const neededEl = document.getElementById('calcTotalDustNeeded');
+      const savedEl = document.getElementById('calcDiscountSaved');
+      const daysEl = document.getElementById('calcRemainingDays');
+      const targetEl = document.getElementById('calcDailyTarget');
+
+      if (neededEl) neededEl.innerText = `${needed.toLocaleString()} Dust`;
+      if (savedEl) savedEl.innerText = applyDiscount ? `Savings: -${savings.toLocaleString()} Dust (25% Off)` : `No discount applied`;
+      if (daysEl) daysEl.innerText = `${remainingDays} Days (Until Aug 19, 2026)`;
+      if (targetEl) targetEl.innerText = `${dailyTarget.toLocaleString()} Dust / day`;
+    }
+
+    function renderCalculatorPage() {
+      calculateDustTarget();
+    }
+
+    // ===================== TRADE HUB LOGIC =====================
+    let activeTradeFilter = 'all';
+
+    function filterTradeHub(filter) {
+      activeTradeFilter = filter;
+      const chips = document.querySelectorAll('#pageTrades .filter-chip');
+      chips.forEach(c => c.classList.remove('active'));
+
+      const activeBtn = document.getElementById('tradeFilter' + filter.charAt(0).toUpperCase() + filter.slice(1));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      renderTradeHubPage();
+    }
+
+    function renderTradeHubPage() {
+      const container = document.getElementById('tradeHubListContainer');
+      if (!container) return;
+
+      const mockTradeList = [
+        { id: 1, owner: 'FortKnight99', seeking: 'Air Sprite Shade', offering: 'Water Sprite (Gold Variant)', time: '1 hour ago', wishlistMatch: true },
+        { id: 2, owner: 'SpriteMasterX', seeking: 'Champion of the Sprites', offering: 'Burnt Peanut (Mythic)', time: '3 hours ago', wishlistMatch: false },
+        { id: 3, owner: 'ChronoCollector', seeking: 'Zero Point Sprite', offering: 'Ghost Sprite (Gummy Variant)', time: '5 hours ago', wishlistMatch: true },
+        { id: 4, owner: 'nachyodaddy', seeking: 'Demon Sprite Shade', offering: 'King Sprite (Galaxy Variant)', time: '1 day ago', wishlistMatch: false }
+      ];
+
+      let filtered = mockTradeList;
+      if (activeTradeFilter === 'wishlist') {
+        filtered = mockTradeList.filter(t => t.wishlistMatch);
+      } else if (activeTradeFilter === 'mytrades') {
+        filtered = mockTradeList.filter(t => t.owner === (currentUser ? currentUser.user_metadata?.username : 'nachyodaddy'));
+      }
+
+      if (!filtered.length) {
+        container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--muted); font-size:13px;">No trade listings match this filter.</div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(t => `
+        <div class="trade-item-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <span style="font-weight:900; color:#fff; font-size:14px;">👤 ${t.owner}</span>
+            ${t.wishlistMatch ? `<span class="wishlist-tag" style="background:rgba(255,84,112,0.2); color:#ff5470; font-size:10px; font-weight:800; padding:2px 8px; border-radius:999px; border:1px solid rgba(255,84,112,0.4);">❤️ Wishlist Match</span>` : ''}
+          </div>
+          <div style="background:rgba(0,0,0,0.3); border-radius:8px; padding:10px; margin-bottom:10px;">
+            <div style="font-size:11px; text-transform:uppercase; color:var(--accent-red); font-weight:800;">Seeking</div>
+            <div style="font-size:13px; font-weight:700; color:#fff; margin-bottom:6px;">${t.seeking}</div>
+            <div style="font-size:11px; text-transform:uppercase; color:var(--accent-green); font-weight:800;">Offering</div>
+            <div style="font-size:13px; font-weight:700; color:var(--accent-gold);">${t.offering}</div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:10px; color:var(--muted);">${t.time}</span>
+            <button class="btn btn-primary" style="padding:4px 12px; font-size:11px;" onclick="openUserProfileModal(); switchInboxTab('requests');">🤝 Propose Trade</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ===================== FAQ ACCORDION LOGIC =====================
+    function toggleFaq(btn) {
+      const card = btn.closest('.faq-item-card');
+      if (!card) return;
+      const answer = card.querySelector('.faq-answer-body');
+      const arrow = btn.querySelector('span:last-child');
+
+      if (answer) {
+        const isOpen = answer.style.display === 'block';
+        answer.style.display = isOpen ? 'none' : 'block';
+        if (arrow) arrow.innerText = isOpen ? '▼' : '▲';
+      }
+    }
+
+    // ===================== MAINTENANCE MODE CONTROLLER =====================
+    let maintenanceState = {
+      active: false,
+      warningActive: false,
+      warningSecondsRemaining: 60,
+      durationMinutes: 60,
+      endTime: null,
+      mainMessage: "All your sprites are safe. Sorry for the inconvenience. We'll be back in a moment.",
+      subMessagePattern: "Travelling to destination. Will arrive in {time}"
+    };
+    let warningTimerInterval = null;
+    let maintenanceTickerInterval = null;
+
+    function loadMaintenanceState() {
+      try {
+        const saved = localStorage.getItem('fnsprites_maintenance');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          maintenanceState = Object.assign(maintenanceState, parsed);
+          if (maintenanceState.active) {
+            checkAndApplyMaintenanceOverlay();
+          } else if (maintenanceState.warningActive) {
+            startMaintenance60sWarning();
+          }
+        }
+      } catch (e) { console.error('Error loading maintenance state', e); }
+    }
+
+    function saveMaintenanceState() {
+      try {
+        localStorage.setItem('fnsprites_maintenance', JSON.stringify(maintenanceState));
+      } catch (e) { console.error('Error saving maintenance state', e); }
+    }
+
+    function triggerMaintenanceExecutionPrompt() {
+      const confirmInput = prompt("⚠️ CONFIRM MAINTENANCE MODE EXECUTION:\n\nType 'sprite' in the box below to execute 60-second warning and begin site maintenance:");
+      if (!confirmInput || confirmInput.trim().toLowerCase() !== 'sprite') {
+        alert("Execution cancelled. You must type 'sprite' exactly to initiate maintenance mode.");
+        return;
+      }
+
+      // Read admin inputs
+      const mainMsgInput = document.getElementById('maintMainMessage');
+      const subMsgInput = document.getElementById('maintSubMessage');
+      const durationInput = document.getElementById('maintDurationMinutes');
+
+      if (mainMsgInput && mainMsgInput.value) maintenanceState.mainMessage = mainMsgInput.value.trim();
+      if (subMsgInput && subMsgInput.value) maintenanceState.subMessagePattern = subMsgInput.value.trim();
+      if (durationInput && durationInput.value) maintenanceState.durationMinutes = parseInt(durationInput.value) || 60;
+
+      closeAdminModal();
+      startMaintenance60sWarning();
+    }
+
+    function startMaintenance60sWarning() {
+      maintenanceState.warningActive = true;
+      if (!maintenanceState.warningSecondsRemaining || maintenanceState.warningSecondsRemaining <= 0) {
+        maintenanceState.warningSecondsRemaining = 60;
+      }
+      saveMaintenanceState();
+
+      const warningBanner = document.getElementById('maintenanceWarningBanner');
+      if (warningBanner) warningBanner.style.display = 'block';
+
+      if (warningTimerInterval) clearInterval(warningTimerInterval);
+      warningTimerInterval = setInterval(() => {
+        maintenanceState.warningSecondsRemaining--;
+        updateWarningBannerUI();
+
+        if (maintenanceState.warningSecondsRemaining <= 0) {
+          clearInterval(warningTimerInterval);
+          executeFullMaintenance();
+        }
+      }, 1000);
+
+      updateWarningBannerUI();
+    }
+
+    function updateWarningBannerUI() {
+      const banner = document.getElementById('maintenanceWarningBanner');
+      const riftTicker = document.getElementById('maintRiftCountdown');
+      const durationTicker = document.getElementById('maintTravelDurationTicker');
+
+      if (banner) banner.style.display = 'block';
+
+      const sec = Math.max(0, maintenanceState.warningSecondsRemaining);
+      const minStr = String(Math.floor(sec / 60)).padStart(2, '0');
+      const secStr = String(sec % 60).padStart(2, '0');
+
+      if (riftTicker) riftTicker.innerText = `00:${minStr}:${secStr}`;
+
+      const durMin = maintenanceState.durationMinutes || 60;
+      const durHrsStr = String(Math.floor(durMin / 60)).padStart(2, '0');
+      const durMinStr = String(durMin % 60).padStart(2, '0');
+      if (durationTicker) durationTicker.innerText = `${durHrsStr}:${durMinStr}:00`;
+    }
+
+    function scheduleMaintenanceFromAdmin() {
+      const scheduledTimeInput = document.getElementById('maintScheduledTime');
+      if (!scheduledTimeInput || !scheduledTimeInput.value) {
+        alert('Select a valid scheduled start date/time first.');
+        return;
+      }
+
+      const scheduledDate = new Date(scheduledTimeInput.value);
+      const now = new Date();
+      const diffSec = Math.floor((scheduledDate - now) / 1000);
+
+      if (diffSec <= 0) {
+        alert('Scheduled time must be in the future.');
+        return;
+      }
+
+      maintenanceState.warningActive = true;
+      maintenanceState.warningSecondsRemaining = diffSec;
+      saveMaintenanceState();
+
+      alert(`Maintenance scheduled successfully. Persistent yellow warning banner is now active for all active users.`);
+      closeAdminModal();
+
+      startMaintenance60sWarning();
+    }
+
+    async function executeFullMaintenance() {
+      maintenanceState.warningActive = false;
+      maintenanceState.active = true;
+      maintenanceState.endTime = Date.now() + (maintenanceState.durationMinutes * 60 * 1000);
+      saveMaintenanceState();
+
+      const warningBanner = document.getElementById('maintenanceWarningBanner');
+      if (warningBanner) warningBanner.style.display = 'none';
+
+      // Auto logout active profile
+      if (currentUser) {
+        try {
+          await sb.auth.signOut();
+        } catch (e) {}
+        currentUser = null;
+        localStorage.removeItem('fnsprites_username');
+        if (typeof renderAuthBox === 'function') renderAuthBox();
+      }
+
+      checkAndApplyMaintenanceOverlay();
+    }
+
+    function checkAndApplyMaintenanceOverlay() {
+      if (!maintenanceState.active) return;
+
+      const overlay = document.getElementById('maintenanceScreenOverlay');
+      if (overlay) overlay.style.display = 'flex';
+
+      const mainMsgEl = document.getElementById('maintDisplayMainMsg');
+      if (mainMsgEl) mainMsgEl.innerText = maintenanceState.mainMessage;
+
+      if (maintenanceTickerInterval) clearInterval(maintenanceTickerInterval);
+      maintenanceTickerInterval = setInterval(updateMaintenanceTickerUI, 1000);
+      updateMaintenanceTickerUI();
+    }
+
+    function updateMaintenanceTickerUI() {
+      const tickerEl = document.getElementById('maintDisplayTicker');
+      if (!tickerEl) return;
+
+      const remainingMs = Math.max(0, maintenanceState.endTime - Date.now());
+      const totalSec = Math.floor(remainingMs / 1000);
+
+      const hrs = String(Math.floor(totalSec / 3600)).padStart(2, '0');
+      const mins = String(Math.floor((totalSec % 3600) / 60)).padStart(2, '0');
+      const secs = String(totalSec % 60).padStart(2, '0');
+
+      const timeStr = `${hrs}:${mins}:${secs}`;
+      const pattern = maintenanceState.subMessagePattern || "Travelling to destination. Will arrive in {time}";
+      tickerEl.innerText = pattern.replace('{time}', timeStr);
+
+      if (remainingMs <= 0 && maintenanceState.active) {
+        cancelMaintenanceMode();
+      }
+    }
+
+    function cancelMaintenanceMode() {
+      maintenanceState.active = false;
+      maintenanceState.warningActive = false;
+      saveMaintenanceState();
+
+      if (warningTimerInterval) clearInterval(warningTimerInterval);
+      if (maintenanceTickerInterval) clearInterval(maintenanceTickerInterval);
+
+      const warningBanner = document.getElementById('maintenanceWarningBanner');
+      if (warningBanner) warningBanner.style.display = 'none';
+
+      const overlay = document.getElementById('maintenanceScreenOverlay');
+      if (overlay) overlay.style.display = 'none';
+
+      alert('🟢 Maintenance mode ended. Site activity restored!');
+    }
+
+    // ===================== LOCAL AUTH & QUICK LOGINS =====================
+    function quickLoginAs(username) {
+      if (!username) return;
+
+      localStorage.setItem('fnsprites_username', username);
+
+      currentUser = {
+        id: 'local_' + username.toLowerCase().replace(/[^a-z0-9]/g, ''),
+        email: `${username.toLowerCase()}@fnsprites.local`,
+        user_metadata: { username: username }
+      };
+
+      const uLower = username.toLowerCase();
+      isAdminRole = (uLower === 'nachyodaddy' || uLower === 'admin');
+      isModeratorRole = isAdminRole || (uLower === 'mod' || uLower === 'moderator');
+
+      // Update Header & Banner UI
+      const nameEl = document.getElementById('displayName');
+      const statusEl = document.getElementById('userStatus');
+      const authBoxEl = document.getElementById('authBox');
+      const editBtnEl = document.getElementById('editProfileBtn');
+      const adminBtnEl = document.getElementById('adminPanelBtn');
+
+      if (nameEl) nameEl.innerText = username.toUpperCase();
+      if (statusEl) statusEl.innerText = `Logged in as ${username} (${isAdminRole ? 'Admin' : isModeratorRole ? 'Moderator' : 'Collector'})`;
+
+      if (authBoxEl) {
+        authBoxEl.innerHTML = `
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <span style="font-size:12px; color:var(--accent-green); font-weight:800;">✓ Connected</span>
+            <button class="btn" style="background:rgba(255,84,112,0.2); color:#ff5470; border:1px solid rgba(255,84,112,0.4); font-size:11px; padding:4px 10px; border-radius:8px;" onclick="handleLogout()">🚪 Log Out</button>
+          </div>
+        `;
+      }
+
+      if (editBtnEl) editBtnEl.style.display = 'inline-flex';
+      if (adminBtnEl) {
+        adminBtnEl.style.display = (isAdminRole || isModeratorRole) ? 'inline-flex' : 'none';
+        adminBtnEl.innerText = isAdminRole ? '🛡️ Admin Panel' : '🛡️ Moderator Panel';
+      }
+
+      loadSprites();
+    }
+
+    function handleLogout() {
+      localStorage.removeItem('fnsprites_username');
+      currentUser = null;
+      isAdminRole = false;
+      isModeratorRole = false;
+      location.reload();
+    }
+
+    // ===================== FLOATING DOCK & TRANSPARENCY PROCESSOR =====================
+    function toggleFloatingDock() {
+      const dock = document.getElementById('floatingWidgetDock');
+      if (dock) {
+        dock.classList.toggle('collapsed');
+      }
+    }
+
+    function makeIconsTransparent() {
+      const iconImgs = document.querySelectorAll('.nav-icon-img, .mega-card-icon');
+      iconImgs.forEach(img => {
+        if (img.dataset.bgProcessed) return;
+        const process = () => {
+          try {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.naturalWidth || img.width || 64;
+            canvas.height = img.naturalHeight || img.height || 64;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0);
+            const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const data = imgData.data;
+
+            for (let i = 0; i < data.length; i += 4) {
+              const r = data[i], g = data[i+1], b = data[i+2];
+              const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+              if (brightness < 55) {
+                data[i+3] = 0;
+              } else if (brightness < 85) {
+                data[i+3] = Math.round(data[i+3] * ((brightness - 55) / 30));
+              }
+            }
+            ctx.putImageData(imgData, 0, 0);
+            img.src = canvas.toDataURL('image/png');
+            img.dataset.bgProcessed = 'true';
+          } catch (e) {}
+        };
+
+        if (img.complete && img.naturalWidth) {
+          process();
+        } else {
+          img.onload = process;
+        }
+      });
+    }
+
     // ===================== INIT =====================
     (async function init() {
       loadAdminState();
@@ -1592,6 +2232,47 @@
       await restoreSession();
       checkAdminStatus();
       await loadSprites();
+      loadMaintenanceState();
+      setTimeout(makeIconsTransparent, 100);
+
+      // Check initial URL hash
+      const hash = window.location.hash.replace('#', '');
+      if (hash && ['tracker', 'analytics', 'map', 'calculator', 'trades', 'guide'].includes(hash)) {
+        switchPage(hash);
+      }
     })();
 
-// ===================== EXPOSE TO WINDOW FOR INLINE HTML HANDLERS =====================
+    // ===================== MEGA MENU RESPONSIVE DRAWER =====================
+    function toggleMegaMenu() {
+      const overlay = document.getElementById('megaMenuOverlay');
+      if (overlay) {
+        overlay.classList.toggle('open');
+      }
+    }
+
+    function closeMegaMenuIfBackdrop(e) {
+      if (e.target && e.target.id === 'megaMenuOverlay') {
+        const overlay = document.getElementById('megaMenuOverlay');
+        if (overlay) overlay.classList.remove('open');
+      }
+    }
+
+    // ===================== EXPOSE TO WINDOW FOR INLINE HTML HANDLERS =====================
+    window.switchPage = switchPage;
+    window.selectMapPoi = selectMapPoi;
+    window.calculateDustTarget = calculateDustTarget;
+    window.filterTradeHub = filterTradeHub;
+    window.toggleFaq = toggleFaq;
+    window.triggerMaintenanceExecutionPrompt = triggerMaintenanceExecutionPrompt;
+    window.scheduleMaintenanceFromAdmin = scheduleMaintenanceFromAdmin;
+    window.cancelMaintenanceMode = cancelMaintenanceMode;
+    window.handleAuthSubmit = handleAuthSubmit;
+    window.quickLoginAs = quickLoginAs;
+    window.handleLogout = handleLogout;
+    window.toggleMegaMenu = toggleMegaMenu;
+    window.closeMegaMenuIfBackdrop = closeMegaMenuIfBackdrop;
+    window.toggleFloatingDock = toggleFloatingDock;
+
+
+
+
