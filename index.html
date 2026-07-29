@@ -1,24 +1,152 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A8%3C/text%3E%3C/svg%3E">
-  <title>Fortnite Sprite Tracker</title>
+  <title>Fortnite Sprite Tracker (SpriteTrackr)</title>
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;0,700;0,800;0,900;1,800&display=swap" rel="stylesheet">
   <!-- Supabase JS Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="./src/styles.css">
 </head>
 <body>
+  <!-- Top Glassmorphic Navigation Header -->
+  <nav class="main-nav-bar" id="mainNavBar">
+    <div class="nav-brand" onclick="switchPage('tracker')">
+      <span class="brand-logo">✨</span>
+      <span class="brand-name">Sprite<span class="accent">Trackr</span></span>
+      <span class="brand-season">Ch. 7 S.3</span>
+    </div>
+    
+    <div class="nav-links desktop-nav-links">
+      <button class="nav-btn active" id="navBtnTracker" data-page="tracker" onclick="switchPage('tracker')">
+        <img src="/assets/nav_tracker.png" class="nav-icon-img" alt="" />
+        <span>Sprite Tracker</span>
+      </button>
+      <button class="nav-btn" id="navBtnAnalytics" data-page="analytics" onclick="switchPage('analytics')">
+        <img src="/assets/nav_analytics.png" class="nav-icon-img" alt="" />
+        <span>Analytics &amp; Ranks</span>
+      </button>
+      <button class="nav-btn" id="navBtnMap" data-page="map" onclick="switchPage('map')">
+        <img src="/assets/nav_map.png" class="nav-icon-img" alt="" />
+        <span>Spawn Map</span>
+      </button>
+      <button class="nav-btn" id="navBtnCalculator" data-page="calculator" onclick="switchPage('calculator')">
+        <img src="/assets/nav_calculator.png" class="nav-icon-img" alt="" />
+        <span>Dust Calculator</span>
+      </button>
+      <button class="nav-btn" id="navBtnTrades" data-page="trades" onclick="switchPage('trades')">
+        <img src="/assets/nav_trades.png" class="nav-icon-img" alt="" />
+        <span>Trade Hub</span>
+      </button>
+      <button class="nav-btn" id="navBtnGuide" data-page="guide" onclick="switchPage('guide')">
+        <img src="/assets/nav_guide.png" class="nav-icon-img" alt="" />
+        <span>Guide &amp; FAQ</span>
+      </button>
+    </div>
+
+    <!-- Responsive Hamburger Trigger -->
+    <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleMegaMenu()" aria-label="Toggle Navigation Menu">
+      <span class="hamburger-icon">☰</span>
+      <span class="hamburger-text">MENU</span>
+    </button>
+  </nav>
+
+  <!-- Mega-Menu Responsive Overlay Drawer -->
+  <div class="mega-menu-overlay" id="megaMenuOverlay" onclick="closeMegaMenuIfBackdrop(event)">
+    <div class="mega-menu-content">
+      <div class="mega-menu-header">
+        <div class="mega-brand">
+          <span class="brand-logo">✨</span>
+          <span>SpriteTrackr Navigation</span>
+        </div>
+        <button class="mega-close-btn" onclick="toggleMegaMenu()">✕</button>
+      </div>
+
+      <div class="mega-menu-grid">
+        <div class="mega-card active" onclick="switchPage('tracker'); toggleMegaMenu();">
+          <img src="/assets/nav_tracker.png" class="mega-card-icon" alt="" />
+          <div class="mega-card-body">
+            <div class="mega-card-title">🎮 Sprite Tracker</div>
+            <div class="mega-card-desc">Track and master all 12 Chapter 7 Season 3 Sprites</div>
+          </div>
+        </div>
+
+        <div class="mega-card" onclick="switchPage('analytics'); toggleMegaMenu();">
+          <img src="/assets/nav_analytics.png" class="mega-card-icon" alt="" />
+          <div class="mega-card-body">
+            <div class="mega-card-title">📊 Analytics &amp; Ranks</div>
+            <div class="mega-card-desc">Live collector leaderboards and mastery meters</div>
+          </div>
+        </div>
+
+        <div class="mega-card" onclick="switchPage('map'); toggleMegaMenu();">
+          <img src="/assets/nav_map.png" class="mega-card-icon" alt="" />
+          <div class="mega-card-body">
+            <div class="mega-card-title">🗺️ Interactive Spawn Map</div>
+            <div class="mega-card-desc">POI spawn locations and Shiny Hours event boosts</div>
+          </div>
+        </div>
+
+        <div class="mega-card" onclick="switchPage('calculator'); toggleMegaMenu();">
+          <img src="/assets/nav_calculator.png" class="mega-card-icon" alt="" />
+          <div class="mega-card-body">
+            <div class="mega-card-title">💡 Dust Calculator</div>
+            <div class="mega-card-desc">Sprite Buyback cost and July 2026 savings planner</div>
+          </div>
+        </div>
+
+        <div class="mega-card" onclick="switchPage('trades'); toggleMegaMenu();">
+          <img src="/assets/nav_trades.png" class="mega-card-icon" alt="" />
+          <div class="mega-card-body">
+            <div class="mega-card-title">🤝 Community Trade Hub</div>
+            <div class="mega-card-desc">Trade offers, wishlist matches, and marketplace</div>
+          </div>
+        </div>
+
+        <div class="mega-card" onclick="switchPage('guide'); toggleMegaMenu();">
+          <img src="/assets/nav_guide.png" class="mega-card-icon" alt="" />
+          <div class="mega-card-body">
+            <div class="mega-card-title">❓ Getting Started &amp; FAQ</div>
+            <div class="mega-card-desc">Walkthroughs, Shiny Hours schedule, and rules</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Full-Screen POV Overlay Border -->
   <div id="povScreenBorder" class="pov-screen-border"></div>
 
-  <!-- Top-Right Navigation Icons -->
-  <a class="guide-link chat-link" href="#" onclick="openTrackrChatModal(); return false;" title="Trackr AI Chat Assistant">🤖</a>
-  <a class="guide-link profile-link-btn" href="#" onclick="openUserProfileModal(); return false;" title="My Profile & Inbox (Sketch #4)">👤</a>
-  <a class="guide-link secondary" href="https://accountshark.net/blog/fortnite-chapter-7-season-3-sprites" target="_blank" rel="noopener" title="Every Sprite, Ability &amp; Drop Rate (AccountShark)">🦈</a>
-  <a class="guide-link" href="https://www.ign.com/wikis/fortnite/Sprites_Checklist_and_Guide_-_All_Variants_and_Abilities_List" target="_blank" rel="noopener" title="Full Sprites Guide (IGN)">📖</a>
+  <!-- Bottom-Right Collapsible Floating Widget Dock -->
+  <div class="floating-widget-dock collapsed" id="floatingWidgetDock">
+    <button class="dock-toggle-btn" id="dockToggleBtn" onclick="toggleFloatingDock()" title="Toggle Quick Tools">
+      <span class="dock-toggle-icon">⚡</span>
+      <span class="dock-toggle-arrow">▶</span>
+    </button>
+    <div class="dock-items-wrapper" id="dockItemsWrapper">
+      <a class="dock-item chat-link" href="#" onclick="openTrackrChatModal(); return false;" title="Trackr AI Chat Assistant">
+        <span class="dock-icon">🤖</span>
+        <span class="dock-label">AI Chat Assistant</span>
+      </a>
+      <a class="dock-item profile-link-btn" href="#" onclick="openUserProfileModal(); return false;" title="My Profile & Inbox">
+        <span class="dock-icon">👤</span>
+        <span class="dock-label">Profile &amp; Inbox</span>
+      </a>
+      <a class="dock-item secondary" href="https://accountshark.net/blog/fortnite-chapter-7-season-3-sprites" target="_blank" rel="noopener" title="Every Sprite &amp; Ability Guide">
+        <span class="dock-icon">🦈</span>
+        <span class="dock-label">Drop Rates</span>
+      </a>
+      <a class="dock-item" href="https://www.ign.com/wikis/fortnite/Sprites_Checklist_and_Guide_-_All_Variants_and_Abilities_List" target="_blank" rel="noopener" title="Full Sprites Checklist (IGN)">
+        <span class="dock-icon">📖</span>
+        <span class="dock-label">IGN Guide</span>
+      </a>
+    </div>
+  </div>
 
   <!-- Fortnite Slideshow Header (Anchored to 0px Top of Viewport) -->
   <div class="hero-slideshow" id="slideshow">
@@ -32,136 +160,415 @@
 
   <div class="container">
 
-    <!-- Stat Row: countdown / progress / next event -->
-    <div class="stat-row">
-      <div class="stat-box" id="countdownBox">
-        <div class="stat-label">Season Ends In</div>
-        <div class="stat-value" id="countdownValue">--</div>
-        <div class="stat-sub">Chapter 7 Season 3 ("Runners")</div>
-      </div>
-      <div class="stat-box" id="progressBox">
-        <div class="stat-label">Collection Progress</div>
-        <div class="stat-value" id="progressValue">0 / 0</div>
-        <div class="stat-sub" id="progressSub">Log in to track your own</div>
-        <div class="progress-bars">
-          <div class="progress-bar-row">
-            <span>Extracted</span>
-            <div class="progress-track"><div class="progress-fill extracted-fill" id="extractedBar" style="width:0%"></div></div>
-            <span id="extractedLabel">0/0</span>
+    <!-- PAGE 1: CORE SPRITE TRACKER VIEW -->
+    <section id="pageTracker" class="page-view active">
+      <!-- Stat Row: countdown / progress / next event -->
+      <div class="stat-row">
+        <div class="stat-box" id="countdownBox">
+          <div class="stat-label">Season Ends In</div>
+          <div class="stat-value" id="countdownValue">--</div>
+          <div class="stat-sub">Chapter 7 Season 3 ("Runners")</div>
+        </div>
+        <div class="stat-box" id="progressBox">
+          <div class="stat-label">Collection Progress</div>
+          <div class="stat-value" id="progressValue">0 / 0</div>
+          <div class="stat-sub" id="progressSub">Log in to track your own</div>
+          <div class="progress-bars">
+            <div class="progress-bar-row">
+              <span>Extracted</span>
+              <div class="progress-track"><div class="progress-fill extracted-fill" id="extractedBar" style="width:0%"></div></div>
+              <span id="extractedLabel">0/0</span>
+            </div>
+            <div class="progress-bar-row">
+              <span>Mastered</span>
+              <div class="progress-track"><div class="progress-fill mastered-fill" id="masteredBar" style="width:0%"></div></div>
+              <span id="masteredLabel">0/0</span>
+            </div>
           </div>
-          <div class="progress-bar-row">
-            <span>Mastered</span>
-            <div class="progress-track"><div class="progress-fill mastered-fill" id="masteredBar" style="width:0%"></div></div>
-            <span id="masteredLabel">0/0</span>
+        </div>
+        <div class="stat-box event-box" id="eventBox">
+          <div class="stat-label">Next Sprite Event</div>
+          <div class="stat-value"><a href="https://beebom.com/fortnite-sprite-events-schedule/" target="_blank" rel="noopener">Shiny Hours</a></div>
+          <div class="stat-sub">July 25, 2026 · 2 PM &amp; 9 PM ET</div>
+        </div>
+      </div>
+
+      <!-- Left-Anchored Responsive Profile Banner with Overlapping Avatar -->
+      <div class="profile-banner">
+        <div class="avatar-wrapper">
+          <img id="profilePhoto" src="https://placehold.co/150x150/1e293b/8b5cf6?text=User" class="profile-photo" alt="Avatar" />
+          <label for="avatarInput" class="avatar-edit-badge" title="Upload new photo">📷</label>
+          <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="uploadAvatar(event)" />
+        </div>
+
+        <div class="user-info">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="user-name" id="displayName">Guest User</div>
+            <span id="pendingApprovalBadge" class="pending-badge" style="display:none;">⏳ Pending Admin Approval</span>
+          </div>
+          <div class="user-status" id="userStatus">Log in below to sync your findings</div>
+          
+          <div style="display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;">
+            <button class="edit-profile-btn" id="editProfileBtn" style="display:none;" onclick="openUserProfileModal()">👤 My Profile &amp; Inbox</button>
+            <button class="admin-panel-btn" id="adminPanelBtn" style="display:none;" onclick="openAdminModal()">🛡️ Admin / Mod Console</button>
+          </div>
+        </div>
+
+        <div class="auth-box" id="authBox">
+          <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
+            <input type="text" id="loginUsername" placeholder="Username" class="input-field" />
+            <input type="password" id="loginPassword" placeholder="Password" class="input-field" />
+            <button class="btn btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()">Log In</button>
+            <button class="btn" style="background:rgba(139,92,246,0.25); color:var(--accent-purple); border:1px solid rgba(139,92,246,0.4); font-size:11px; padding:6px 12px; border-radius:8px;" onclick="quickLoginAs('nachyodaddy')">👑 Admin Test</button>
+            <button class="btn" style="background:rgba(16,185,129,0.25); color:var(--accent-green); border:1px solid rgba(16,185,129,0.4); font-size:11px; padding:6px 12px; border-radius:8px;" onclick="quickLoginAs('Player1')">👤 Member Test</button>
+            <button class="btn-link" onclick="openRulesModal()">📜 Rules</button>
+          </div>
+        </div>
+
+        <!-- Bottom Row of Profile Panel -->
+        <div id="bottomBannerRow" style="width: 100%; display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap; gap: 10px;">
+          <!-- Left Side: Browse Players Button -->
+          <button class="browse-players-btn" id="browsePlayersBtn" onclick="openBrowsePlayers()">👥 Browse Players Directory</button>
+
+          <!-- Right Side: Sign in with OAuth Links & Notice -->
+          <div id="oauthSection" style="display: flex; flex-direction: column; align-items: flex-end; margin-left: auto;">
+            <div class="oauth-box">
+              <span class="oauth-label">Sign in with:</span>
+              <button class="oauth-btn google" onclick="handleOAuthLogin('Google')">🌐 Google</button>
+              <button class="oauth-btn xbox" onclick="handleOAuthLogin('Xbox')">🎮 Xbox</button>
+              <button class="oauth-btn epic" onclick="handleOAuthLogin('Epic')">⚡ Epic</button>
+              <button class="oauth-btn steam" onclick="handleOAuthLogin('Steam')">⚙️ Steam</button>
+            </div>
+            <div class="auth-mode-note" id="authModeNote">Manual sign-ups require Admin Approval. Social sign-ins auto-approve!</div>
           </div>
         </div>
       </div>
-      <div class="stat-box event-box" id="eventBox">
-        <div class="stat-label">Next Sprite Event</div>
-        <div class="stat-value"><a href="https://beebom.com/fortnite-sprite-events-schedule/" target="_blank" rel="noopener">Shiny Hours</a></div>
-        <div class="stat-sub">July 25, 2026 · 2 PM &amp; 9 PM ET</div>
-      </div>
-    </div>
 
-    <!-- Left-Anchored Responsive Profile Banner with Overlapping Avatar -->
-    <div class="profile-banner">
-      <div class="avatar-wrapper">
-        <img id="profilePhoto" src="https://placehold.co/150x150/1e293b/8b5cf6?text=User" class="profile-photo" alt="Avatar" />
-        <label for="avatarInput" class="avatar-edit-badge" title="Upload new photo">📷</label>
-        <input type="file" id="avatarInput" accept="image/*" style="display: none;" onchange="uploadAvatar(event)" />
-      </div>
-
-      <div class="user-info">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <div class="user-name" id="displayName">Guest User</div>
-          <span id="pendingApprovalBadge" class="pending-badge" style="display:none;">⏳ Pending Admin Approval</span>
+      <!-- Controls Wrapper (Sticky Supported) -->
+      <div class="sticky-controls-wrap" id="stickyControlsWrap">
+        <div class="controls">
+          <input type="text" id="searchInput" placeholder="Search sprites..." oninput="renderGrid()">
+          <div class="filter-chip active" data-filter="all" onclick="setFilter('all')">All</div>
+          <div class="filter-chip" data-filter="extracted" onclick="setFilter('extracted')">Extracted</div>
+          <div class="filter-chip" data-filter="mastered" onclick="setFilter('mastered')">Mastered</div>
+          <div class="filter-chip" data-filter="untouched" onclick="setFilter('untouched')">Untouched</div>
+          <div class="filter-chip" data-filter="wishlist" onclick="setFilter('wishlist')">Wishlist ❤️</div>
+          <button class="filter-chip" id="stickyToggleBtn" onclick="toggleStickyControls()">🔒 Sticky</button>
+          <select id="raritySelect" class="filter-select" onchange="renderGrid()">
+            <option value="">All Rarities</option>
+            <option value="Rare">Rare</option>
+            <option value="Epic">Epic</option>
+            <option value="Legendary">Legendary</option>
+            <option value="Mythic">Mythic</option>
+          </select>
+          <select id="variantSelect" class="filter-select" onchange="renderGrid()">
+            <option value="">All Variants</option>
+            <option value="Base">Base</option>
+            <option value="Gold">Gold</option>
+            <option value="Gummy">Gummy</option>
+            <option value="Galaxy">Galaxy</option>
+            <option value="Holofoil">Holofoil</option>
+            <option value="Cube">Cube</option>
+          </select>
         </div>
-        <div class="user-status" id="userStatus">Log in below to sync your findings</div>
-        
-        <div style="display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;">
-          <button class="edit-profile-btn" id="editProfileBtn" style="display:none;" onclick="openUserProfileModal()">👤 My Profile &amp; Inbox</button>
-          <button class="admin-panel-btn" id="adminPanelBtn" style="display:none;" onclick="openAdminModal()">🛡️ Admin / Mod Console</button>
-        </div>
-      </div>
 
-      <div class="auth-box" id="authBox">
-        <div style="display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap;">
-          <input type="text" id="loginUsername" placeholder="Username" class="input-field" />
-          <input type="password" id="loginPassword" placeholder="Password" class="input-field" />
-          <button class="btn btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()">Log In</button>
-          <button class="btn-link" id="authToggleLink" onclick="toggleAuthMode()">Need an account? Sign Up</button>
-          <button class="btn-link" onclick="openRulesModal()">📜 Community Rules</button>
-        </div>
-      </div>
-
-      <!-- Bottom Row of Profile Panel -->
-      <div id="bottomBannerRow" style="width: 100%; display: flex; align-items: center; justify-content: space-between; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); flex-wrap: wrap; gap: 10px;">
-        <!-- Left Side: Browse Players Button -->
-        <button class="browse-players-btn" id="browsePlayersBtn" onclick="openBrowsePlayers()">👥 Browse Players Directory</button>
-
-        <!-- Right Side: Sign in with OAuth Links & Notice -->
-        <div id="oauthSection" style="display: flex; flex-direction: column; align-items: flex-end; margin-left: auto;">
-          <div class="oauth-box">
-            <span class="oauth-label">Sign in with:</span>
-            <button class="oauth-btn google" onclick="handleOAuthLogin('Google')">🌐 Google</button>
-            <button class="oauth-btn xbox" onclick="handleOAuthLogin('Xbox')">🎮 Xbox</button>
-            <button class="oauth-btn epic" onclick="handleOAuthLogin('Epic')">⚡ Epic</button>
-            <button class="oauth-btn steam" onclick="handleOAuthLogin('Steam')">⚙️ Steam</button>
+        <!-- SPRITE TABLE SELECTOR (2 Rows of 10 Types + Show All) -->
+        <div class="sprite-table-container">
+          <div class="sprite-table-header">
+            <span>🎮 Sprite Type Selector Table</span>
+            <span style="font-size:10px; color:var(--accent-purple);">Click any type to toggle group visibility · Completed groups glow!</span>
           </div>
-          <div class="auth-mode-note" id="authModeNote">Manual sign-ups require Admin Approval. Social sign-ins auto-approve!</div>
+          <div class="sprite-table-grid" id="spriteTableGrid">
+            <!-- Populated dynamically -->
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Controls Wrapper (Sticky Supported) -->
-    <div class="sticky-controls-wrap" id="stickyControlsWrap">
-      <div class="controls">
-        <input type="text" id="searchInput" placeholder="Search sprites..." oninput="renderGrid()">
-        <div class="filter-chip active" data-filter="all" onclick="setFilter('all')">All</div>
-        <div class="filter-chip" data-filter="extracted" onclick="setFilter('extracted')">Extracted</div>
-        <div class="filter-chip" data-filter="mastered" onclick="setFilter('mastered')">Mastered</div>
-        <div class="filter-chip" data-filter="untouched" onclick="setFilter('untouched')">Untouched</div>
-        <div class="filter-chip" data-filter="wishlist" onclick="setFilter('wishlist')">Wishlist ❤️</div>
-        <button class="filter-chip" id="stickyToggleBtn" onclick="toggleStickyControls()">🔒 Sticky</button>
-        <select id="raritySelect" class="filter-select" onchange="renderGrid()">
-          <option value="">All Rarities</option>
-          <option value="Rare">Rare</option>
-          <option value="Epic">Epic</option>
-          <option value="Legendary">Legendary</option>
-          <option value="Mythic">Mythic</option>
-        </select>
-        <select id="variantSelect" class="filter-select" onchange="renderGrid()">
-          <option value="">All Variants</option>
-          <option value="Base">Base</option>
-          <option value="Gold">Gold</option>
-          <option value="Gummy">Gummy</option>
-          <option value="Galaxy">Galaxy</option>
-          <option value="Holofoil">Holofoil</option>
-          <option value="Cube">Cube</option>
-        </select>
+      <!-- Collection Grid Container -->
+      <div id="gridContainer"></div>
+      <div id="loader" class="loader">Loading sprites...</div>
+    </section>
+
+    <!-- PAGE 2: ANALYTICS & RANKS -->
+    <section id="pageAnalytics" class="page-view" style="margin-top: 420px;">
+      <div class="page-header-card">
+        <div class="page-title">📊 Analytics &amp; Global Leaderboards</div>
+        <div class="page-subtitle">Track top collectors across the Fortnite community, inspect rarity drop distributions, and calculate your mastery completion pace.</div>
       </div>
 
-      <!-- SPRITE TABLE SELECTOR (2 Rows of 10 Types + Show All) -->
-      <div class="sprite-table-container">
-        <div class="sprite-table-header">
-          <span>🎮 Sprite Type Selector Table</span>
-          <span style="font-size:10px; color:var(--accent-purple);">Click any type to toggle group visibility · Completed groups glow!</span>
+      <div class="analytics-grid">
+        <!-- Left: Global Collector Leaderboard -->
+        <div class="admin-card" style="margin:0;">
+          <div class="admin-card-title">
+            <span>🏆 Global Sprite Collector Leaderboard</span>
+            <span style="font-size:11px; color:var(--accent-purple);">Live Community Rankings</span>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="admin-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Player</th>
+                  <th>Extracted</th>
+                  <th>Mastered</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="analyticsLeaderboardBody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="sprite-table-grid" id="spriteTableGrid">
-          <!-- Populated dynamically -->
+
+        <!-- Right: Rarity Distribution & Metrics -->
+        <div style="display:flex; flex-direction:column; gap:1.25rem;">
+          <div class="admin-card" style="margin:0;">
+            <div class="admin-card-title">🌟 Rarity Tier Breakdown</div>
+            <div class="rarity-progress-list" id="rarityDistributionList">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <div class="admin-card" style="margin:0;">
+            <div class="admin-card-title">👑 Mastery Completion Rate</div>
+            <div style="text-align:center; padding:10px 0;">
+              <div style="font-size:2.5rem; font-weight:900; color:var(--accent-gold);" id="analyticsMasteryPercentage">0%</div>
+              <div style="font-size:12px; color:var(--muted);" id="analyticsMasterySub">0 of 91 Mastered Crowns</div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Collection Grid Container -->
-    <div id="gridContainer"></div>
-    <div id="loader" class="loader">Loading sprites...</div>
+    <!-- PAGE 3: SPAWN MAP & POIS -->
+    <section id="pageMap" class="page-view" style="margin-top: 420px;">
+      <div class="page-header-card">
+        <div class="page-title">🗺️ Interactive Sprite Spawn Map &amp; POIs</div>
+        <div class="page-subtitle">Explore Chapter 7 Season 3 POI spawn locations, element biomes, Shiny Hours schedule, and rare mythic sprite hotspots.</div>
+      </div>
+
+      <div class="map-layout-grid">
+        <!-- Left: Interactive Fortnite Chapter 7 Season 3 Map -->
+        <div class="map-viewport-box">
+          <div class="map-grid-overlay"></div>
+          <div style="position:absolute; top:12px; left:16px; font-size:11px; font-weight:800; color:var(--accent-gold); text-transform:uppercase; letter-spacing:1px; z-index:10; background:rgba(0,0,0,0.5); padding:4px 10px; border-radius:6px;">
+            📍 Island Map (Ch 7 S 3)
+          </div>
+
+          <!-- POI Pins -->
+          <div class="map-poi-pin active" style="top:25%; left:30%;" onclick="selectMapPoi('Mount Olympus')">
+            <span>⚡ Mount Olympus</span>
+          </div>
+          <div class="map-poi-pin" style="top:45%; left:55%;" onclick="selectMapPoi('Zero Point Lake')">
+            <span>🌀 Zero Point Lake</span>
+          </div>
+          <div class="map-poi-pin" style="top:70%; left:25%;" onclick="selectMapPoi('Shifty Shafts')">
+            <span>💎 Shifty Shafts</span>
+          </div>
+          <div class="map-poi-pin" style="top:30%; left:75%;" onclick="selectMapPoi('Dark Forest')">
+            <span>🌲 Dark Forest</span>
+          </div>
+          <div class="map-poi-pin" style="top:75%; left:70%;" onclick="selectMapPoi('Volcanic Rift')">
+            <span>🔥 Volcanic Rift</span>
+          </div>
+          <div class="map-poi-pin" style="top:18%; left:50%;" onclick="selectMapPoi('Cloud Sanctum')">
+            <span>☁️ Cloud Sanctum</span>
+          </div>
+        </div>
+
+        <!-- Right: POI Details & Spawning Sprites -->
+        <div class="admin-card" style="margin:0;">
+          <div class="admin-card-title" id="poiCardTitle">📍 Mount Olympus</div>
+          <div id="poiCardBody" style="font-size:13px; color:var(--muted); line-height:1.6;">
+            Click any POI pin on the map to view spawning Sprites, drop rates, and biome bonuses.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 4: DUST & CRAFTING CALCULATOR -->
+    <section id="pageCalculator" class="page-view" style="margin-top: 420px;">
+      <div class="page-header-card">
+        <div class="page-title">💡 Sprite Dust &amp; Crafting Calculator</div>
+        <div class="page-subtitle">Calculate total Sprite Dust required to complete your collection, track July 2026 price cut savings, and plan your daily target pacing.</div>
+      </div>
+
+      <div class="calc-card-grid">
+        <!-- Left: Inputs & Targets -->
+        <div class="admin-card" style="margin:0;">
+          <div class="admin-card-title">⚙️ Calculator Inputs</div>
+          <div class="form-group">
+            <label class="form-label">Current Sprite Dust Owned</label>
+            <input type="number" id="calcCurrentDust" class="form-control" placeholder="e.g. 1500" value="0" oninput="calculateDustTarget()" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Target Goal</label>
+            <select id="calcGoalTarget" class="form-control" onchange="calculateDustTarget()">
+              <option value="unextracted">Extract All Remaining Untouched Sprites</option>
+              <option value="mastered">Upgrade All Extracted to Mastered Crowns</option>
+              <option value="all">Full 100% Mastered Collection</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Apply July 2026 Price Cut (-25% Buyback Savings)</label>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <input type="checkbox" id="calcApplyDiscount" checked onchange="calculateDustTarget()" style="width:18px; height:18px; cursor:pointer;" />
+              <span style="font-size:13px; color:#fff;">Enable Official Buyback Discount</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Calculation Results -->
+        <div class="admin-card" style="margin:0;">
+          <div class="admin-card-title">📈 Recommended Plan &amp; Costs</div>
+          <div class="calc-result-box" style="margin-bottom:12px;">
+            <div style="font-size:11px; text-transform:uppercase; color:var(--muted);">Total Dust Needed</div>
+            <div class="calc-result-num" id="calcTotalDustNeeded">0</div>
+            <div style="font-size:11px; color:var(--accent-green);" id="calcDiscountSaved">Savings: 0 Dust</div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:8px; margin-bottom:8px;">
+            <span>Remaining Days in Season:</span>
+            <strong id="calcRemainingDays" style="color:var(--accent-gold);">23 Days</strong>
+          </div>
+          <div style="display:flex; justify-content:space-between; font-size:13px; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:8px;">
+            <span>Recommended Daily Earning:</span>
+            <strong id="calcDailyTarget" style="color:var(--accent-purple);">0 Dust / day</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 5: COMMUNITY TRADE HUB -->
+    <section id="pageTrades" class="page-view" style="margin-top: 420px;">
+      <div class="page-header-card">
+        <div class="trade-hub-header">
+          <div>
+            <div class="page-title">🤝 Community Trade Hub</div>
+            <div class="page-subtitle">Browse live trade offers from other players, match items on your wishlist, and post custom trade listings.</div>
+          </div>
+          <button class="btn btn-primary" onclick="openUserProfileModal(); switchInboxTab('requests');">➕ Create Trade Listing</button>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px; margin-bottom:1.25rem; flex-wrap:wrap;">
+        <button class="filter-chip active" id="tradeFilterAll" onclick="filterTradeHub('all')">All Listings</button>
+        <button class="filter-chip" id="tradeFilterWishlist" onclick="filterTradeHub('wishlist')">❤️ Wishlist Matches</button>
+        <button class="filter-chip" id="tradeFilterMyTrades" onclick="filterTradeHub('mytrades')">👤 My Trade Offers</button>
+      </div>
+
+      <div class="trade-card-grid" id="tradeHubListContainer">
+        <!-- Populated dynamically -->
+      </div>
+    </section>
+
+    <!-- PAGE 6: GUIDE & FAQ -->
+    <section id="pageGuide" class="page-view" style="margin-top: 420px;">
+      <div class="page-header-card">
+        <div class="page-title">❓ Getting Started Guide &amp; Community Rules</div>
+        <div class="page-subtitle">Everything you need to know about Fortnite Chapter 7 Season 3 Sprites, Extracted vs Mastered crowns, Shiny Hours, and Cloud Syncing.</div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:1.5rem;">
+        <!-- Step by Step Walkthrough -->
+        <div class="admin-card" style="margin:0;">
+          <div class="admin-card-title">🚀 How SpriteTrackr Works</div>
+          <div style="display:flex; flex-direction:column; gap:12px; font-size:13px; color:var(--text); line-height:1.5;">
+            <div style="display:flex; gap:12px; align-items:flex-start;">
+              <span style="background:var(--accent-purple); color:#fff; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-weight:900; flex-shrink:0;">1</span>
+              <div><strong>Track Extracted &amp; Mastered:</strong> Single-click any sprite card or category divider to mark Extracted or Mastered crowns.</div>
+            </div>
+            <div style="display:flex; gap:12px; align-items:flex-start;">
+              <span style="background:var(--accent-purple); color:#fff; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-weight:900; flex-shrink:0;">2</span>
+              <div><strong>Cloud Sync &amp; Fallback:</strong> Log in with Google, Xbox, Epic, or Steam to sync your collection across devices via Supabase. LocalStorage saves offline fallback data.</div>
+            </div>
+            <div style="display:flex; gap:12px; align-items:flex-start;">
+              <span style="background:var(--accent-purple); color:#fff; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-weight:900; flex-shrink:0;">3</span>
+              <div><strong>Wishlist &amp; Custom Notes:</strong> Bookmark sprites with the heart icon and add private notes on where you extracted them.</div>
+            </div>
+            <div style="display:flex; gap:12px; align-items:flex-start;">
+              <span style="background:var(--accent-purple); color:#fff; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-weight:900; flex-shrink:0;">4</span>
+              <div><strong>Trade Marketplace:</strong> Send trade requests to other players in the Community Trade Hub or directly from the Players Directory.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Event Schedule -->
+        <div class="admin-card" style="margin:0;">
+          <div class="admin-card-title">🌟 Shiny Hours &amp; Event Schedule</div>
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Schedule</th>
+                <th>Bonus Effect</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Shiny Hours</strong></td>
+                <td>Daily 2 PM &amp; 9 PM ET</td>
+                <td><span style="color:var(--accent-gold); font-weight:700;">3x Variant Spawn Rate</span></td>
+              </tr>
+              <tr>
+                <td><strong>Element Storm</strong></td>
+                <td>Fridays 5 PM ET</td>
+                <td><span style="color:var(--accent-green); font-weight:700;">2x Sprite Dust Drops</span></td>
+              </tr>
+              <tr>
+                <td><strong>Zero Point Surge</strong></td>
+                <td>Weekends</td>
+                <td><span style="color:var(--accent-purple); font-weight:700;">Mythic Spawn Surge</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Accordion FAQ -->
+      <div class="admin-card" style="margin:0;">
+        <div class="admin-card-title">💡 Frequently Asked Questions (FAQ)</div>
+        <div class="guide-accordion">
+          <div class="faq-item-card">
+            <button class="faq-question-btn" onclick="toggleFaq(this)">
+              <span>What is the difference between Extracted and Mastered?</span>
+              <span>▼</span>
+            </button>
+            <div class="faq-answer-body" style="display:none;">
+              Extracted means you have found and captured the Sprite in-game. Mastered means you have completed its mastery challenges and earned the Gold Crown badge for your profile.
+            </div>
+          </div>
+
+          <div class="faq-item-card">
+            <button class="faq-question-btn" onclick="toggleFaq(this)">
+              <span>Does SpriteTrackr cost anything or require an account?</span>
+              <span>▼</span>
+            </button>
+            <div class="faq-answer-body" style="display:none;">
+              No! SpriteTrackr is 100% free for the Fortnite community. You can track your sprites offline without an account, or log in to sync your progress across devices.
+            </div>
+          </div>
+
+          <div class="faq-item-card">
+            <button class="faq-question-btn" onclick="toggleFaq(this)">
+              <span>How do social sign-ins work?</span>
+              <span>▼</span>
+            </button>
+            <div class="faq-answer-body" style="display:none;">
+              Social sign-ins (Google, Xbox, Epic, Steam) auto-approve instantly, granting you full access to community player profiles, trade requests, and inbox messaging.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <!-- Footer Report Issue Action -->
     <div style="text-align:center; margin-top: 2.5rem;">
       <button class="btn" style="background:rgba(22, 26, 43, 0.85); border:1px solid rgba(255,255,255,0.15); color:var(--muted); font-size:12px; border-radius:999px; padding:8px 20px;" onclick="openReportIssueModal()">🚩 Report Issue / Feedback</button>
     </div>
   </div>
+
 
   <!-- INFO MODAL -->
   <div class="modal-overlay" id="modalOverlay" onclick="closeModalIfBackdrop(event)">
@@ -429,6 +836,7 @@
             <button class="admin-tab-btn" id="tabBtnNotices" onclick="switchAdminTab('notices')">📢 Site Notices</button>
             <button class="admin-tab-btn" id="tabBtnUsers" onclick="switchAdminTab('users')">👥 Users</button>
             <button class="admin-tab-btn" id="tabBtnStats" onclick="switchAdminTab('stats')">📊 Stats</button>
+            <button class="admin-tab-btn" id="tabBtnMaintenance" onclick="switchAdminTab('maintenance')">🛠️ Maintenance</button>
           </div>
 
           <!-- TAB: BANNER BACKGROUNDS -->
@@ -619,6 +1027,59 @@
               </div>
             </div>
           </div>
+
+          <!-- TAB 4: MAINTENANCE CONTROL (DEDICATED SAFE TAB) -->
+          <div class="admin-panel-view" id="panelMaintenance">
+            <div class="admin-card" style="border:1px solid rgba(255,84,112,0.4); background:rgba(255,84,112,0.05);">
+              <div class="admin-card-title" style="color:var(--accent-red);">
+                <span>🛠️ Maintenance Mode Execution</span>
+                <span class="role-badge" style="background:rgba(255,84,112,0.2); color:#ff5470; border:1px solid rgba(255,84,112,0.4);">HIGH SECURITY AREA</span>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">Maintenance Reassurance Message</label>
+                <input type="text" class="form-control" id="maintMainMessage" value="All your sprites are safe. Sorry for the inconvenience. We'll be back in a moment.">
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">Travel / Duration Message Pattern</label>
+                  <input type="text" class="form-control" id="maintSubMessage" value="Travelling to destination. Will arrive in {time}">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Maintenance Duration (Minutes)</label>
+                  <input type="number" class="form-control" id="maintDurationMinutes" min="1" max="1440" value="60">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Schedule Ahead Start Time (Optional)</label>
+                <input type="datetime-local" class="form-control" id="maintScheduledTime">
+                <div style="font-size:11px; color:var(--muted); margin-top:4px;">Setting a scheduled start time will display a top-right persistent yellow banner to all active players immediately.</div>
+              </div>
+
+              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;">
+                <button class="btn" style="background:#ff3355; color:#fff; font-weight:900; font-size:13px; padding:10px 20px; border-radius:10px; box-shadow:0 4px 15px rgba(255,51,85,0.4);" onclick="triggerMaintenanceExecutionPrompt()">
+                  🛑 EXECUTE MAINTENANCE MODE (60s Warning)
+                </button>
+                <button class="btn" style="background:rgba(255,203,61,0.2); color:var(--accent-gold); border:1px solid rgba(255,203,61,0.4); font-size:12px; border-radius:10px;" onclick="scheduleMaintenanceFromAdmin()">
+                  📅 Schedule Maintenance Start
+                </button>
+                <button class="btn" style="background:rgba(16,185,129,0.2); color:var(--accent-green); border:1px solid rgba(16,185,129,0.4); font-size:12px; border-radius:10px;" onclick="cancelMaintenanceMode()">
+                  🟢 End / Cancel Maintenance
+                </button>
+              </div>
+            </div>
+
+            <div class="admin-card">
+              <div class="admin-card-title">ℹ️ Maintenance Mode Behavior</div>
+              <div style="font-size:12px; color:var(--muted); line-height:1.6;">
+                <p style="margin-bottom:6px;">• <strong>60-Second Warning:</strong> All active logged-in players receive a persistent top-right yellow warning banner with bright red text count down prior to traveling.</p>
+                <p style="margin-bottom:6px;">• <strong>Auto Logout &amp; Suspension:</strong> At 00:00:00, all active profile sessions are logged out. Sprite collecting, messaging, and trading are completely suspended.</p>
+                <p>• <strong>Cosmic Rift View:</strong> Unauthenticated visitors and players are greeted with the dark space pulsating rift graphic page with live destination ticker.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -628,6 +1089,7 @@
         <button class="btn btn-primary" onclick="saveAdminChanges()">💾 Submit Changes</button>
       </div>
     </div>
+
   <!-- ANNOUNCEMENT TOAST POPUP -->
   <div id="announcementToast" class="announcement-toast" style="display:none;">
     <div class="toast-header">
@@ -636,6 +1098,77 @@
     </div>
     <div class="toast-body" id="toastMessage">Double XP Event active!</div>
     <div class="toast-timer">⏳ <span id="toastTimeLeft">Expires soon</span></div>
+  </div>
+
+  <!-- PERSISTENT TOP-RIGHT YELLOW BORDERED MAINTENANCE WARNING MODAL PANEL -->
+  <div id="maintenanceWarningBanner" class="maint-warning-floating-panel" style="display:none;">
+    <div class="maint-warning-header">
+      <span>⚠️ MAINTENANCE NOTICE</span>
+      <span class="maint-warning-pulse"></span>
+    </div>
+    <div class="maint-warning-text" id="maintWarningText">
+      The site will be rifting in <span id="maintRiftCountdown" class="maint-red-ticker">00:01:00</span> minutes. Complete all trades and collections before we travel. Travel time <span id="maintTravelDurationTicker" class="maint-red-ticker">01:00:00</span>.
+    </div>
+  </div>
+
+  <!-- FULL-SCREEN MAINTENANCE COSMIC RIFT OVERLAY -->
+  <div id="maintenanceScreenOverlay" class="maint-screen-overlay" style="display:none;">
+    <!-- Outer Space Starfield Effect -->
+    <div class="starfield-bg"></div>
+
+    <div class="maint-content-box">
+      <!-- Pulsating Zero-Point Rift / Tear Graphic -->
+      <div class="cosmic-rift-container">
+        <svg class="cosmic-rift-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="riftGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#00f2fe" stop-opacity="1" />
+              <stop offset="40%" stop-color="#7c3aed" stop-opacity="0.8" />
+              <stop offset="80%" stop-color="#ff007f" stop-opacity="0.5" />
+              <stop offset="100%" stop-color="#0d0f1a" stop-opacity="0" />
+            </radialGradient>
+            <filter id="glowBlur" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="6" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          <!-- Outer Pulsating Energy Aura -->
+          <circle cx="100" cy="100" r="75" fill="url(#riftGlow)" class="rift-aura-pulse" />
+
+          <!-- Torn Cosmic Space Tear Path -->
+          <path d="M 100 15 
+                   C 115 45, 145 70, 125 100 
+                   C 105 130, 135 160, 100 185 
+                   C 65 160, 95 130, 75 100 
+                   C 55 70, 85 45, 100 15 Z" 
+                fill="#ffffff" 
+                filter="url(#glowBlur)" 
+                class="rift-tear-path" />
+
+          <!-- Floating Energy Particles -->
+          <circle cx="95" cy="50" r="3" fill="#00f2fe" class="rift-particle p1" />
+          <circle cx="110" cy="110" r="4" fill="#ffcb3d" class="rift-particle p2" />
+          <circle cx="85" cy="140" r="2.5" fill="#ff007f" class="rift-particle p3" />
+        </svg>
+      </div>
+
+      <!-- Ticking Travelling Message & Reassurance -->
+      <div class="maint-ticker-box">
+        <div class="maint-ticker-title" id="maintDisplayTicker">Travelling to destination. Will arrive in 00:00:00</div>
+        <div class="maint-ticker-sub" id="maintDisplayMainMsg">All your sprites are safe. Sorry for the inconvenience. We'll be back in a moment.</div>
+      </div>
+
+      <!-- Emergency Admin Override Button -->
+      <div style="margin-top: 24px;">
+        <button class="btn" style="background: rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.18); color:var(--muted); font-size:11px; border-radius:999px; padding:6px 16px;" onclick="openAdminModal()">
+          🛡️ Admin Maintenance Bypass
+        </button>
+      </div>
+    </div>
   </div>
 
   <script type="module" src="./src/main.js"></script>
