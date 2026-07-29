@@ -92,9 +92,13 @@
       }
 
       const adminBtn = document.getElementById('adminPanelBtn');
+      const quickMaintBtn = document.getElementById('quickMaintBtn');
       if (adminBtn) {
         adminBtn.style.display = (isAdminRole || isModeratorRole) ? 'inline-flex' : 'none';
         adminBtn.innerText = isAdminRole ? '🛡️ Admin Panel' : '🛡️ Moderator Panel';
+      }
+      if (quickMaintBtn) {
+        quickMaintBtn.style.display = (isAdminRole || isModeratorRole) ? 'inline-flex' : 'none';
       }
     }
 
@@ -229,7 +233,7 @@
     }
 
     function switchAdminTab(tab) {
-      const tabs = ['slider', 'banners', 'notices', 'users', 'stats'];
+      const tabs = ['slider', 'banners', 'notices', 'users', 'stats', 'maintenance'];
       tabs.forEach(t => {
         const btn = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
         const panel = document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1));
@@ -684,8 +688,9 @@
 
     function saveAdminChanges() {
       saveAdminStateToStorage();
+      saveMaintenanceState();
       renderSiteSlides();
-      alert('💾 All admin configuration changes saved & applied live!');
+      alert('💾 All admin configuration & maintenance settings saved & applied live!');
       closeAdminModal();
     }
 
@@ -2156,6 +2161,26 @@
       startMaintenance60sWarning();
     }
 
+    function triggerInstantMaintenanceMode() {
+      const confirmInput = prompt("⚠️ CONFIRM INSTANT MAINTENANCE MODE EXECUTION:\n\nType 'sprite' in the box below to immediately execute site maintenance mode:");
+      if (!confirmInput || confirmInput.trim().toLowerCase() !== 'sprite') {
+        alert("Execution cancelled. You must type 'sprite' exactly to initiate instant maintenance mode.");
+        return;
+      }
+
+      // Read admin inputs
+      const mainMsgInput = document.getElementById('maintMainMessage');
+      const subMsgInput = document.getElementById('maintSubMessage');
+      const durationInput = document.getElementById('maintDurationMinutes');
+
+      if (mainMsgInput && mainMsgInput.value) maintenanceState.mainMessage = mainMsgInput.value.trim();
+      if (subMsgInput && subMsgInput.value) maintenanceState.subMessagePattern = subMsgInput.value.trim();
+      if (durationInput && durationInput.value) maintenanceState.durationMinutes = parseInt(durationInput.value) || 60;
+
+      closeAdminModal();
+      executeFullMaintenance();
+    }
+
     function startMaintenance60sWarning() {
       maintenanceState.warningActive = true;
       if (!maintenanceState.warningSecondsRemaining || maintenanceState.warningSecondsRemaining <= 0) {
@@ -2346,9 +2371,13 @@
       }
 
       if (editBtnEl) editBtnEl.style.display = 'inline-flex';
+      const quickMaintBtnEl = document.getElementById('quickMaintBtn');
       if (adminBtnEl) {
         adminBtnEl.style.display = (isAdminRole || isModeratorRole) ? 'inline-flex' : 'none';
         adminBtnEl.innerText = isAdminRole ? '🛡️ Admin Panel' : '🛡️ Moderator Panel';
+      }
+      if (quickMaintBtnEl) {
+        quickMaintBtnEl.style.display = (isAdminRole || isModeratorRole) ? 'inline-flex' : 'none';
       }
 
       loadSprites();
@@ -2445,9 +2474,32 @@
     window.calculateDustTarget = calculateDustTarget;
     window.filterTradeHub = filterTradeHub;
     window.toggleFaq = toggleFaq;
+    window.openAdminModal = openAdminModal;
+    window.closeAdminModal = closeAdminModal;
+    window.closeAdminModalIfBackdrop = closeAdminModalIfBackdrop;
+    window.switchAdminTab = switchAdminTab;
+    window.saveAdminChanges = saveAdminChanges;
     window.triggerMaintenanceExecutionPrompt = triggerMaintenanceExecutionPrompt;
+    window.triggerInstantMaintenanceMode = triggerInstantMaintenanceMode;
     window.scheduleMaintenanceFromAdmin = scheduleMaintenanceFromAdmin;
     window.cancelMaintenanceMode = cancelMaintenanceMode;
+    window.updateSliderSpeed = updateSliderSpeed;
+    window.handleSlideFileUpload = handleSlideFileUpload;
+    window.addCustomSlide = addCustomSlide;
+    window.toggleSlideActive = toggleSlideActive;
+    window.deleteSlide = deleteSlide;
+    window.updateBoxBackground = updateBoxBackground;
+    window.handleBoxBgUpload = handleBoxBgUpload;
+    window.clearBoxBg = clearBoxBg;
+    window.createSiteAnnouncement = createSiteAnnouncement;
+    window.approvePendingUser = approvePendingUser;
+    window.rejectPendingUser = rejectPendingUser;
+    window.viewAsUserPOV = viewAsUserPOV;
+    window.openIssueNoticeModal = openIssueNoticeModal;
+    window.resetUserPhoto = resetUserPhoto;
+    window.toggleUserSuspend = toggleUserSuspend;
+    window.changeUserRole = changeUserRole;
+    window.handleOAuthLogin = handleOAuthLogin;
     window.handleAuthSubmit = handleAuthSubmit;
     window.quickLoginAs = quickLoginAs;
     window.handleLogout = handleLogout;
