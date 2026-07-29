@@ -1047,52 +1047,81 @@
     // Master sprite list comes straight from the original public source -
     // no separate hosting/sync step needed for that part.
     async function fetchMasterSprites() {
-      var baseUrl = 'https://staticvacant.github.io/fnsprites/';
-      try {
-        var res = await fetch(baseUrl + 'sprites-data.js');
-        if (res.ok) {
-          var jsContent = await res.text();
-          var objRegex = /\{\s*id:\s*"([^"]+)"\s*,\s*name:\s*"([^"]+)"\s*,\s*theme:\s*"([^"]+)"\s*,\s*rarity:\s*"([^"]+)"\s*,\s*unreleased:\s*(true|false)\s*\}/g;
-          var match;
-          var sprites = [];
-          while ((match = objRegex.exec(jsContent)) !== null) {
-            if (match[5] === 'true') continue; // skip unreleased
-            var name = match[2];
-            if (name.indexOf('Gem ') === 0) continue; // Gem variants were vaulted/never actually released
-            sprites.push({
-              name: name,
-              imageUrl: baseUrl + 'sprites/' + match[1] + '.png',
-              rarity: match[4]
-            });
-          }
-          if (sprites.length > 0) return sprites;
-        }
-      } catch (e) {
-        console.warn('Network note: Using built-in master sprites list:', e.message);
-      }
+      const defaultMasterSprites = [
+        { name: 'Water', rarity: 'Rare' },
+        { name: 'Gold Water', rarity: 'Rare' },
+        { name: 'Gummy Water', rarity: 'Rare' },
+        { name: 'Galaxy Water', rarity: 'Rare' },
 
-      return [
-        { name: 'Water Sprite', imageUrl: getSpriteImageUrl('Water Sprite', ''), rarity: 'Rare' },
-        { name: 'Water Sprite Shade', imageUrl: getSpriteImageUrl('Water Sprite Shade', ''), rarity: 'Rare' },
-        { name: 'Woodsprite', imageUrl: getSpriteImageUrl('Woodsprite', ''), rarity: 'Rare' },
-        { name: 'Fire Sprite Shade', imageUrl: getSpriteImageUrl('Fire Sprite Shade', ''), rarity: 'Rare' },
-        { name: 'Air Sprite Shade', imageUrl: getSpriteImageUrl('Air Sprite Shade', ''), rarity: 'Rare' },
-        { name: 'Sprite Shenanigans', imageUrl: getSpriteImageUrl('Sprite Shenanigans', ''), rarity: 'Epic' },
-        { name: 'Sprite Guardians', imageUrl: getSpriteImageUrl('Sprite Guardians', ''), rarity: 'Epic' },
-        { name: 'Sprite Magic', imageUrl: getSpriteImageUrl('Sprite Magic', ''), rarity: 'Epic' },
-        { name: 'Sprite Might', imageUrl: getSpriteImageUrl('Sprite Might', ''), rarity: 'Epic' },
-        { name: 'Sprite Plushie', imageUrl: getSpriteImageUrl('Sprite Plushie', ''), rarity: 'Legendary' },
-        { name: 'Champion of the Sprites', imageUrl: getSpriteImageUrl('Champion of the Sprites', ''), rarity: 'Epic' },
-        { name: 'Sprite Mastery Pod', imageUrl: getSpriteImageUrl('Sprite Mastery Pod', ''), rarity: 'Mythic' },
-        { name: 'Sprite Seat', imageUrl: getSpriteImageUrl('Sprite Seat', ''), rarity: 'Rare' },
-        { name: 'Sprite Runners', imageUrl: getSpriteImageUrl('Sprite Runners', ''), rarity: 'Epic' },
-        { name: 'I Heart Sprites', imageUrl: getSpriteImageUrl('I Heart Sprites', ''), rarity: 'Epic' },
-        { name: 'Model Delta-7B Aethersprite', imageUrl: getSpriteImageUrl('Model Delta-7B Aethersprite', ''), rarity: 'Legendary' },
-        { name: 'S.O.S (Save Our Sprites)', imageUrl: getSpriteImageUrl('S.O.S (Save Our Sprites)', ''), rarity: 'Mythic' },
-        { name: 'Spritefall', imageUrl: getSpriteImageUrl('Spritefall', ''), rarity: 'Legendary' },
-        { name: 'Sprite Soarer', imageUrl: getSpriteImageUrl('Sprite Soarer', ''), rarity: 'Mythic' },
-        { name: 'Burnt Peanut', imageUrl: getSpriteImageUrl('Burnt Peanut', ''), rarity: 'Mythic' }
-      ];
+        { name: 'Earth', rarity: 'Rare' },
+        { name: 'Gold Earth', rarity: 'Rare' },
+        { name: 'Gummy Earth', rarity: 'Rare' },
+        { name: 'Galaxy Earth', rarity: 'Rare' },
+
+        { name: 'Fire', rarity: 'Rare' },
+        { name: 'Gold Fire', rarity: 'Rare' },
+        { name: 'Gummy Fire', rarity: 'Rare' },
+        { name: 'Galaxy Fire', rarity: 'Rare' },
+
+        { name: 'Air', rarity: 'Rare' },
+        { name: 'Gold Air', rarity: 'Rare' },
+        { name: 'Gummy Air', rarity: 'Rare' },
+        { name: 'Galaxy Air', rarity: 'Rare' },
+
+        { name: 'Fishy', rarity: 'Rare' },
+        { name: 'Gold Fishy', rarity: 'Rare' },
+
+        { name: 'Duck', rarity: 'Epic' },
+        { name: 'Gold Duck', rarity: 'Epic' },
+
+        { name: 'Ghost', rarity: 'Epic' },
+        { name: 'Gold Ghost', rarity: 'Epic' },
+
+        { name: 'King', rarity: 'Epic' },
+        { name: 'Gold King', rarity: 'Epic' },
+
+        { name: 'Demon', rarity: 'Epic' },
+        { name: 'Gold Demon', rarity: 'Epic' },
+
+        { name: 'Aura', rarity: 'Epic' },
+        { name: 'Gold Aura', rarity: 'Epic' },
+        { name: 'Gummy Aura', rarity: 'Epic' },
+
+        { name: 'Striker', rarity: 'Epic' },
+        { name: 'Gold Striker', rarity: 'Epic' },
+
+        { name: 'Dream', rarity: 'Legendary' },
+        { name: 'Gold Dream', rarity: 'Legendary' },
+
+        { name: 'Punk', rarity: 'Legendary' },
+        { name: 'Gold Punk', rarity: 'Legendary' },
+
+        { name: 'Boss', rarity: 'Legendary' },
+        { name: 'Gold Boss', rarity: 'Legendary' },
+
+        { name: 'Seven', rarity: 'Legendary' },
+        { name: 'Gold Seven', rarity: 'Legendary' },
+        { name: 'Holofoil Seven', rarity: 'Legendary' },
+
+        { name: 'Zero Point', rarity: 'Mythic' },
+        { name: 'Gold Zero Point', rarity: 'Mythic' },
+
+        { name: 'Grim', rarity: 'Mythic' },
+        { name: 'Gold Grim', rarity: 'Mythic' },
+
+        { name: 'Batman', rarity: 'Mythic' },
+        { name: 'Gold Batman', rarity: 'Mythic' },
+
+        { name: 'Burnt Peanut', rarity: 'Mythic' }
+      ].map(function(s) {
+        return {
+          name: s.name,
+          imageUrl: getSpriteImageUrl(s.name, ''),
+          rarity: s.rarity
+        };
+      });
+
+      return defaultMasterSprites;
     }
 
     async function fetchMyProgress() {
@@ -2175,6 +2204,50 @@
 
       alert('🟢 Maintenance mode ended. Site activity restored!');
     }
+
+    async function handleAuthSubmit() {
+      const usernameInput = document.getElementById('loginUsername');
+      const passwordInput = document.getElementById('loginPassword');
+      const username = (usernameInput ? usernameInput.value : '').trim();
+      const password = (passwordInput ? passwordInput.value : '').trim();
+
+      if (!username) {
+        alert('Please enter your username or email address.');
+        return;
+      }
+
+      try {
+        const email = username.includes('@') ? username : `${username.toLowerCase()}@fnsprites.com`;
+        const { data, error } = await sb.auth.signInWithPassword({
+          email: email,
+          password: password || 'defaultPassword123'
+        });
+
+        if (!error && data.user) {
+          currentUser = data.user;
+          localStorage.setItem('fnsprites_username', username);
+          await checkAdminStatus();
+          quickLoginAs(username);
+          return;
+        }
+      } catch (e) {
+        console.warn('Supabase auth fallback:', e.message);
+      }
+
+      quickLoginAs(username);
+    }
+
+    // Site Title Fade-Out on Scroll
+    window.addEventListener('scroll', function() {
+      const brandTitle = document.getElementById('brandTitle');
+      if (brandTitle) {
+        if (window.scrollY > 30) {
+          brandTitle.classList.add('fade-out');
+        } else {
+          brandTitle.classList.remove('fade-out');
+        }
+      }
+    }, { passive: true });
 
     // ===================== LOCAL AUTH & QUICK LOGINS =====================
     function quickLoginAs(username) {
