@@ -1,0 +1,24 @@
+{
+  "name": "fnsprites",
+  "version": "1.0.0",
+  "description": "Fortnite Sprite Tracker - Interactive Web App for Tracking extracted & mastered sprites",
+  "main": "index.html",
+  "type": "module",
+  "scripts": {
+    "dev": "npx vite",
+    "build": "npx vite build",
+    "preview": "npx vite preview"
+  },
+  "keywords": [
+    "fortnite",
+    "sprite-tracker",
+    "fnsprites",
+    "vite"
+  ],
+  "author": "nachyodaddy",
+  "license": "MIT",
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.3.1"
+  }
+}
