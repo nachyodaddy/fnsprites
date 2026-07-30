@@ -2188,6 +2188,11 @@
           checkAndApplyMaintenanceOverlay();
         } else if (maintenanceState.warningActive) {
           startMaintenance60sWarning();
+        } else {
+          const overlay = document.getElementById('maintenanceScreenOverlay');
+          if (overlay) overlay.style.display = 'none';
+          const warningBanner = document.getElementById('maintenanceWarningBanner');
+          if (warningBanner) warningBanner.style.display = 'none';
         }
       } catch (e) { console.error('Error loading maintenance state', e); }
     }
