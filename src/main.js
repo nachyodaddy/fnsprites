@@ -1151,43 +1151,86 @@
 
     // ===================== DATA LOAD =====================
     // Master sprite list comes straight from the original public source -
-    // no separate hosting/sync step needed for that part.
+    // staticvacant.github.io/fnsprites/sprites-data.js
     async function fetchMasterSprites() {
+      const baseUrl = 'https://staticvacant.github.io/fnsprites/';
+      try {
+        const res = await fetch(baseUrl + 'sprites-data.js');
+        if (res.ok) {
+          const jsContent = await res.text();
+          const objRegex = /\{\s*id:\s*"([^"]+)"\s*,\s*name:\s*"([^"]+)"\s*,\s*theme:\s*"([^"]+)"\s*,\s*rarity:\s*"([^"]+)"\s*,\s*unreleased:\s*(true|false)\s*\}/g;
+          let match;
+          const sprites = [];
+          while ((match = objRegex.exec(jsContent)) !== null) {
+            if (match[5] === 'true') continue; // skip unreleased
+            const name = match[2];
+            if (name.indexOf('Gem ') === 0) continue; // Gem variants were vaulted
+            sprites.push({
+              name: name,
+              imageUrl: baseUrl + 'sprites/' + match[1] + '.png',
+              rarity: match[4]
+            });
+          }
+          if (sprites.length > 0) return sprites;
+        }
+      } catch (e) {
+        console.warn('Network error fetching sprites-data.js, using fallback list:', e);
+      }
+
+      // Complete fallback list of master sprites if offline or network error
       const defaultMasterSprites = [
         { name: 'Water', rarity: 'Rare' },
         { name: 'Gold Water', rarity: 'Rare' },
         { name: 'Gummy Water', rarity: 'Rare' },
         { name: 'Galaxy Water', rarity: 'Rare' },
+        { name: 'Holofoil Water', rarity: 'Rare' },
+        { name: 'Quack Water', rarity: 'Rare' },
 
         { name: 'Earth', rarity: 'Rare' },
         { name: 'Gold Earth', rarity: 'Rare' },
         { name: 'Gummy Earth', rarity: 'Rare' },
         { name: 'Galaxy Earth', rarity: 'Rare' },
+        { name: 'Cube Earth', rarity: 'Rare' },
+        { name: 'Quack Earth', rarity: 'Rare' },
 
         { name: 'Fire', rarity: 'Rare' },
         { name: 'Gold Fire', rarity: 'Rare' },
         { name: 'Gummy Fire', rarity: 'Rare' },
         { name: 'Galaxy Fire', rarity: 'Rare' },
+        { name: 'Holofoil Fire', rarity: 'Rare' },
+        { name: 'Quack Fire', rarity: 'Rare' },
 
         { name: 'Air', rarity: 'Rare' },
         { name: 'Gold Air', rarity: 'Rare' },
         { name: 'Gummy Air', rarity: 'Rare' },
         { name: 'Galaxy Air', rarity: 'Rare' },
+        { name: 'Holofoil Air', rarity: 'Rare' },
+        { name: 'Quack Air', rarity: 'Rare' },
 
         { name: 'Fishy', rarity: 'Rare' },
         { name: 'Gold Fishy', rarity: 'Rare' },
+        { name: 'Gummy Fishy', rarity: 'Rare' },
+        { name: 'Galaxy Fishy', rarity: 'Rare' },
 
         { name: 'Duck', rarity: 'Epic' },
         { name: 'Gold Duck', rarity: 'Epic' },
+        { name: 'Gummy Duck', rarity: 'Epic' },
+        { name: 'Galaxy Duck', rarity: 'Epic' },
 
         { name: 'Ghost', rarity: 'Epic' },
         { name: 'Gold Ghost', rarity: 'Epic' },
+        { name: 'Gummy Ghost', rarity: 'Epic' },
+        { name: 'Galaxy Ghost', rarity: 'Epic' },
 
         { name: 'King', rarity: 'Epic' },
         { name: 'Gold King', rarity: 'Epic' },
+        { name: 'Gummy King', rarity: 'Epic' },
+        { name: 'Galaxy King', rarity: 'Epic' },
 
         { name: 'Demon', rarity: 'Epic' },
         { name: 'Gold Demon', rarity: 'Epic' },
+        { name: 'Gummy Demon', rarity: 'Epic' },
+        { name: 'Galaxy Demon', rarity: 'Epic' },
 
         { name: 'Aura', rarity: 'Epic' },
         { name: 'Gold Aura', rarity: 'Epic' },
@@ -1195,22 +1238,30 @@
 
         { name: 'Striker', rarity: 'Epic' },
         { name: 'Gold Striker', rarity: 'Epic' },
+        { name: 'Gummy Striker', rarity: 'Epic' },
 
         { name: 'Dream', rarity: 'Legendary' },
         { name: 'Gold Dream', rarity: 'Legendary' },
+        { name: 'Gummy Dream', rarity: 'Legendary' },
+        { name: 'Galaxy Dream', rarity: 'Legendary' },
 
         { name: 'Punk', rarity: 'Legendary' },
         { name: 'Gold Punk', rarity: 'Legendary' },
+        { name: 'Gummy Punk', rarity: 'Legendary' },
+        { name: 'Galaxy Punk', rarity: 'Legendary' },
 
         { name: 'Boss', rarity: 'Legendary' },
         { name: 'Gold Boss', rarity: 'Legendary' },
+        { name: 'Gummy Boss', rarity: 'Legendary' },
 
         { name: 'Seven', rarity: 'Legendary' },
         { name: 'Gold Seven', rarity: 'Legendary' },
         { name: 'Holofoil Seven', rarity: 'Legendary' },
+        { name: 'Galaxy Seven', rarity: 'Legendary' },
 
         { name: 'Zero Point', rarity: 'Mythic' },
         { name: 'Gold Zero Point', rarity: 'Mythic' },
+        { name: 'Galaxy Zero Point', rarity: 'Mythic' },
 
         { name: 'Grim', rarity: 'Mythic' },
         { name: 'Gold Grim', rarity: 'Mythic' },
@@ -1218,7 +1269,11 @@
         { name: 'Batman', rarity: 'Mythic' },
         { name: 'Gold Batman', rarity: 'Mythic' },
 
-        { name: 'Burnt Peanut', rarity: 'Mythic' }
+        { name: 'Burnt Peanut', rarity: 'Mythic' },
+        { name: 'Sprite Guardians', rarity: 'Special' },
+        { name: 'Sprite Magic', rarity: 'Special' },
+        { name: 'Sprite Plushie', rarity: 'Special' },
+        { name: 'Sprite Seat', rarity: 'Special' }
       ].map(function(s) {
         return {
           name: s.name,
@@ -1401,13 +1456,14 @@
 
       var data = buildGroups();
       var sections = [];
+      var filterByCategory = activeTypeToggles.size > 0;
 
       data.groupOrder.forEach(function(base) {
-        if (!activeTypeToggles.has(base)) return;
+        if (filterByCategory && !activeTypeToggles.has(base)) return;
         var visible = data.groups[base].filter(function(s) { return matchesFilter(s) && matchesSearch(s, query) && matchesRarityVariant(s); });
         if (visible.length > 0) sections.push(buildGroupSection(base, visible));
       });
-      if (activeTypeToggles.has('Collabs')) {
+      if (!filterByCategory || activeTypeToggles.has('Collabs')) {
         var soloVisible = data.soloGroup.filter(function(s) { return matchesFilter(s) && matchesSearch(s, query) && matchesRarityVariant(s); });
         if (soloVisible.length > 0) sections.push(buildGroupSection('Fan Favorites (No Variants)', soloVisible));
       }
