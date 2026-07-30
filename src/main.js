@@ -1140,22 +1140,20 @@
     };
 
     function getSpriteImageUrl(name, defaultUrl) {
-      if (defaultUrl && defaultUrl.startsWith('http') && !defaultUrl.includes('oereylignfdcrnafqpix')) return defaultUrl;
+      if (defaultUrl && defaultUrl.length > 0 && !defaultUrl.includes('oereylignfdcrnafqpix') && !defaultUrl.includes('staticvacant')) return defaultUrl;
       const id = SPRITE_ID_MAP[name];
       if (id) {
-        return 'https://staticvacant.github.io/fnsprites/sprites/' + id + '.png';
+        return './sprites/' + id + '.png';
       }
       const cleanName = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-      return 'https://staticvacant.github.io/fnsprites/sprites/' + cleanName + '.png';
+      return './sprites/' + cleanName + '.png';
     }
 
     // ===================== DATA LOAD =====================
-    // Master sprite list comes straight from the original public source -
-    // staticvacant.github.io/fnsprites/sprites-data.js
+    // Self-hosted master sprite list from ./sprites-data.js
     async function fetchMasterSprites() {
-      const baseUrl = 'https://staticvacant.github.io/fnsprites/';
       try {
-        const res = await fetch(baseUrl + 'sprites-data.js');
+        const res = await fetch('./sprites-data.js');
         if (res.ok) {
           const jsContent = await res.text();
           const objRegex = /\{\s*id:\s*"([^"]+)"\s*,\s*name:\s*"([^"]+)"\s*,\s*theme:\s*"([^"]+)"\s*,\s*rarity:\s*"([^"]+)"\s*,\s*unreleased:\s*(true|false)\s*\}/g;
@@ -1167,7 +1165,7 @@
             if (name.indexOf('Gem ') === 0) continue; // Gem variants were vaulted
             sprites.push({
               name: name,
-              imageUrl: baseUrl + 'sprites/' + match[1] + '.png',
+              imageUrl: './sprites/' + match[1] + '.png',
               rarity: match[4]
             });
           }
